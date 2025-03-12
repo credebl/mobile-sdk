@@ -1,5 +1,5 @@
 {
-  "name": "@adeya/digilocker",
+  "name": "@credebl/digilocker-mobile",
   "version": "0.0.1",
   "license": "Apache-2.0",
   "main": "build/index",
@@ -31,10 +31,10 @@
   },
   "devDependencies": {
     "@types/node": "^18.18.8",
-    "rimraf": "3.0.2",
-    "typescript": "~5.5.2",
+    "@types/uuid": "^9.0.2",
     "@types/xml2js": "~0.4.14",
-    "@types/uuid": "^9.0.2"
+    "rimraf": "^4.4.0",
+    "typescript": "~5.5.2"
   },
   "peerDependencies": {
     "react-native": "*"

@@ -1,5 +1,5 @@
 {
-  "name": "@adeya/ssi",
+  "name": "@credebl/ssi-mobile",
   "version": "1.0.1-alpha.0",
   "license": "Apache-2.0",
   "main": "build/index",
@@ -24,27 +24,27 @@
     "release": "release-it"
   },
   "dependencies": {
-    "@credo-ts/anoncreds": "0.5.11",
-    "@credo-ts/askar": "0.5.11",
-    "@credo-ts/core": "0.5.11",
-    "@credo-ts/indy-vdr": "0.5.11",
-    "@credo-ts/openid4vc": "0.5.11",
+    "@credo-ts/anoncreds": "0.5.13",
+    "@credo-ts/askar": "0.5.13",
+    "@credo-ts/core": "0.5.13",
+    "@credo-ts/indy-vdr": "0.5.13",
+    "@credo-ts/openid4vc": "0.5.13",
     "@credo-ts/push-notifications": "0.7.1",
-    "@credo-ts/question-answer": "0.5.11",
+    "@credo-ts/question-answer": "0.5.13",
     "@credo-ts/react-hooks": "0.6.1",
-    "@credo-ts/react-native": "0.5.11",
+    "@credo-ts/react-native": "0.5.13",
     "@sd-jwt/decode": "^0.7.2",
     "query-string": "^8.1.0"
   },
   "peerDependencies": {
-    "@hyperledger/anoncreds-react-native": "0.2.2",
-    "@hyperledger/aries-askar-react-native": "0.2.3",
-    "@hyperledger/indy-vdr-react-native": "0.2.2"
+    "@hyperledger/anoncreds-react-native": "^0.2.2",
+    "@hyperledger/aries-askar-react-native": "^0.2.3",
+    "@hyperledger/indy-vdr-react-native": "^0.2.2"
   },
   "devDependencies": {
     "@types/node": "^18.18.8",
     "@types/react": "^18.0.24",
-    "rimraf": "3.0.2",
+    "rimraf": "^4.4.0",
     "typescript": "~5.5.2"
   }
 }

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2020",
+    "declaration": true,
+    "sourceMap": true,
+    "strict": true,
+    "noEmitOnError": true,
+    "lib": [],
+    "types": [],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "useUnknownInCatchVariables": false
+  },
+  "exclude": ["node_modules", "build", "**/*.test.ts", "**/__tests__/*.ts", "**/__mocks__/*.ts", "**/build/**"]
+}

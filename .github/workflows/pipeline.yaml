@@ -32,20 +32,23 @@ on:
 jobs:
   continuous-integration:
     name: 'Continuous Integration'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
 
-      - uses: pnpm/action-setup@v3
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
         with:
-          version: 9.1.0
+          node-version: 22
+          cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Check formatting
-        run: pnpm check-format
+        run: pnpm style:check
 
       - name: Check types
         run: pnpm check-types
@@ -57,20 +60,23 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
 
     name: 'Continuous Deployment'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: ['continuous-integration']
 
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_TOKEN }}
+      - uses: pnpm/action-setup@v4
 
-      - uses: pnpm/action-setup@v3
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
         with:
-          version: 9.1.0
+          node-version: 22
+          cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm build
