@@ -1,3 +1,4 @@
+import type { W3cCredentialRecord } from '@credo-ts/core'
 import type { OpenId4VcCredentialMetadata } from './metadata'
 import type {
   CredentialDisplay,
@@ -5,11 +6,10 @@ import type {
   CredentialIssuerDisplay,
   JffW3cCredentialJson,
   W3cCredentialDisplay,
-  W3cCredentialJson
+  W3cCredentialJson,
 } from './openIdHelpers'
-import type { W3cCredentialRecord } from '@credo-ts/core'
 
-import { Hasher, SdJwtVcRecord, ClaimFormat, JsonTransformer } from '@credo-ts/core'
+import { ClaimFormat, Hasher, JsonTransformer, SdJwtVcRecord } from '@credo-ts/core'
 import { decodeSdJwtSync, getClaimsSync } from '@sd-jwt/decode'
 
 import { getOpenId4VcCredentialMetadata } from './metadata'
@@ -35,7 +35,7 @@ export function getIssuerDisplay(
   issuerDisplay.logo = openidIssuerDisplay?.logo
     ? {
         url: openidIssuerDisplay.logo?.url,
-        altText: openidIssuerDisplay.logo?.alt_text
+        altText: openidIssuerDisplay.logo?.alt_text,
       }
     : undefined
 
@@ -44,7 +44,7 @@ export function getIssuerDisplay(
   if (openidCredentialDisplay && !issuerDisplay.logo && openidCredentialDisplay.logo) {
     issuerDisplay.logo = {
       url: openidCredentialDisplay.logo?.url,
-      altText: openidCredentialDisplay.logo?.alt_text
+      altText: openidCredentialDisplay.logo?.alt_text,
     }
   }
 
@@ -62,7 +62,7 @@ export function processIssuerDisplay(
 
   return {
     ...issuerDisplay,
-    name: issuerDisplay.name ?? 'Unknown'
+    name: issuerDisplay.name ?? 'Unknown',
   }
 }
 
@@ -81,8 +81,8 @@ export function getW3cIssuerDisplay(
     issuerDisplay.logo = issuerJson?.logoUrl
       ? { url: issuerJson?.logoUrl }
       : issuerJson?.image
-      ? { url: typeof issuerJson.image === 'string' ? issuerJson.image : issuerJson.image.id }
-      : undefined
+        ? { url: typeof issuerJson.image === 'string' ? issuerJson.image : issuerJson.image.id }
+        : undefined
   }
 
   // Issuer name from JFF
@@ -114,7 +114,7 @@ export function getCredentialDisplay(
     credentialDisplay.backgroundImage = openidCredentialDisplay?.background_image
       ? {
           url: openidCredentialDisplay.background_image.url,
-          altText: openidCredentialDisplay.background_image.alt_text
+          altText: openidCredentialDisplay.background_image.alt_text,
         }
       : undefined
   }
@@ -150,7 +150,7 @@ export function getW3cCredentialDisplay(
   return {
     ...credentialDisplay,
     // Last fallback, if there's really no name for the credential, we use a generic name
-    name: credentialDisplay.name ?? 'Credential'
+    name: credentialDisplay.name ?? 'Credential',
   }
 }
 
@@ -166,7 +166,7 @@ export function getSdJwtCredentialDisplay(
 
   return {
     ...credentialDisplay,
-    name: credentialDisplay.name ?? 'Credential'
+    name: credentialDisplay.name ?? 'Credential',
   }
 }
 
@@ -195,7 +195,7 @@ export function filterAndMapSdJwtKeys(sdJwtVcPayload: Record<string, unknown>) {
   const credentialMetadata: CredentialMetadata = {
     type: vct,
     issuer: iss,
-    holder: cnf
+    holder: cnf,
   }
 
   if (iat) {
@@ -210,7 +210,7 @@ export function filterAndMapSdJwtKeys(sdJwtVcPayload: Record<string, unknown>) {
 
   return {
     visibleProperties,
-    metadata: credentialMetadata
+    metadata: credentialMetadata,
   }
 }
 
@@ -231,9 +231,9 @@ export function getCredentialForDisplaySdJwt(
     createdAt: credentialRecord.createdAt,
     display: {
       ...credentialDisplay,
-      issuer: issuerDisplay
+      issuer: issuerDisplay,
     },
-    attributes: filterAndMapSdJwtKeys(decodedPayload).visibleProperties
+    attributes: filterAndMapSdJwtKeys(decodedPayload).visibleProperties,
   }
 }
 
@@ -259,7 +259,7 @@ export function getCredentialForDisplay(
 
   // to be implimented later support credential with multiple subjects
   const credentialAttributes = Array.isArray(credential.credentialSubject)
-    ? credential.credentialSubject[0] ?? {}
+    ? (credential.credentialSubject[0] ?? {})
     : credential.credentialSubject
 
   return {
@@ -267,9 +267,9 @@ export function getCredentialForDisplay(
     createdAt: credentialRecord.createdAt,
     display: {
       ...credentialDisplay,
-      issuer: issuerDisplay
+      issuer: issuerDisplay,
     },
     credential,
-    attributes: credentialAttributes
+    attributes: credentialAttributes,
   }
 }

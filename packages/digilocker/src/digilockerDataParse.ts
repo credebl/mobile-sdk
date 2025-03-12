@@ -61,7 +61,7 @@ interface DrivingLicenseData {
 }
 
 const getOrDefault = (obj: any, path: string[], defaultValue = ''): string => {
-  return path.reduce((acc, key) => (acc && acc[key] ? acc[key] : defaultValue), obj)
+  return path.reduce((acc, key) => (acc?.[key] ? acc[key] : defaultValue), obj)
 }
 
 export const parseAadhaarData = async (xmlString: string): Promise<AadhaarData | { error: string }> => {
@@ -88,7 +88,7 @@ export const parseAadhaarData = async (xmlString: string): Promise<AadhaarData |
       street: getOrDefault(poa, ['$', 'street']),
       landmark: getOrDefault(poa, ['$', 'lm']),
       postOffice: getOrDefault(poa, ['$', 'po']),
-      photo
+      photo,
     }
     return aadhaarData
   } catch (error) {
@@ -107,7 +107,7 @@ export const parsePANData = async (xmlString: string): Promise<PANData | { error
       panNumber: certificate?.$?.number || '',
       name: issuedTo?.$?.name || '',
       dob: issuedTo?.$?.dob || '',
-      gender: issuedTo?.$?.gender || ''
+      gender: issuedTo?.$?.gender || '',
     }
 
     return panData
@@ -157,7 +157,7 @@ export const parseDrivingLicenseData = async (xmlString: string): Promise<Drivin
       permanentAddressCountry: permanentAddress.country || '',
       licenseTypes: licenseTypes.map((item: { $: { abbreviation: string } }) => item.$.abbreviation).join(', '),
       gender: issuedTo?.$?.gender || '',
-      photo: issuedTo?.Photo?.[0]._ || ''
+      photo: issuedTo?.Photo?.[0]._ || '',
     }
     return drivingLicenseData
   } catch (error) {

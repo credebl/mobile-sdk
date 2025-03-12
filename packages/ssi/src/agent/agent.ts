@@ -10,31 +10,31 @@ import {
   LegacyIndyCredentialFormatService,
   LegacyIndyProofFormatService,
   V1CredentialProtocol,
-  V1ProofProtocol
+  V1ProofProtocol,
 } from '@credo-ts/anoncreds'
 import { AskarModule } from '@credo-ts/askar'
 import {
   Agent,
-  DidsModule,
-  WebDidResolver,
-  CredentialsModule,
-  V2CredentialProtocol,
-  ProofsModule,
-  V2ProofProtocol,
-  AutoAcceptProof,
   AutoAcceptCredential,
-  MediationRecipientModule,
-  HttpOutboundTransport,
-  WsOutboundTransport,
+  AutoAcceptProof,
   ConnectionsModule,
+  CredentialsModule,
+  DidsModule,
+  DifPresentationExchangeProofFormatService,
+  HttpOutboundTransport,
   JsonLdCredentialFormatService,
-  DifPresentationExchangeProofFormatService
+  MediationRecipientModule,
+  ProofsModule,
+  V2CredentialProtocol,
+  V2ProofProtocol,
+  WebDidResolver,
+  WsOutboundTransport,
 } from '@credo-ts/core'
 import {
   IndyVdrAnonCredsRegistry,
   IndyVdrIndyDidResolver,
   IndyVdrModule,
-  IndyVdrSovDidResolver
+  IndyVdrSovDidResolver,
 } from '@credo-ts/indy-vdr'
 import { PushNotificationsFcmModule } from '@credo-ts/push-notifications'
 import { QuestionAnswerModule } from '@credo-ts/question-answer'
@@ -54,71 +54,71 @@ export const getAgentModules = ({
   mediatorInvitationUrl,
   mediatorPickupStrategy,
   indyNetworks,
-  maximumMessagePickup = 5
+  maximumMessagePickup = 5,
 }: AdeyaAgentModuleOptions) => {
   return {
     askar: new AskarModule({
-      ariesAskar
+      ariesAskar,
     }),
     anoncreds: new AnonCredsModule({
       registries: [new IndyVdrAnonCredsRegistry()],
-      anoncreds
+      anoncreds,
     }),
     mediationRecipient: new MediationRecipientModule({
       mediatorInvitationUrl,
       mediatorPickupStrategy,
-      maximumMessagePickup
+      maximumMessagePickup,
     }),
     dids: new DidsModule({
       registrars: [],
-      resolvers: [new WebDidResolver(), new IndyVdrSovDidResolver(), new IndyVdrIndyDidResolver()]
+      resolvers: [new WebDidResolver(), new IndyVdrSovDidResolver(), new IndyVdrIndyDidResolver()],
     }),
     indyVdr: new IndyVdrModule({
       indyVdr,
-      networks: indyNetworks
+      networks: indyNetworks,
     }),
     credentials: new CredentialsModule({
       autoAcceptCredentials: AutoAcceptCredential.ContentApproved,
       credentialProtocols: [
         new V1CredentialProtocol({
-          indyCredentialFormat: new LegacyIndyCredentialFormatService()
+          indyCredentialFormat: new LegacyIndyCredentialFormatService(),
         }),
         new V2CredentialProtocol({
           credentialFormats: [
             new LegacyIndyCredentialFormatService(),
             new AnonCredsCredentialFormatService(),
             new DataIntegrityCredentialFormatService(),
-            new JsonLdCredentialFormatService()
-          ]
-        })
-      ]
+            new JsonLdCredentialFormatService(),
+          ],
+        }),
+      ],
     }),
     proofs: new ProofsModule({
       autoAcceptProofs: AutoAcceptProof.ContentApproved,
       proofProtocols: [
         new V1ProofProtocol({
-          indyProofFormat: new LegacyIndyProofFormatService()
+          indyProofFormat: new LegacyIndyProofFormatService(),
         }),
         new V2ProofProtocol({
           proofFormats: [
             new LegacyIndyProofFormatService(),
             new AnonCredsProofFormatService(),
-            new DifPresentationExchangeProofFormatService()
-          ]
-        })
-      ]
+            new DifPresentationExchangeProofFormatService(),
+          ],
+        }),
+      ],
     }),
     connections: new ConnectionsModule({
-      autoAcceptConnections: true
+      autoAcceptConnections: true,
     }),
     pushNotificationsFcm: new PushNotificationsFcmModule(),
-    questionAnswer: new QuestionAnswerModule()
+    questionAnswer: new QuestionAnswerModule(),
   }
 }
 
 export const initializeAgent = async ({
   agentConfig,
-  modules
+  modules,
 }: {
   agentConfig: InitConfig
   modules: AgentModulesInput
@@ -127,9 +127,9 @@ export const initializeAgent = async ({
     dependencies: agentDependencies,
     config: {
       autoUpdateStorageOnStartup: true,
-      ...agentConfig
+      ...agentConfig,
     },
-    modules
+    modules,
   })
 
   agent.registerOutboundTransport(new HttpOutboundTransport())

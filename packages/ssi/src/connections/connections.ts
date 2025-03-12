@@ -6,7 +6,7 @@ import type {
   CreateOutOfBandInvitationConfig,
   OutOfBandInvitation,
   ReceiveOutOfBandInvitationConfig,
-  Routing
+  Routing,
 } from '@credo-ts/core'
 
 /**
@@ -25,7 +25,7 @@ export const createLegacyInvitation = async (agent: Agent, domain: string, confi
   return {
     record,
     invitation: record.invitation,
-    invitationUrl
+    invitationUrl,
   }
 }
 
@@ -69,7 +69,7 @@ export const createInvitation = async (agent: Agent, domain: string, config?: Cr
   return {
     record,
     invitation: record.outOfBandInvitation,
-    invitationUrl
+    invitationUrl,
   }
 }
 

@@ -1,7 +1,7 @@
 import type { Agent, Query } from '@credo-ts/core'
 import type {
   GenericRecord,
-  SaveGenericRecordOption
+  SaveGenericRecordOption,
 } from '@credo-ts/core/build/modules/generic-records/repository/GenericRecord'
 
 /**

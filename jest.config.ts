@@ -8,10 +8,10 @@ const config: JestConfigWithTsJest = {
       'ts-jest',
       {
         tsconfig: 'tsconfig.test.json',
-        isolatedModules: true
-      }
-    ]
-  }
+        isolatedModules: true,
+      },
+    ],
+  },
 }
 
 module.exports = config

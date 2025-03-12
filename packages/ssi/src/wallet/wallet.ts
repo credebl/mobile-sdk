@@ -12,7 +12,7 @@ import {
   LogLevel,
   SigningProviderRegistry,
   WsOutboundTransport,
-  utils
+  utils,
 } from '@credo-ts/core'
 import { agentDependencies } from '@credo-ts/react-native'
 
@@ -70,12 +70,12 @@ export const isWalletImportable = async (
   importConfig: WalletExportImportConfig
 ): Promise<boolean> => {
   const fileSystem = new agentDependencies.FileSystem()
-  const tempImportPath = fileSystem.tempPath + '/' + utils.uuid()
+  const tempImportPath = `${fileSystem.tempPath}/${utils.uuid()}`
   try {
     // Add temp path to wallet config
     walletConfig.storage = {
       type: 'sqlite',
-      path: tempImportPath
+      path: tempImportPath,
     }
     // NOTE: a custom wallet is used to check if the wallet passphrase is correct and can be imported successfully.
     const askarWallet = new AskarWallet(new ConsoleLogger(LogLevel.debug), fileSystem, new SigningProviderRegistry([]))
@@ -115,9 +115,9 @@ export const importWalletWithAgent = async ({ importConfig, agentConfig, modules
     dependencies: agentDependencies,
     config: {
       autoUpdateStorageOnStartup: true,
-      ...agentConfig
+      ...agentConfig,
     },
-    modules
+    modules,
   })
 
   agent.registerOutboundTransport(new HttpOutboundTransport())

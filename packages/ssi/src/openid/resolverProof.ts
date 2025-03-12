@@ -1,8 +1,8 @@
+import type { Agent, DifPexCredentialsForRequest } from '@credo-ts/core'
+import type { OpenId4VcSiopVerifiedAuthorizationRequest } from '@credo-ts/openid4vc'
 import type { OpenId4VPRequestRecord } from './displayProof'
 import type { ParseInvitationResult } from './openIdHelpers'
 import type { OpenID4VCIParam } from './resolver'
-import type { Agent, DifPexCredentialsForRequest } from '@credo-ts/core'
-import type { OpenId4VcSiopVerifiedAuthorizationRequest } from '@credo-ts/openid4vc'
 
 import { X509ModuleConfig } from '@credo-ts/core'
 import { Jwt } from '@credo-ts/core'
@@ -18,8 +18,8 @@ function handleTextResponse(text: string): ParseInvitationResult {
       result: {
         format: 'parsed',
         type: 'openid-authorization-request',
-        data: text
-      }
+        data: text,
+      },
     }
   }
 
@@ -57,8 +57,8 @@ function handleJsonResponse(json: unknown): ParseInvitationResult {
       result: {
         format: 'parsed',
         type: 'openid-credential-offer',
-        data: json
-      }
+        data: json,
+      },
     }
   }
 
@@ -77,8 +77,8 @@ export async function fetchInvitationDataUrl(dataUrl: string): Promise<ParseInvi
         // for DIDComm out of band invitations we should include application/json
         // but we are flexible and also want to support other types of invitations
         // as e.g. the OpenID SIOP request is a signed encoded JWT string
-        Accept: 'application/json, text/plain, */*'
-      }
+        Accept: 'application/json, text/plain, */*',
+      },
     })
     clearTimeout(timeout)
     if (!response.ok) {
@@ -108,7 +108,7 @@ const extractCertificateFromJwt = (jwt: string) => {
  */
 export const extractCertificateFromAuthorizationRequest = async ({
   data,
-  uri
+  uri,
 }: {
   data?: string
   uri?: string
@@ -117,7 +117,7 @@ export const extractCertificateFromAuthorizationRequest = async ({
     if (data) {
       return {
         data,
-        certificate: extractCertificateFromJwt(data)
+        certificate: extractCertificateFromJwt(data),
       }
     }
 
@@ -132,13 +132,13 @@ export const extractCertificateFromAuthorizationRequest = async ({
         ) {
           return {
             data: result.result.data,
-            certificate: extractCertificateFromJwt(result.result.data)
+            certificate: extractCertificateFromJwt(result.result.data),
           }
         }
       } else if (query.request && typeof query.request === 'string') {
         const _res = {
           data: query.request,
-          certificate: extractCertificateFromJwt(query.request)
+          certificate: extractCertificateFromJwt(query.request),
         }
         return _res
       }
@@ -175,7 +175,7 @@ const allowUntrustedCertificates = false
 export const getOID4VCCredentialsForProofRequest = async ({
   agent,
   data,
-  uri
+  uri,
 }: OpenID4VCIParam): Promise<OpenId4VPRequestRecord | undefined> => {
   let requestUri = uri
 
@@ -210,7 +210,7 @@ export const getOID4VCCredentialsForProofRequest = async ({
         ? getHostOpenIdNameFromUrl(resolved.authorizationRequest.responseURI)
         : undefined,
       createdAt: new Date(),
-      type: 'OpenId4VPRequestRecord'
+      type: 'OpenId4VPRequestRecord',
     }
   } catch (err) {
     agent.config.logger.error(`Parsing presentation request:  ${(err as Error)?.message ?? err}`)
@@ -223,7 +223,7 @@ export const shareProof = async ({
   authorizationRequest,
   credentialsForRequest,
   selectedCredentials,
-  allowUntrustedCertificate = false
+  allowUntrustedCertificate = false,
 }: {
   agent: Agent
   authorizationRequest: OpenId4VcSiopVerifiedAuthorizationRequest
@@ -259,8 +259,8 @@ export const shareProof = async ({
       agent.modules.openId4VcHolder.acceptSiopAuthorizationRequest({
         authorizationRequest,
         presentationExchange: {
-          credentials
-        }
+          credentials,
+        },
       })
     )
 

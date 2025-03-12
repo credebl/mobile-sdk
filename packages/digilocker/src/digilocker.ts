@@ -1,5 +1,5 @@
+import { createHash } from 'node:crypto'
 import axios from 'axios'
-import { createHash } from 'crypto'
 
 import {
   DIGILOCKER_AADHAAR,
@@ -10,7 +10,7 @@ import {
   DIGILOCKER_FETCH_FILE,
   DIGILOCKER_ISSUE_DOCUMENT,
   DIGILOCKER_REDIRECT_URL_2,
-  DIGILOCKER_TOKEN_URL
+  DIGILOCKER_TOKEN_URL,
 } from './constant'
 
 export type AdeyaDigiLockerModuleOptions = {
@@ -33,7 +33,7 @@ export const generateCodeChallenge = (codeVerifier: string): string => {
 export const initiateDigiLockerOAuth = async ({
   client_id = '',
   redirect_url = '',
-  codeVerifier = ''
+  codeVerifier = '',
 }: AdeyaDigiLockerModuleOptions) => {
   try {
     const codeChallenge = generateCodeChallenge(codeVerifier)
@@ -49,21 +49,15 @@ export const fetchDigiLockerToken = async ({
   client_id = '',
   client_secret = '',
   redirect_url = '',
-  codeVerifier = ''
+  codeVerifier = '',
 }: AdeyaDigiLockerModuleOptions) => {
-  const params =
-    `grant_type=authorization_code&` +
-    `code=${encodeURIComponent(authCode)}&` +
-    `client_id=${encodeURIComponent(client_id)}&` +
-    `client_secret=${encodeURIComponent(client_secret)}&` +
-    `redirect_uri=${encodeURIComponent(redirect_url)}&` +
-    `code_verifier=${encodeURIComponent(codeVerifier)}`
+  const params = `grant_type=authorization_code&code=${encodeURIComponent(authCode)}&client_id=${encodeURIComponent(client_id)}&client_secret=${encodeURIComponent(client_secret)}&redirect_uri=${encodeURIComponent(redirect_url)}&code_verifier=${encodeURIComponent(codeVerifier)}`
 
   try {
     const response = await axios.post(DIGILOCKER_TOKEN_URL, params, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     })
     return response.data
   } catch (error) {
@@ -76,8 +70,8 @@ export const fetchAadhaarData = async (accessToken: string): Promise<{ message: 
   try {
     const response = await axios.get(DIGILOCKER_AADHAAR, {
       headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     })
     return response.data
   } catch (error) {
@@ -90,8 +84,8 @@ export const fetchIssuedDocuments = async (accessToken: string): Promise<{ messa
   try {
     const response = await axios.get(DIGILOCKER_ISSUE_DOCUMENT, {
       headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     })
     return response.data
   } catch (error) {
@@ -106,8 +100,8 @@ export const fetchDocumentData = async (uri: string, accessToken: string): Promi
   try {
     const response = await axios.get(documentUrl, {
       headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     })
     return response.data
   } catch (error) {
@@ -122,8 +116,8 @@ export const fetchDocument = async (uri: string, accessToken: string): Promise<{
   try {
     const response = await axios.get(documentUrl, {
       headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     })
     return response.data
   } catch (error) {

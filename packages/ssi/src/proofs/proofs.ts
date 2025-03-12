@@ -10,7 +10,7 @@ import type {
   ProposeProofOptions,
   RequestProofOptions,
   SelectCredentialsForProofRequestOptions,
-  SendProofProblemReportOptions
+  SendProofProblemReportOptions,
 } from '@credo-ts/core'
 
 /**

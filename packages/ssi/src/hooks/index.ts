@@ -17,7 +17,7 @@ import {
   useProofsByConnectionId,
   useQuestionAnswer,
   useQuestionAnswerByConnectionId,
-  useQuestionAnswerById
+  useQuestionAnswerById,
 } from '@credo-ts/react-hooks'
 
 export {
@@ -39,5 +39,5 @@ export {
   useProofsByConnectionId,
   useQuestionAnswer,
   useQuestionAnswerByConnectionId,
-  useQuestionAnswerById
+  useQuestionAnswerById,
 }

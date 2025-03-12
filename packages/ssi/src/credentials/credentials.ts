@@ -5,7 +5,7 @@ import type {
   CredentialProtocol,
   DeleteCredentialOptions,
   ProposeCredentialOptions,
-  SendCredentialProblemReportOptions
+  SendCredentialProblemReportOptions,
 } from '@credo-ts/core'
 
 /**

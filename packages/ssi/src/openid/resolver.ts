@@ -6,12 +6,12 @@ import {
   JwaSignatureAlgorithm,
   SdJwtVcRecord,
   W3cCredentialRecord,
-  getJwkFromKey
+  getJwkFromKey,
 } from '@credo-ts/core'
 import {
   OpenId4VciCredentialFormatProfile,
   type OpenId4VciCredentialSupportedWithId,
-  type OpenId4VciSupportedCredentialFormats
+  type OpenId4VciSupportedCredentialFormats,
 } from '@credo-ts/openid4vc'
 
 import { extractOpenId4VcCredentialMetadata, setOpenId4VcCredentialMetadata } from './metadata'
@@ -36,7 +36,7 @@ export const receiveCredentialFromOpenId4VciOffer = async ({ agent, data, uri }:
   agent.config.logger.info(`Receiving openid uri ${offerUri}`, {
     offerUri,
     data,
-    uri
+    uri,
   })
   const resolvedCredentialOffer = await agent.modules.openId4VcHolder.resolveCredentialOffer(offerUri)
 
@@ -49,7 +49,7 @@ export const receiveCredentialFromOpenId4VciOffer = async ({ agent, data, uri }:
         keyType,
         supportsAllDidMethods,
         supportsJwk,
-        credentialFormat
+        credentialFormat,
       }: {
         supportedDidMethods: string[] | undefined
         keyType: KeyType
@@ -63,8 +63,8 @@ export const receiveCredentialFromOpenId4VciOffer = async ({ agent, data, uri }:
           supportsAllDidMethods || supportedDidMethods?.includes('did:jwk')
             ? 'jwk'
             : supportedDidMethods?.includes('did:key')
-            ? 'key'
-            : undefined
+              ? 'key'
+              : undefined
 
         // If supportedDidMethods is undefined, and supportsJwk is false, we will default to did:key
         // this is important as part of MATTR launchpad support which MUST use did:key but doesn't
@@ -77,8 +77,8 @@ export const receiveCredentialFromOpenId4VciOffer = async ({ agent, data, uri }:
           const didResult = await agent.dids.create<JwkDidCreateOptions | KeyDidCreateOptions>({
             method: didMethod,
             options: {
-              keyType
-            }
+              keyType,
+            },
           })
 
           if (didResult.didState.state !== 'finished') {
@@ -96,18 +96,18 @@ export const receiveCredentialFromOpenId4VciOffer = async ({ agent, data, uri }:
 
           return {
             didUrl: verificationMethodId,
-            method: 'did'
+            method: 'did',
           }
         }
 
         // Otherwise we also support plain jwk for sd-jwt only
         if (supportsJwk && credentialFormat === OpenId4VciCredentialFormatProfile.SdJwtVc) {
           const key = await agent.wallet.createKey({
-            keyType
+            keyType,
           })
           return {
             method: 'jwk',
-            jwk: getJwkFromKey(key)
+            jwk: getJwkFromKey(key),
           }
         }
 
@@ -124,8 +124,8 @@ export const receiveCredentialFromOpenId4VciOffer = async ({ agent, data, uri }:
         // is EdDSA. The list is ordered by preference, so if no suites are defined by the issuer, the first one
         // will be used
         JwaSignatureAlgorithm.EdDSA,
-        JwaSignatureAlgorithm.ES256
-      ]
+        JwaSignatureAlgorithm.ES256,
+      ],
     }
   )
 
@@ -138,13 +138,13 @@ export const receiveCredentialFromOpenId4VciOffer = async ({ agent, data, uri }:
 
   if ('compact' in firstCredential) {
     record = new SdJwtVcRecord({
-      compactSdJwtVc: firstCredential.compact
+      compactSdJwtVc: firstCredential.compact,
     })
   } else {
     record = new W3cCredentialRecord({
       credential: firstCredential,
       // We don't support expanded types right now, but would become problem when we support JSON-LD
-      tags: {}
+      tags: {},
     })
   }
 

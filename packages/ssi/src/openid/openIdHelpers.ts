@@ -1,12 +1,12 @@
+import type { Agent, CredentialExchangeRecord } from '@credo-ts/core'
 import type { CredentialMetadata } from './displayProof'
-import type { CredentialExchangeRecord, Agent } from '@credo-ts/core'
 
 import {
   ClaimFormat,
   SdJwtVcRecord,
   SdJwtVcRepository,
   W3cCredentialRecord,
-  W3cCredentialRepository
+  W3cCredentialRepository,
 } from '@credo-ts/core'
 
 import { getOID4VCCredentialsForProofRequest } from './resolverProof'
@@ -18,7 +18,7 @@ export enum InvitationQrTypesSupported {
   OPENID_INITIATE_ISSUANCE = 'openid-initiate-issuance://',
   OPENID_CREDENTIAL_OFFER = 'openid-credential-offer://',
   OPENID4VP = 'openid4vp://',
-  OPENID_VC = 'openid-vc://'
+  OPENID_VC = 'openid-vc://',
 }
 export type ParseInvitationResult =
   | {
@@ -73,8 +73,8 @@ export function parseInvitationUrl(invitationUrl: string): ParseInvitationResult
       result: {
         format: 'url',
         type: 'openid-credential-offer',
-        data: invitationUrl
-      }
+        data: invitationUrl,
+      },
     }
   }
 
@@ -84,13 +84,13 @@ export function parseInvitationUrl(invitationUrl: string): ParseInvitationResult
       result: {
         format: 'url',
         type: 'openid-authorization-request',
-        data: invitationUrl
-      }
+        data: invitationUrl,
+      },
     }
   }
   return {
     success: false,
-    error: 'Invitation not recognized.'
+    error: 'Invitation not recognized.',
   }
 }
 
@@ -141,9 +141,8 @@ export const sanitizeString = (str: string) => {
   words = words.map((word, index) => {
     if (index === 0) {
       return word.charAt(0).toUpperCase() + word.slice(1)
-    } else {
-      return word.charAt(0).toLowerCase() + word.slice(1)
     }
+    return word.charAt(0).toLowerCase() + word.slice(1)
   })
   return words.join(' ')
 }
@@ -209,7 +208,7 @@ export const addRecord = (
 
   return {
     ...state,
-    w3cCredentialRecords: newRecordsState
+    w3cCredentialRecords: newRecordsState,
   }
 }
 
@@ -225,7 +224,7 @@ export const removeRecord = (
 
   return {
     ...state,
-    w3cCredentialRecords: newRecordsState
+    w3cCredentialRecords: newRecordsState,
   }
 }
 
@@ -233,7 +232,7 @@ export const defaultState: OpenIDCredentialRecordState = {
   openIDCredentialRecords: [],
   w3cCredentialRecords: [],
   sdJwtVcRecords: [],
-  isLoading: true
+  isLoading: true,
 }
 
 function checkAgent(agent: Agent) {
@@ -268,7 +267,7 @@ export const resolveOpenIDPresentationRequest = async (uri: string, agent: Agent
   try {
     const record = await getOID4VCCredentialsForProofRequest({
       agent: agent,
-      uri: uri
+      uri: uri,
     })
     return record
   } catch (err: unknown) {

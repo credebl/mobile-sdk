@@ -1,6 +1,6 @@
-import type { DisplayImage } from './openIdHelpers'
 import type { DifPexCredentialsForRequest } from '@credo-ts/core'
 import type { OpenId4VcSiopResolvedAuthorizationRequest } from '@credo-ts/openid4vc'
+import type { DisplayImage } from './openIdHelpers'
 
 import { ClaimFormat } from '@credo-ts/core'
 
@@ -22,7 +22,7 @@ export interface OpenId4VPRequestRecord extends OpenId4VcSiopResolvedAuthorizati
 
 export enum CredentialMetadata {
   customMetadata = 'customMetadata',
-  metaData = 'metaData'
+  metaData = 'metaData',
 }
 export interface FormattedSubmissionEntry {
   /** can be either AnonCreds groupName or PEX inputDescriptorId */
@@ -79,9 +79,9 @@ export function formatDifPexCredentialsForRequest(
             metadata,
             backgroundColor: display.backgroundColor,
             backgroundImage: display.backgroundImage,
-            claimFormat
+            claimFormat,
           }
-        })
+        }),
       }
     })
   })
@@ -90,6 +90,6 @@ export function formatDifPexCredentialsForRequest(
     areAllSatisfied: entries.every((entry) => entry.isSatisfied),
     name: credentialsForRequest.name ?? 'Unknown',
     purpose: credentialsForRequest.purpose,
-    entries
+    entries,
   }
 }
