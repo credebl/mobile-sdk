@@ -60,6 +60,7 @@ interface DrivingLicenseData {
   photo: string
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const getOrDefault = (obj: any, path: string[], defaultValue = ''): string => {
   return path.reduce((acc, key) => (acc?.[key] ? acc[key] : defaultValue), obj)
 }

@@ -31,13 +31,8 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "style": {
-        "noRestrictedGlobals": {
-          "level": "error",
-          "options": {
-            "deniedGlobals": ["URL", "URLSearchParams", "fetch", "Response", "Headers"]
-          }
-        }
+      "suspicious": {
+        "noConsole": "error"
       },
       "correctness": {
         "recommended": true,

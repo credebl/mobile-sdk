@@ -189,7 +189,6 @@ export function filterAndMapSdJwtKeys(sdJwtVcPayload: Record<string, unknown>) {
     exp?: number
     [key: string]: unknown
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { _sd_alg, _sd_hash, iss, vct, cnf, iat, exp, nbf, ...visibleProperties } = sdJwtVcPayload as SdJwtVcPayload
 
   const credentialMetadata: CredentialMetadata = {
@@ -239,7 +238,7 @@ export function getCredentialForDisplaySdJwt(
 
 export function getCredentialForDisplay(
   // TODO Will update when will give support to MdocRecord
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   credentialRecord: W3cCredentialRecord | SdJwtVcRecord | any
 ): W3cCredentialDisplay {
   const openId4VcMetadata = getOpenId4VcCredentialMetadata(credentialRecord)

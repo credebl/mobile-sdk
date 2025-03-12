@@ -8,7 +8,6 @@
     "url": "https://github.com/credebl/mobile-sdk"
   },
   "scripts": {
-    "lint": "eslint .",
     "test": "jest",
     "check-types": "pnpm -r check-types",
     "style:check": "biome check --unsafe",

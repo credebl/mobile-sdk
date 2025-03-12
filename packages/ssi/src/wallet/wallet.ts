@@ -42,8 +42,6 @@ export const isWalletPinCorrect = async (walletConfig: WalletConfig) => {
     await askarWallet.close()
     return true
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log('Error opening wallet', e)
     return false
   }
 }
@@ -84,8 +82,6 @@ export const isWalletImportable = async (
     await fileSystem.delete(tempImportPath)
     return true
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log('Error importing wallet', e)
     await fileSystem.delete(tempImportPath)
     return false
   }
