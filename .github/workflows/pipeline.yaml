@@ -47,7 +47,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Check formatting
+      - name: Check formatting and Linting
         run: pnpm style:check
 
       - name: Check types
@@ -81,7 +81,7 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Initialise the NPM config
+      - name: Initialize the NPM config
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
@@ -91,8 +91,8 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         shell: bash
         run: |
-          git config --global user.email "amit.padmani@ayanworks.com"
-          git config --global user.name "Amit Padmani"
+          git config --global user.name "lfdt-bot"
+          git config --global user.email "lfdt-bot@lfdecentralizedtrust.org"
 
           if [ ${{ inputs.release-type }} == 'alpha' ]; then
             pnpm run --dir packages/${{ inputs.package }} release --preRelease=${{ inputs.release-type }} --npm.tag=alpha
