@@ -4,9 +4,9 @@
   "license": "Apache-2.0",
   "main": "build/index",
   "source": "src/index",
-  "homepage": "https://github.com/credebl/adeya-sdk/tree/main/packages/digilocker",
+  "homepage": "https://github.com/credebl/mobile-sdk/tree/main/packages/digilocker",
   "repository": {
-    "url": "https://github.com/credebl/adeya-sdk/tree/main/packages/digilocker",
+    "url": "https://github.com/credebl/mobile-sdk/tree/main/packages/digilocker",
     "type": "git",
     "directory": "packages/digilocker"
   },
