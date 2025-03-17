@@ -65,8 +65,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_TOKEN }}
       - uses: pnpm/action-setup@v4
 
       - name: Setup NodeJS
@@ -88,6 +86,7 @@ jobs:
 
       - name: Publish
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         shell: bash
         run: |
