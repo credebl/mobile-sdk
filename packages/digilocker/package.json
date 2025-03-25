@@ -24,8 +24,7 @@
     "check-types": "pnpm compile --noEmit",
     "build": "pnpm clean && pnpm compile",
     "clean": "rimraf -rf ./build",
-    "compile": "tsc",
-    "release": "release-it"
+    "compile": "tsc"
   },
   "devDependencies": {
     "@types/node": "^18.18.8",

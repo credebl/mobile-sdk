@@ -18,8 +18,7 @@
     "check-types": "pnpm compile --noEmit",
     "build": "pnpm clean && pnpm compile",
     "clean": "rimraf -rf ./build",
-    "compile": "tsc",
-    "release": "release-it"
+    "compile": "tsc"
   },
   "dependencies": {
     "@credo-ts/anoncreds": "0.5.13",
