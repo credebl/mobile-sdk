@@ -14,7 +14,9 @@
     "style:fix": "biome check --write --unsafe",
     "build": "pnpm -r build",
     "clean": "pnpm -r clean",
-    "validate": "pnpm check-types && pnpm style:check"
+    "validate": "pnpm check-types && pnpm style:check",
+    "release": "pnpm build && pnpm changeset publish --no-git-tag",
+    "changeset-version": "pnpm changeset version && pnpm style:fix"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
