@@ -14,11 +14,11 @@
     "style:fix": "biome check --write --unsafe",
     "build": "pnpm -r build",
     "clean": "pnpm -r clean",
-    "format": "pnpm prettier --write",
     "validate": "pnpm check-types && pnpm style:check"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@changesets/cli": "^2.28.1",
     "@types/jest": "^29.5.5",
     "@types/node": "^20.7.0",
     "jest": "^29.7.0",
