@@ -13,9 +13,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [
-    "build"
-  ],
+  "files": ["build"],
   "scripts": {
     "check-types": "pnpm compile --noEmit",
     "build": "pnpm clean && pnpm compile",
