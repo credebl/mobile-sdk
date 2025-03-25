@@ -1,6 +1,6 @@
 {
   "name": "@credebl/ssi-mobile",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "Apache-2.0",
   "main": "build/index",
   "source": "src/index",
@@ -13,7 +13,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": ["build"],
+  "files": [
+    "build"
+  ],
   "scripts": {
     "check-types": "pnpm compile --noEmit",
     "build": "pnpm clean && pnpm compile",
