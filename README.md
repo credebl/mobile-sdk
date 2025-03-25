@@ -1,7 +1,5 @@
 # Credebl Mobile SDK
 
-[![Pipeline](https://github.com/credebl/mobile-sdk/actions/workflows/pipeline.yaml/badge.svg?branch=main)](https://github.com/credebl/mobile-sdk/actions/workflows/pipeline.yaml)
-
 ### Packages
 
 <table>
