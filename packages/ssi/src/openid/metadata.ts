@@ -1,6 +1,5 @@
 import type { SdJwtVcRecord, W3cCredentialRecord } from '@credo-ts/core'
 import type { OpenId4VciCredentialSupported, OpenId4VciIssuerMetadataDisplay } from '@credo-ts/openid4vc'
-import type { EndpointMetadataResult } from '@sphereon/oid4vci-common'
 
 export interface OpenId4VcCredentialMetadata {
   credential: {
@@ -17,7 +16,8 @@ export const openId4VcCredentialMetadataKey = '_Adeya/openId4VcCredentialMetadat
 
 export function extractOpenId4VcCredentialMetadata(
   credentialMetadata: OpenId4VciCredentialSupported,
-  serverMetadata: EndpointMetadataResult
+  // biome-ignore lint/suspicious/noExplicitAny: We need to use any here because the type is not exported from the package.
+  serverMetadata: any
 ): OpenId4VcCredentialMetadata {
   return {
     credential: {
