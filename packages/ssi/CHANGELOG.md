@@ -1,5 +1,11 @@
 # @credebl/ssi-mobile
 
+## 2.0.1
+
+### Patch Changes
+
+- ea0eddf: fix: package builds
+
 ## 2.0.0
 
 ### Major Changes
