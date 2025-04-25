@@ -2,8 +2,10 @@
   "name": "@credebl/digilocker-mobile",
   "main": "src/index",
   "types": "src/index",
-  "version": "1.0.0",
-  "files": ["build"],
+  "version": "1.0.1",
+  "files": [
+    "build"
+  ],
   "license": "Apache-2.0",
   "publishConfig": {
     "main": "build/index",

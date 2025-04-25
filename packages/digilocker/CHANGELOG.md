@@ -1,5 +1,11 @@
 # @credebl/digilocker-mobile
 
+## 1.0.1
+
+### Patch Changes
+
+- ea0eddf: fix: package builds
+
 ## 1.0.0
 
 ### Major Changes
