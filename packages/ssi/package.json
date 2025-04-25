@@ -1,24 +1,26 @@
 {
   "name": "@credebl/ssi-mobile",
+  "main": "src/index",
+  "types": "src/index",
   "version": "2.0.0",
+  "files": ["build"],
   "license": "Apache-2.0",
-  "main": "build/index",
-  "source": "src/index",
+  "publishConfig": {
+    "main": "build/index",
+    "types": "build/index",
+    "access": "public"
+  },
   "homepage": "https://github.com/credebl/mobile-sdk/tree/main/packages/ssi",
   "repository": {
     "url": "https://github.com/credebl/mobile-sdk/tree/main/packages/ssi",
     "type": "git",
     "directory": "packages/ssi"
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "files": ["build"],
   "scripts": {
     "check-types": "pnpm compile --noEmit",
     "build": "pnpm clean && pnpm compile",
     "clean": "rimraf -rf ./build",
-    "compile": "tsc"
+    "compile": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
     "@credo-ts/anoncreds": "0.5.13",

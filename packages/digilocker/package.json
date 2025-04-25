@@ -1,19 +1,21 @@
 {
   "name": "@credebl/digilocker-mobile",
+  "main": "src/index",
+  "types": "src/index",
   "version": "1.0.0",
+  "files": ["build"],
   "license": "Apache-2.0",
-  "main": "build/index",
-  "source": "src/index",
+  "publishConfig": {
+    "main": "build/index",
+    "types": "build/index",
+    "access": "public"
+  },
   "homepage": "https://github.com/credebl/mobile-sdk/tree/main/packages/digilocker",
   "repository": {
     "url": "https://github.com/credebl/mobile-sdk/tree/main/packages/digilocker",
     "type": "git",
     "directory": "packages/digilocker"
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "files": ["build"],
   "dependencies": {
     "axios": "^1.6.0",
     "crypto-js": "^4.2.0",
@@ -24,7 +26,7 @@
     "check-types": "pnpm compile --noEmit",
     "build": "pnpm clean && pnpm compile",
     "clean": "rimraf -rf ./build",
-    "compile": "tsc"
+    "compile": "tsc -p tsconfig.build.json"
   },
   "devDependencies": {
     "@types/node": "^18.18.8",
