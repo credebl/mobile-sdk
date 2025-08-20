@@ -1,0 +1,41 @@
+{
+  "name": "@credebl/ssi-mobile-core",
+  "main": "src/index",
+  "types": "src/index",
+  "version": "0.0.1",
+  "files": ["build"],
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "main": "build/index",
+    "types": "build/index",
+    "access": "public"
+  },
+  "homepage": "https://github.com/credebl/mobile-sdk/tree/main/packages/core",
+  "repository": {
+    "url": "https://github.com/credebl/mobile-sdk/tree/main/packages/core",
+    "type": "git",
+    "directory": "packages/core"
+  },
+  "scripts": {
+    "check-types": "pnpm compile --noEmit",
+    "build": "pnpm clean && pnpm compile",
+    "clean": "rimraf -rf ./build",
+    "compile": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@credo-ts/askar": "0.6.0-alpha-20250325224513",
+    "@credo-ts/core": "0.6.0-alpha-20250325224513",
+    "@credo-ts/react-native": "0.6.0-alpha-20250325224513",
+    "rxjs": "^7.2.0"
+  },
+  "peerDependencies": {
+    "@openwallet-foundation/askar-react-native": "^0.3.0"
+  },
+  "devDependencies": {
+    "@credebl/ssi-mobile-openid4vc": "workspace:*",
+    "@types/node": "^18.18.8",
+    "@types/react": "^18.0.24",
+    "rimraf": "^4.4.0",
+    "typescript": "~5.5.2"
+  }
+}

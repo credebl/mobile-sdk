@@ -1,0 +1,37 @@
+{
+  "name": "@credebl/ssi-mobile-openid4vc",
+  "main": "src/index",
+  "types": "src/index",
+  "version": "0.0.1",
+  "files": ["build"],
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "main": "build/index",
+    "types": "build/index",
+    "access": "public"
+  },
+  "homepage": "https://github.com/credebl/mobile-sdk/tree/main/packages/openid4vc",
+  "repository": {
+    "url": "https://github.com/credebl/mobile-sdk/tree/main/packages/openid4vc",
+    "type": "git",
+    "directory": "packages/openid4vc"
+  },
+  "scripts": {
+    "check-types": "pnpm compile --noEmit",
+    "build": "pnpm clean && pnpm compile",
+    "clean": "rimraf -rf ./build",
+    "compile": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@credebl/ssi-mobile-core": "workspace:*",
+    "@credo-ts/core": "0.6.0-alpha-20250325224513",
+    "@credo-ts/openid4vc": "0.6.0-alpha-20250325224513",
+    "rxjs": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.18.8",
+    "@types/react": "^18.0.24",
+    "rimraf": "^4.4.0",
+    "typescript": "~5.5.2"
+  }
+}
