@@ -4,6 +4,16 @@ import { agentDependencies } from '@credo-ts/react-native'
 import type { PropsWithChildren } from 'react'
 import { useMobileSDK } from './contexts'
 import AgentProvider from './providers/AgentProvider'
+import { AskarModule } from '@credo-ts/askar'
+import {askar} from "@openwallet-foundation/askar-react-native"
+
+const getCoreModules = () => {
+  return {
+    askar: new AskarModule({
+      askar
+    }),
+  }
+}
 
 export interface MobileSDKModule {
   initialize(agent: Agent): void
@@ -28,6 +38,8 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
 
   public async initialize() {
     const defaultModules = this.configuration.defaultModules ?? {}
+    const coreModules = getCoreModules()
+    Object.assign(defaultModules, coreModules)
 
     const modules = Object.entries(this.configuration.modules).reduce((acc, [, module]) => {
       const moduleModules = module.getAgentModules()

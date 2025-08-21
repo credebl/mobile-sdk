@@ -1,4 +1,4 @@
-import type { MobileSDKModule } from '@credebl/core'
+import type { MobileSDKModule } from '@credebl/ssi-mobile-core'
 import {
   type Agent,
   JwaSignatureAlgorithm,

@@ -94,13 +94,13 @@ export function getCredentialBindingResolver(requestBatch: boolean | number = 1)
     ) {
       return {
         method: 'jwk',
+        // @ts-expect-error - keys is not a valid property for OpenId4VcCredentialHolderJwkBinding
         keys: keys.map((key) => getJwkFromKey(key)),
       }
     }
 
     throw new Error(
-      `No supported binding method could be found. Supported methods are did:key and did:jwk, or plain jwk for sd-jwt/mdoc. Issuer supports ${
-        supportsJwk ? 'jwk, ' : ''
+      `No supported binding method could be found. Supported methods are did:key and did:jwk, or plain jwk for sd-jwt/mdoc. Issuer supports ${supportsJwk ? 'jwk, ' : ''
       }${supportedDidMethods?.join(', ') ?? 'Unknown'}`
     )
   }

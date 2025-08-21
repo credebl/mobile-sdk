@@ -13,14 +13,47 @@ import {
   getRefreshCredentialMetadata,
 } from '../metadata'
 import { formatDate, getHostNameFromUrl, sanitizeString } from '../utils'
-import {
-  type FormattedSubmissionEntrySatisfiedCredential,
-  getAttributesAndMetadataForSdJwtPayload,
-  recursivelyMapAttributes,
-  safeCalculateJwkThumbprint,
-} from './displayProof'
+import { safeCalculateJwkThumbprint } from '../utils/jwk'
+import { getAttributesAndMetadataForSdJwtPayload } from '../utils/sdjwt'
 
 export type CredentialForDisplayId = `w3c-credential-${string}` | `sd-jwt-vc-${string}` | `mdoc-${string}`
+
+export interface FormattedSubmissionEntrySatisfiedCredential {
+  credential: CredentialForDisplay
+
+  /**
+   * If not present the whole credential will be disclosed
+   */
+  disclosed: {
+    attributes: CredentialForDisplay['attributes']
+    metadata: CredentialForDisplay['metadata']
+
+    paths: string[][]
+  }
+}
+
+export interface DisplayImage {
+  url?: string
+  altText?: string
+}
+
+export interface CredentialDisplay {
+  name: string
+  locale?: string
+  description?: string
+  textColor?: string
+  backgroundColor?: string
+  backgroundImage?: DisplayImage
+  issuer: CredentialIssuerDisplay
+}
+
+export interface CredentialIssuerDisplay {
+  name: string
+  domain?: string
+  locale?: string
+  logo?: DisplayImage
+}
+
 
 export type W3cIssuerJson = {
   id: string
@@ -47,13 +80,13 @@ export type JffW3cCredentialJson = W3cCredentialJson & {
   }
 
   issuer:
-    | string
-    | (W3cIssuerJson & {
-        name?: string
-        iconUrl?: string
-        logoUrl?: string
-        image?: string | { id?: string; type?: 'Image' }
-      })
+  | string
+  | (W3cIssuerJson & {
+    name?: string
+    iconUrl?: string
+    logoUrl?: string
+    image?: string | { id?: string; type?: 'Image' }
+  })
 }
 export interface DisplayImage {
   url?: string
@@ -147,7 +180,7 @@ export interface CredentialForDisplay {
   claimFormat: ClaimFormat.SdJwtVc | ClaimFormat.MsoMdoc | ClaimFormat.JwtVc | ClaimFormat.LdpVc
   record: W3cCredentialRecord | MdocRecord | SdJwtVcRecord
 
-  category: CredentialCategoryMetadata | null
+  category?: CredentialCategoryMetadata
   hasRefreshToken: boolean
 }
 
@@ -200,13 +233,13 @@ export function getIssuerDisplay(
   issuerDisplay.name = openidIssuerDisplay?.name
   issuerDisplay.logo = openidIssuerDisplay?.logo
     ? ({
-        url: openidIssuerDisplay.logo.url ?? '',
-        altText: openidIssuerDisplay.logo.alt_text ?? '',
-      } as DisplayImage)
+      url: openidIssuerDisplay.logo.url ?? '',
+      altText: openidIssuerDisplay.logo.alt_text ?? '',
+    } as DisplayImage)
     : {
-        url: '',
-        altText: '',
-      }
+      url: '',
+      altText: '',
+    }
 
   // Check and use credential display logo if issuerDisplay doesn't have one
   const openidCredentialDisplay = findDisplay(
@@ -328,9 +361,9 @@ export function getCredentialDisplay(
     credentialDisplay.backgroundColor = openidCredentialDisplay?.background_color
     credentialDisplay.backgroundImage = openidCredentialDisplay?.background_image
       ? {
-          url: openidCredentialDisplay.background_image.url as string,
-          altText: openidCredentialDisplay.background_image.alt_text as string,
-        }
+        url: openidCredentialDisplay.background_image.url as string,
+        altText: openidCredentialDisplay.background_image.alt_text as string,
+      }
       : undefined
   }
 
@@ -384,9 +417,9 @@ export function getSdJwtTypeMetadataCredentialDisplay(
     backgroundColor: typeMetadataDisplay?.rendering?.simple?.background_color,
     backgroundImage: typeMetadataDisplay?.rendering?.simple?.logo
       ? {
-          url: typeMetadataDisplay?.rendering?.simple?.logo.uri,
-          altText: typeMetadataDisplay?.rendering?.simple?.logo.alt_text,
-        }
+        url: typeMetadataDisplay?.rendering?.simple?.logo.uri,
+        altText: typeMetadataDisplay?.rendering?.simple?.logo.alt_text,
+      }
       : undefined,
   }
 
@@ -434,7 +467,6 @@ export function filterAndMapSdJwtKeys(sdJwtVcPayload: Record<string, unknown>) {
     [key: string]: unknown
   }
   // TODO: We should map these claims to nice format and names
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { _sd_alg, _sd_hash, iss, vct, cnf, iat, exp, nbf, ...visibleProperties } = sdJwtVcPayload as SdJwtVcPayload
 
   const holder = (cnf.kid ?? cnf.jwk) ? safeCalculateJwkThumbprint(cnf.jwk as JwkJson) : undefined
@@ -455,9 +487,7 @@ export function filterAndMapSdJwtKeys(sdJwtVcPayload: Record<string, unknown>) {
   }
 
   return {
-    visibleProperties: Object.fromEntries(
-      Object.entries(visibleProperties).map(([key, value]) => [key, recursivelyMapAttributes(value)])
-    ),
+    visibleProperties,
     metadata: credentialMetadata,
     raw: {
       issuedAt: iat ? new Date(iat * 1000) : undefined,
@@ -545,7 +575,7 @@ export function getCredentialForDisplay(
       metadata,
       claimFormat: ClaimFormat.SdJwtVc,
       record: credentialRecord,
-      category: credentialCategoryMetadata,
+      category: credentialCategoryMetadata ?? undefined,
       hasRefreshToken,
     }
   }
@@ -600,7 +630,7 @@ export function getCredentialForDisplay(
       },
       claimFormat: credentialRecord.credential.claimFormat,
       record: credentialRecord,
-      category: credentialCategoryMetadata,
+      category: credentialCategoryMetadata ?? undefined,
       hasRefreshToken,
     }
   }
@@ -667,8 +697,8 @@ export function getOpenId4VcCredentialDisplay(
     backgroundColor: openidCredentialDisplay?.background_color,
     backgroundImage: openidCredentialDisplay?.background_image
       ? {
-          url: openidCredentialDisplay.background_image.uri,
-        }
+        url: openidCredentialDisplay.background_image.uri,
+      }
       : undefined,
     issuer: getOpenId4VcIssuerDisplay(openId4VcMetadata, preferredLocale),
   }

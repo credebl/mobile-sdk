@@ -6,10 +6,10 @@ export function formatDate(input: string | Date, options?: { includeTime?: boole
 
   const timeOptions = includeTime
     ? ({
-        hour: '2-digit',
-        minute: '2-digit',
-        hourCycle: 'h24',
-      } as const)
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h24',
+    } as const)
     : {}
 
   return date.toLocaleString('en-US', {
@@ -18,4 +18,9 @@ export function formatDate(input: string | Date, options?: { includeTime?: boole
     day: 'numeric',
     ...timeOptions,
   })
+}
+
+export function isDateString(value: string) {
+  // We do the length check first to avoid unnecessary regex
+  return value.length === 'yyyy-mm-dd'.length && value.match(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/)
 }
