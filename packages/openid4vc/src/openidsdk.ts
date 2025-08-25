@@ -2,9 +2,12 @@ import type { MobileSDKModule } from '@credebl/ssi-mobile-core'
 import {
   type Agent,
   JwaSignatureAlgorithm,
-  type MdocRecord,
-  type SdJwtVcRecord,
-  type W3cCredentialRecord,
+  MdocRecord,
+  MdocRepository,
+  SdJwtVcRecord,
+  SdJwtVcRepository,
+  W3cCredentialRecord,
+  W3cCredentialRepository,
   X509Module,
   type X509ModuleConfigOptions,
 } from '@credo-ts/core'
@@ -208,5 +211,42 @@ export class OpenID4VCSDK implements MobileSDKModule {
         credential: record,
       }
     })
+  }
+
+  public async storeOpenIdCredential(cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord): Promise<void> {
+    const agent = this.assertAndGetAgent()
+    if (cred instanceof W3cCredentialRecord) {
+      await agent.dependencyManager.resolve(W3cCredentialRepository).save(agent.context, cred)
+    } else if (cred instanceof SdJwtVcRecord) {
+      await agent.dependencyManager.resolve(SdJwtVcRepository).save(agent.context, cred)
+    } else if (cred instanceof MdocRecord) {
+      await agent.dependencyManager.resolve(MdocRepository).save(agent.context, cred)
+    } else {
+      throw new Error('Credential type is not supported')
+    }
+  }
+
+  public async acquireAuthorizationCodeAccessToken({
+    resolvedCredentialOffer,
+    codeVerifier,
+    authorizationCode,
+    clientId,
+    redirectUri,
+  }: {
+    resolvedCredentialOffer: OpenId4VciResolvedCredentialOffer
+    codeVerifier?: string
+    authorizationCode: string
+    clientId: string
+    redirectUri?: string
+  }) {
+    const agent = this.assertAndGetAgent()
+    const response = await agent.modules.openId4VcHolder.requestToken({
+      resolvedCredentialOffer,
+      code: authorizationCode,
+      codeVerifier,
+      redirectUri,
+      clientId,
+    })
+    return response
   }
 }

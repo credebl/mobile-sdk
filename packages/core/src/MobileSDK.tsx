@@ -1,4 +1,4 @@
-import { Agent, type InitConfig } from '@credo-ts/core'
+import { Agent, CacheModule, DidsModule, JwkDidRegistrar, JwkDidResolver, KeyDidRegistrar, KeyDidResolver, SingleContextStorageLruCache, type InitConfig } from '@credo-ts/core'
 import type { AgentModulesInput } from '@credo-ts/core/build/agent/AgentModules'
 import { agentDependencies } from '@credo-ts/react-native'
 import type { PropsWithChildren } from 'react'
@@ -12,6 +12,15 @@ const getCoreModules = () => {
     askar: new AskarModule({
       askar
     }),
+    dids: new DidsModule({
+      registrars: [new JwkDidRegistrar(), new KeyDidRegistrar()],
+      resolvers: [new JwkDidResolver(), new KeyDidResolver()],
+    }),
+    cache: new CacheModule({
+      cache: new SingleContextStorageLruCache({
+        limit: 50
+      })
+    })
   }
 }
 
