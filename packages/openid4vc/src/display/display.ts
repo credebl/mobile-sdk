@@ -54,7 +54,6 @@ export interface CredentialIssuerDisplay {
   logo?: DisplayImage
 }
 
-
 export type W3cIssuerJson = {
   id: string
 }
@@ -80,13 +79,13 @@ export type JffW3cCredentialJson = W3cCredentialJson & {
   }
 
   issuer:
-  | string
-  | (W3cIssuerJson & {
-    name?: string
-    iconUrl?: string
-    logoUrl?: string
-    image?: string | { id?: string; type?: 'Image' }
-  })
+    | string
+    | (W3cIssuerJson & {
+        name?: string
+        iconUrl?: string
+        logoUrl?: string
+        image?: string | { id?: string; type?: 'Image' }
+      })
 }
 export interface DisplayImage {
   url?: string
@@ -233,13 +232,13 @@ export function getIssuerDisplay(
   issuerDisplay.name = openidIssuerDisplay?.name
   issuerDisplay.logo = openidIssuerDisplay?.logo
     ? ({
-      url: openidIssuerDisplay.logo.url ?? '',
-      altText: openidIssuerDisplay.logo.alt_text ?? '',
-    } as DisplayImage)
+        url: openidIssuerDisplay.logo.url ?? '',
+        altText: openidIssuerDisplay.logo.alt_text ?? '',
+      } as DisplayImage)
     : {
-      url: '',
-      altText: '',
-    }
+        url: '',
+        altText: '',
+      }
 
   // Check and use credential display logo if issuerDisplay doesn't have one
   const openidCredentialDisplay = findDisplay(
@@ -361,9 +360,9 @@ export function getCredentialDisplay(
     credentialDisplay.backgroundColor = openidCredentialDisplay?.background_color
     credentialDisplay.backgroundImage = openidCredentialDisplay?.background_image
       ? {
-        url: openidCredentialDisplay.background_image.url as string,
-        altText: openidCredentialDisplay.background_image.alt_text as string,
-      }
+          url: openidCredentialDisplay.background_image.url as string,
+          altText: openidCredentialDisplay.background_image.alt_text as string,
+        }
       : undefined
   }
 
@@ -417,9 +416,9 @@ export function getSdJwtTypeMetadataCredentialDisplay(
     backgroundColor: typeMetadataDisplay?.rendering?.simple?.background_color,
     backgroundImage: typeMetadataDisplay?.rendering?.simple?.logo
       ? {
-        url: typeMetadataDisplay?.rendering?.simple?.logo.uri,
-        altText: typeMetadataDisplay?.rendering?.simple?.logo.alt_text,
-      }
+          url: typeMetadataDisplay?.rendering?.simple?.logo.uri,
+          altText: typeMetadataDisplay?.rendering?.simple?.logo.alt_text,
+        }
       : undefined,
   }
 
@@ -697,8 +696,8 @@ export function getOpenId4VcCredentialDisplay(
     backgroundColor: openidCredentialDisplay?.background_color,
     backgroundImage: openidCredentialDisplay?.background_image
       ? {
-        url: openidCredentialDisplay.background_image.uri,
-      }
+          url: openidCredentialDisplay.background_image.uri,
+        }
       : undefined,
     issuer: getOpenId4VcIssuerDisplay(openId4VcMetadata, preferredLocale),
   }

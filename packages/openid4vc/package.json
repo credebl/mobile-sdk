@@ -23,6 +23,7 @@
     "compile": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
+    "@astronautlabs/jsonpath": "^1.1.2",
     "@credebl/ssi-mobile-core": "workspace:*",
     "@credo-ts/core": "0.6.0-alpha-20250325224513",
     "@credo-ts/openid4vc": "0.6.0-alpha-20250325224513",

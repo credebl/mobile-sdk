@@ -6,10 +6,10 @@ export function formatDate(input: string | Date, options?: { includeTime?: boole
 
   const timeOptions = includeTime
     ? ({
-      hour: '2-digit',
-      minute: '2-digit',
-      hourCycle: 'h24',
-    } as const)
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h24',
+      } as const)
     : {}
 
   return date.toLocaleString('en-US', {

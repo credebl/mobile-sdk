@@ -1,16 +1,26 @@
-import { Agent, CacheModule, DidsModule, JwkDidRegistrar, JwkDidResolver, KeyDidRegistrar, KeyDidResolver, SingleContextStorageLruCache, type InitConfig } from '@credo-ts/core'
+import { AskarModule } from '@credo-ts/askar'
+import {
+  Agent,
+  CacheModule,
+  DidsModule,
+  type InitConfig,
+  JwkDidRegistrar,
+  JwkDidResolver,
+  KeyDidRegistrar,
+  KeyDidResolver,
+  SingleContextStorageLruCache,
+} from '@credo-ts/core'
 import type { AgentModulesInput } from '@credo-ts/core/build/agent/AgentModules'
 import { agentDependencies } from '@credo-ts/react-native'
+import { askar } from '@openwallet-foundation/askar-react-native'
 import type { PropsWithChildren } from 'react'
 import { useMobileSDK } from './contexts'
 import AgentProvider from './providers/AgentProvider'
-import { AskarModule } from '@credo-ts/askar'
-import {askar} from "@openwallet-foundation/askar-react-native"
 
 const getCoreModules = () => {
   return {
     askar: new AskarModule({
-      askar
+      askar,
     }),
     dids: new DidsModule({
       registrars: [new JwkDidRegistrar(), new KeyDidRegistrar()],
@@ -18,9 +28,9 @@ const getCoreModules = () => {
     }),
     cache: new CacheModule({
       cache: new SingleContextStorageLruCache({
-        limit: 50
-      })
-    })
+        limit: 50,
+      }),
+    }),
   }
 }
 

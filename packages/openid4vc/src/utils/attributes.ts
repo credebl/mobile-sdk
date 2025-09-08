@@ -1,5 +1,5 @@
-import { DateOnly, TypedArrayEncoder } from "@credo-ts/core"
-import { formatDate, isDateString } from "./date"
+import { DateOnly, TypedArrayEncoder } from '@credo-ts/core'
+import { formatDate, isDateString } from './date'
 
 type MappedAttributesReturnType =
   | string
@@ -50,7 +50,6 @@ export function detectImageMimeType(data: Uint8Array): 'image/jpeg' | 'image/jp2
 
   return null
 }
-
 
 export function recursivelyMapMdocAttributes(value: unknown): MappedAttributesReturnType {
   if (value instanceof Uint8Array) {

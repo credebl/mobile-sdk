@@ -1,6 +1,7 @@
 import type { MobileSDKModule } from '@credebl/ssi-mobile-core'
 import {
   type Agent,
+  type DifPresentationExchangeDefinitionV2,
   JwaSignatureAlgorithm,
   MdocRecord,
   MdocRepository,
@@ -22,12 +23,16 @@ import {
   preAuthorizedCodeGrantIdentifier,
 } from '@credo-ts/openid4vc'
 import { getCredentialBindingResolver } from './credentialBindingResolver'
+import type { FormattedSubmission } from './display'
 import {
   extractOpenId4VcCredentialMetadata,
   setBatchCredentialMetadata,
   setOpenId4VcCredentialMetadata,
 } from './metadata'
+import { type GetCredentialsForProofRequestOptions, formatDifPexCredentialsForRequest } from './resolverProof'
 import { credentialRecordFromCredential, encodeCredential } from './utils'
+
+export type CredentialsForProofRequest = Awaited<ReturnType<OpenID4VCSDK['getCredentialsForProofRequest']>>
 
 export type OpenId4VcConfiguration = {} & X509ModuleConfigOptions
 
@@ -248,5 +253,136 @@ export class OpenID4VCSDK implements MobileSDKModule {
       clientId,
     })
     return response
+  }
+
+  // Proofs
+  public async getCredentialsForProofRequest({
+    uri,
+    requestPayload,
+    allowUntrustedFederation = true,
+    origin,
+    trustedX509Entities,
+    preferredLocale,
+  }: GetCredentialsForProofRequestOptions) {
+    const agent = this.assertAndGetAgent()
+
+    let request: string | Record<string, unknown>
+    if (uri) {
+      request = uri
+    } else if (requestPayload) {
+      request = requestPayload
+    } else {
+      throw new Error('Either requestPayload or uri must be provided')
+    }
+
+    agent.config.logger.info('Receiving openid request', {
+      request,
+    })
+
+    const resolved = await agent.modules.openId4VcHolder.resolveOpenId4VpAuthorizationRequest(request, {})
+
+    const { authorizationRequestPayload } = resolved
+    const clientMetadata = authorizationRequestPayload.client_metadata
+    const verifier = {
+      entity_id: authorizationRequestPayload.client_id ?? `web-origin:${origin}`,
+      uri:
+        typeof authorizationRequestPayload.response_uri === 'string'
+          ? new URL(authorizationRequestPayload.response_uri).origin
+          : undefined,
+      logo_uri: clientMetadata?.logo_uri,
+      organization_name: clientMetadata?.client_name,
+    }
+    let formattedSubmission: FormattedSubmission
+    if (resolved.presentationExchange) {
+      formattedSubmission = formatDifPexCredentialsForRequest(
+        resolved.presentationExchange.credentialsForRequest,
+        resolved.presentationExchange.definition as DifPresentationExchangeDefinitionV2,
+        preferredLocale
+      )
+    } else {
+      throw new Error('No presentation exchange or dcql found in authorization request.')
+    }
+
+    return {
+      ...resolved.presentationExchange,
+      ...resolved.dcql,
+      origin,
+      verifier: {
+        hostName: verifier.uri,
+        entityId: verifier.entity_id,
+        logo: verifier.logo_uri
+          ? {
+              url: verifier.logo_uri,
+            }
+          : undefined,
+        name: verifier.organization_name,
+      },
+      authorizationRequest: resolved.authorizationRequestPayload,
+      formattedSubmission,
+      transactionData: resolved.transactionData,
+    } as const
+  }
+
+  public async shareProof({
+    resolvedRequest,
+    selectedCredentials,
+    acceptTransactionData,
+  }: {
+    resolvedRequest: CredentialsForProofRequest
+    selectedCredentials: { [inputDescriptorId: string]: string }
+    acceptTransactionData?: boolean
+  }) {
+    const agent = this.assertAndGetAgent()
+    const { authorizationRequest } = resolvedRequest
+    if (
+      !resolvedRequest.credentialsForRequest?.areRequirementsSatisfied &&
+      !resolvedRequest.queryResult?.canBeSatisfied
+    ) {
+      throw new Error('Requirements from proof request are not satisfied')
+    }
+
+    // Map all requirements and entries to a credential record. If a credential record for an
+    // input descriptor has been provided in `selectedCredentials` we will use that. Otherwise
+    // it will pick the first available credential.
+    const presentationExchangeCredentials = resolvedRequest.credentialsForRequest
+      ? Object.fromEntries(
+          await Promise.all(
+            resolvedRequest.credentialsForRequest.requirements.flatMap((requirement) =>
+              requirement.submissionEntry.slice(0, requirement.needsCount).map(async (entry) => {
+                const credentialId = selectedCredentials[entry.inputDescriptorId]
+                const credential =
+                  entry.verifiableCredentials.find((vc) => vc.credentialRecord.id === credentialId) ??
+                  entry.verifiableCredentials[0]
+
+                return [entry.inputDescriptorId, [{ ...credential }]]
+              })
+            )
+          )
+        )
+      : undefined
+
+    const result = await agent.modules.openId4VcHolder.acceptOpenId4VpAuthorizationRequest({
+      authorizationRequestPayload: authorizationRequest,
+      presentationExchange: presentationExchangeCredentials
+        ? {
+            credentials: presentationExchangeCredentials,
+          }
+        : undefined,
+      transactionData: undefined,
+      origin: resolvedRequest.origin,
+    })
+
+    if (result.serverResponse && (result.serverResponse.status < 200 || result.serverResponse.status > 299)) {
+      agent.config.logger.error('Error while accepting authorization request', {
+        authorizationRequest,
+        response: result.authorizationResponse,
+        responsePayload: result.authorizationResponsePayload,
+      })
+      throw new Error(
+        `Error while accepting authorization request. ${JSON.stringify(result.serverResponse.body, null, 2)}`
+      )
+    }
+
+    return result
   }
 }

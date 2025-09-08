@@ -100,7 +100,8 @@ export function getCredentialBindingResolver(requestBatch: boolean | number = 1)
     }
 
     throw new Error(
-      `No supported binding method could be found. Supported methods are did:key and did:jwk, or plain jwk for sd-jwt/mdoc. Issuer supports ${supportsJwk ? 'jwk, ' : ''
+      `No supported binding method could be found. Supported methods are did:key and did:jwk, or plain jwk for sd-jwt/mdoc. Issuer supports ${
+        supportsJwk ? 'jwk, ' : ''
       }${supportedDidMethods?.join(', ') ?? 'Unknown'}`
     )
   }
