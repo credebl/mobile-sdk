@@ -1,9 +1,12 @@
 import {
   ClaimFormat,
   JsonTransformer,
+  type Mdoc,
+  type MdocNameSpaces,
   SdJwtVcRecord,
   type SdJwtVcTypeMetadata,
   type SingleOrArray,
+  getJwkFromKey,
 } from '@credo-ts/core'
 
 import { type JwkJson, type MdocRecord, W3cCredentialRecord } from '@credo-ts/core'
@@ -15,6 +18,7 @@ import {
 import { formatDate, getHostNameFromUrl, sanitizeString } from '../utils'
 import { safeCalculateJwkThumbprint } from '../utils/jwk'
 import { getAttributesAndMetadataForSdJwtPayload } from '../utils/sdjwt'
+import { recursivelyMapAttributes } from './proof'
 
 export type CredentialForDisplayId = `w3c-credential-${string}` | `sd-jwt-vc-${string}` | `mdoc-${string}`
 
@@ -79,13 +83,13 @@ export type JffW3cCredentialJson = W3cCredentialJson & {
   }
 
   issuer:
-    | string
-    | (W3cIssuerJson & {
-        name?: string
-        iconUrl?: string
-        logoUrl?: string
-        image?: string | { id?: string; type?: 'Image' }
-      })
+  | string
+  | (W3cIssuerJson & {
+    name?: string
+    iconUrl?: string
+    logoUrl?: string
+    image?: string | { id?: string; type?: 'Image' }
+  })
 }
 export interface DisplayImage {
   url?: string
@@ -232,13 +236,13 @@ export function getIssuerDisplay(
   issuerDisplay.name = openidIssuerDisplay?.name
   issuerDisplay.logo = openidIssuerDisplay?.logo
     ? ({
-        url: openidIssuerDisplay.logo.url ?? '',
-        altText: openidIssuerDisplay.logo.alt_text ?? '',
-      } as DisplayImage)
+      url: openidIssuerDisplay.logo.url ?? '',
+      altText: openidIssuerDisplay.logo.alt_text ?? '',
+    } as DisplayImage)
     : {
-        url: '',
-        altText: '',
-      }
+      url: '',
+      altText: '',
+    }
 
   // Check and use credential display logo if issuerDisplay doesn't have one
   const openidCredentialDisplay = findDisplay(
@@ -360,9 +364,9 @@ export function getCredentialDisplay(
     credentialDisplay.backgroundColor = openidCredentialDisplay?.background_color
     credentialDisplay.backgroundImage = openidCredentialDisplay?.background_image
       ? {
-          url: openidCredentialDisplay.background_image.url as string,
-          altText: openidCredentialDisplay.background_image.alt_text as string,
-        }
+        url: openidCredentialDisplay.background_image.url as string,
+        altText: openidCredentialDisplay.background_image.alt_text as string,
+      }
       : undefined
   }
 
@@ -416,9 +420,9 @@ export function getSdJwtTypeMetadataCredentialDisplay(
     backgroundColor: typeMetadataDisplay?.rendering?.simple?.background_color,
     backgroundImage: typeMetadataDisplay?.rendering?.simple?.logo
       ? {
-          url: typeMetadataDisplay?.rendering?.simple?.logo.uri,
-          altText: typeMetadataDisplay?.rendering?.simple?.logo.alt_text,
-        }
+        url: typeMetadataDisplay?.rendering?.simple?.logo.uri,
+        altText: typeMetadataDisplay?.rendering?.simple?.logo.alt_text,
+      }
       : undefined,
   }
 
@@ -696,8 +700,8 @@ export function getOpenId4VcCredentialDisplay(
     backgroundColor: openidCredentialDisplay?.background_color,
     backgroundImage: openidCredentialDisplay?.background_image
       ? {
-          url: openidCredentialDisplay.background_image.uri,
-        }
+        url: openidCredentialDisplay.background_image.uri,
+      }
       : undefined,
     issuer: getOpenId4VcIssuerDisplay(openId4VcMetadata, preferredLocale),
   }
@@ -705,4 +709,38 @@ export function getOpenId4VcCredentialDisplay(
   // NOTE: logo is used in issuer display (not sure if that's right though)
 
   return credentialDisplay
+}
+
+export function getAttributesAndMetadataForMdocPayload(namespaces: MdocNameSpaces, mdocInstance: Mdoc) {
+  const attributes: CredentialForDisplay['attributes'] = Object.fromEntries(
+    Object.values(namespaces).flatMap((v) => {
+      return Object.entries(v).map(([key, value]) => [key, recursivelyMapAttributes(value)])
+    })
+  )
+
+  // FIXME: Date should be fixed in Mdoc library
+  // The problem is that mdocInstance.validityInfo.validFrom and validUntil are already Date objects that contain NaN, not just NaN values.
+  // When you call toISOString() on a Date containing NaN, it will throw an error.
+  const mdocMetadata: CredentialMetadata = {
+    type: mdocInstance.docType,
+    holder: mdocInstance.deviceKey
+      ? safeCalculateJwkThumbprint(getJwkFromKey(mdocInstance.deviceKey).toJson())
+      : undefined,
+    issuedAt: mdocInstance.validityInfo.signed.toISOString(),
+    validFrom:
+      mdocInstance.validityInfo.validFrom instanceof Date &&
+        !Number.isNaN(mdocInstance.validityInfo.validFrom.getTime())
+        ? mdocInstance.validityInfo.validFrom.toISOString()
+        : undefined,
+    validUntil:
+      mdocInstance.validityInfo.validUntil instanceof Date &&
+        !Number.isNaN(mdocInstance.validityInfo.validUntil.getTime())
+        ? mdocInstance.validityInfo.validUntil.toISOString()
+        : undefined,
+  }
+
+  return {
+    attributes,
+    metadata: mdocMetadata,
+  }
 }
