@@ -27,7 +27,7 @@
     "typescript": "catalog:"
   },
   "engines": {
-    "node": ">= 20"
+    "node": ">=20"
   },
   "packageManager": "pnpm@9.14.2+sha256.06e65a4965baff6d6097f9c8f75c35f6d420974dbc03d775009056a69edfd271"
 }

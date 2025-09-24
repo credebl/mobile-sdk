@@ -135,7 +135,6 @@ export interface CredentialMetadata {
 
   hasRefreshToken?: boolean
 
-  // TODO: define and render
   status?: unknown
 }
 
@@ -168,9 +167,6 @@ export interface CredentialCategoryMetadata {
    * @default true
    */
   canDeleteCredential?: boolean
-
-  // TODO: we can also store here the key binding requirements, and whether we need to sign
-  // locally or remotely (so we can show PIN)
 }
 
 export interface CredentialForDisplay {
@@ -411,8 +407,6 @@ export function getSdJwtTypeMetadataCredentialDisplay(
 ): Omit<CredentialDisplay, 'issuer' | 'name'> & { name?: string } {
   const typeMetadataDisplay = findDisplay(sdJwtTypeMetadata.display, preferredLocale)
 
-  // TODO: support SVG rendering method
-
   const credentialDisplay = {
     name: typeMetadataDisplay?.name,
     description: typeMetadataDisplay?.description,
@@ -437,7 +431,6 @@ export function getSdJwtCredentialDisplay(
 ) {
   let credentialDisplay: Partial<CredentialDisplay> = {}
 
-  // TODO: should we combine them? I think not really needed if you have one of them
   // Type metadata takes precendence.
   if (typeMetadata) {
     credentialDisplay = getSdJwtTypeMetadataCredentialDisplay(typeMetadata, preferredLocal)
@@ -454,7 +447,6 @@ export function getSdJwtCredentialDisplay(
   return {
     ...credentialDisplay,
     // Last fallback, if there's really no name for the credential, we use a generic name
-    // TODO: use on-device AI to determine a name for the credential based on the credential data
     name: credentialDisplay.name ?? 'Credential',
   }
 }
@@ -469,7 +461,6 @@ export function filterAndMapSdJwtKeys(sdJwtVcPayload: Record<string, unknown>) {
     exp?: number
     [key: string]: unknown
   }
-  // TODO: We should map these claims to nice format and names
   const { _sd_alg, _sd_hash, iss, vct, cnf, iat, exp, nbf, ...visibleProperties } = sdJwtVcPayload as SdJwtVcPayload
 
   const holder = (cnf.kid ?? cnf.jwk) ? safeCalculateJwkThumbprint(cnf.jwk as JwkJson) : undefined
@@ -522,9 +513,6 @@ export function getCredentialForDisplayId(
 }
 
 export function getDisclosedAttributeNamesForDisplay(credential: FormattedSubmissionEntrySatisfiedCredential) {
-  // FIXME: this implementation in still too naive
-  // TODO: use the credential claim metadata (sd-jwt / oid4vc) to get labels for attribute paths
-  // TODO: we miss e.g. showing age_equal_or_over.21 as Age Over 21, but with the display metadata
   // from bdr we can at least show it as: Age verification. If there is a key for a nested path we can
   // also decide to include it
 
@@ -706,8 +694,6 @@ export function getOpenId4VcCredentialDisplay(
     issuer: getOpenId4VcIssuerDisplay(openId4VcMetadata, preferredLocale),
   }
 
-  // NOTE: logo is used in issuer display (not sure if that's right though)
-
   return credentialDisplay
 }
 
@@ -718,9 +704,6 @@ export function getAttributesAndMetadataForMdocPayload(namespaces: MdocNameSpace
     })
   )
 
-  // FIXME: Date should be fixed in Mdoc library
-  // The problem is that mdocInstance.validityInfo.validFrom and validUntil are already Date objects that contain NaN, not just NaN values.
-  // When you call toISOString() on a Date containing NaN, it will throw an error.
   const mdocMetadata: CredentialMetadata = {
     type: mdocInstance.docType,
     holder: mdocInstance.deviceKey

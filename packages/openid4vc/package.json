@@ -2,7 +2,7 @@
   "name": "@credebl/ssi-mobile-openid4vc",
   "main": "src/index",
   "types": "src/index",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "files": [
     "build"
   ],
@@ -33,9 +33,8 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@types/node": "^18.19.123",
     "@types/react": "catalog:",
-    "rimraf": "^4.4.1",
+    "rimraf": "catalog:",
     "typescript": "catalog:"
   }
 }

@@ -18,5 +18,6 @@ export {
 
 export { MdocRecord, SdJwtVcRecord, W3cCredentialRecord, GenericRecord }
 
-export * from './openidsdk'
+export * from './OpenIDSdk'
 export * from './display'
+export * from './providers'

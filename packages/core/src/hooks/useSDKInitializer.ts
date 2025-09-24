@@ -3,7 +3,7 @@ import { MobileSDK, type MobileSDKOptions } from '../MobileSDK'
 import { useMobileSDK } from '../contexts'
 
 export const useMobileSDKInitializer = () => {
-  const { initialize, isInitialized } = useMobileSDK()
+  const { initialize, isInitialized, sdk } = useMobileSDK()
 
   const initializeSDK = useCallback(
     async (options: MobileSDKOptions) => {
@@ -21,5 +21,5 @@ export const useMobileSDKInitializer = () => {
     [isInitialized, initialize]
   )
 
-  return { initializeSDK, isInitialized }
+  return { initializeSDK, isInitialized, sdk }
 }

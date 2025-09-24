@@ -2,8 +2,10 @@
   "name": "@credebl/ssi-mobile-core",
   "main": "src/index",
   "types": "src/index",
-  "version": "0.0.1",
-  "files": ["build"],
+  "version": "0.0.2",
+  "files": [
+    "build"
+  ],
   "license": "Apache-2.0",
   "publishConfig": {
     "main": "build/index",
@@ -32,9 +34,8 @@
     "@openwallet-foundation/askar-react-native": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^18.19.123",
     "@types/react": "catalog:",
-    "rimraf": "^4.4.1",
+    "rimraf": "catalog:",
     "typescript": "catalog:"
   }
 }

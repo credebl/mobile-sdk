@@ -12,6 +12,9 @@ catalogs:
     '@types/react':
       specifier: 19.0.0
       version: 19.0.0
+    rimraf:
+      specifier: 6.0.1
+      version: 6.0.1
     typescript:
       specifier: ~5.8.3
       version: 5.8.3
@@ -57,15 +60,12 @@ importers:
         specifier: ^7.8.2
         version: 7.8.2
     devDependencies:
-      '@types/node':
-        specifier: ^18.19.123
-        version: 18.19.123
       '@types/react':
         specifier: 'catalog:'
         version: 19.0.0
       rimraf:
-        specifier: ^4.4.1
-        version: 4.4.1
+        specifier: 'catalog:'
+        version: 6.0.1
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -85,9 +85,6 @@ importers:
         specifier: ^0.6.2
         version: 0.6.2
     devDependencies:
-      '@types/node':
-        specifier: ^18.19.123
-        version: 18.19.123
       '@types/uuid':
         specifier: ^9.0.8
         version: 9.0.8
@@ -95,8 +92,8 @@ importers:
         specifier: ~0.4.14
         version: 0.4.14
       rimraf:
-        specifier: ^4.4.1
-        version: 4.4.1
+        specifier: 'catalog:'
+        version: 6.0.1
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -122,15 +119,12 @@ importers:
         specifier: ^7.8.2
         version: 7.8.2
     devDependencies:
-      '@types/node':
-        specifier: ^18.19.123
-        version: 18.19.123
       '@types/react':
         specifier: 'catalog:'
         version: 19.0.0
       rimraf:
-        specifier: ^4.4.1
-        version: 4.4.1
+        specifier: 'catalog:'
+        version: 6.0.1
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -1046,6 +1040,14 @@ packages:
     peerDependenciesMeta:
       '@types/node':
         optional: true
+
+  '@isaacs/balanced-match@4.0.1':
+    resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
+    engines: {node: 20 || >=22}
+
+  '@isaacs/brace-expansion@5.0.0':
+    resolution: {integrity: sha512-ZT55BDLV0yv0RBm2czMiZ+SqCGO7AvmOM3G/w2xhVPH+te0aKgFjmBvGlL1dH+ql2tgGO3MVrbb3jCKyvpgnxA==}
+    engines: {node: 20 || >=22}
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -2602,13 +2604,14 @@ packages:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
     hasBin: true
 
+  glob@11.0.3:
+    resolution: {integrity: sha512-2Nim7dha1KVkaiF4q6Dj+ngPPMdfvLJEOpZk/jKiUAkqKebpGAWQXAq9z1xu9HKu5lWfqw/FASuccEjyznjPaA==}
+    engines: {node: 20 || >=22}
+    hasBin: true
+
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
     deprecated: Glob versions prior to v9 are no longer supported
-
-  glob@9.3.5:
-    resolution: {integrity: sha512-e1LleDykUz2Iu+MTYdkSsuWX8lvAjAcs0Xef0lNIu0S2wOAzuTxCJtcd9S3cijlwYF18EsU3rzb8jPVobxDh9Q==}
-    engines: {node: '>=16 || 14 >=14.17'}
 
   globby@11.1.0:
     resolution: {integrity: sha512-jhIXaOzy1sb8IyocaruWSn1TjmnBVs8Ayhcy83rmxNJ8q2uWKCAj3CnJY+KpGSXCueAPc0i05kVvVKtP1t9S3g==}
@@ -2853,6 +2856,10 @@ packages:
 
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
+
+  jackspeak@4.1.1:
+    resolution: {integrity: sha512-zptv57P3GpL+O0I7VdMJNBZCu+BPHVQUk55Ft8/QCJjTVxrnJHuVuX/0Bl2A6/+2oyR/ZMEuFKwmzqqZ/U5nPQ==}
+    engines: {node: 20 || >=22}
 
   jest-changed-files@29.7.0:
     resolution: {integrity: sha512-fEArFiwf1BpQ+4bXSprcDc3/x4HSzL4al2tozwVpDFpsxALjLYdyiIK4e5Vz66GQJIbXJ82+35PtysofptNX2w==}
@@ -3235,6 +3242,10 @@ packages:
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
 
+  lru-cache@11.2.1:
+    resolution: {integrity: sha512-r8LA6i4LP4EeWOhqBaZZjDWwehd1xUJPCJd9Sv300H0ZmcUER4+JPh7bqqZeqs1o5pgtgvXm+d9UGrB5zZGDiQ==}
+    engines: {node: 20 || >=22}
+
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
@@ -3430,12 +3441,12 @@ packages:
     resolution: {integrity: sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==}
     engines: {node: '>=6'}
 
+  minimatch@10.0.3:
+    resolution: {integrity: sha512-IPZ167aShDZZUMdRk66cyQAW3qr0WzbHkPdMYa8bzZhlHhO3jALbKdxcaak7W9FfT2rZNpQuUu4Od7ILEpXSaw==}
+    engines: {node: 20 || >=22}
+
   minimatch@3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
-
-  minimatch@8.0.4:
-    resolution: {integrity: sha512-W0Wvr9HyFXZRGIDgCicunpQ299OKXs9RgZfaukz4qAW/pJhcpUfupc9c+OObPOFueNy8VSrZgEmDtk6Kh4WzDA==}
-    engines: {node: '>=16 || 14 >=14.17'}
 
   minimatch@9.0.5:
     resolution: {integrity: sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==}
@@ -3443,10 +3454,6 @@ packages:
 
   minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
-
-  minipass@4.2.8:
-    resolution: {integrity: sha512-fNzuVyifolSLFL4NzpF+wEF4qrgqaaKX0haXPQEdQ7NKAN+WecoKMHV09YcuL/DHxrUsYQOK3MiuDf7Ip2OXfQ==}
-    engines: {node: '>=8'}
 
   minipass@7.1.2:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
@@ -3717,6 +3724,10 @@ packages:
   path-scurry@1.11.1:
     resolution: {integrity: sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==}
     engines: {node: '>=16 || 14 >=14.18'}
+
+  path-scurry@2.0.0:
+    resolution: {integrity: sha512-ypGJsmGtdXUOeM5u93TyeIEfEhM6s+ljAhrk5vAvSx8uyY/02OvrZnA0YNGUrPXfpJMgI1ODd3nwz8Npx4O4cg==}
+    engines: {node: 20 || >=22}
 
   path-type@4.0.0:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
@@ -4007,9 +4018,9 @@ packages:
     deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
 
-  rimraf@4.4.1:
-    resolution: {integrity: sha512-Gk8NlF062+T9CqNGn6h4tls3k6T1+/nXdOcSZVikNVtlRdYpA7wRJJMoXmuvOnLW844rPjdQ7JgXCYM6PPC/og==}
-    engines: {node: '>=14'}
+  rimraf@6.0.1:
+    resolution: {integrity: sha512-9dkvaxAsk/xNXSJzMgFqqMCuFgt2+KsOFek3TMLfo8NCPfWpBmqwyNn5Y+NX56QUYfCtsyhF3ayiboEoUmJk/A==}
+    engines: {node: 20 || >=22}
     hasBin: true
 
   run-parallel@1.2.0:
@@ -6231,6 +6242,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.3.0
 
+  '@isaacs/balanced-match@4.0.1': {}
+
+  '@isaacs/brace-expansion@5.0.0':
+    dependencies:
+      '@isaacs/balanced-match': 4.0.1
+
   '@isaacs/cliui@8.0.2':
     dependencies:
       string-width: 5.1.2
@@ -6239,7 +6256,6 @@ snapshots:
       strip-ansi-cjs: strip-ansi@6.0.1
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
-    optional: true
 
   '@isaacs/fs-minipass@4.0.1':
     dependencies:
@@ -6418,7 +6434,7 @@ snapshots:
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.6
       '@types/istanbul-reports': 3.0.4
-      '@types/node': 18.19.123
+      '@types/node': 24.3.0
       '@types/yargs': 15.0.19
       chalk: 4.1.2
     optional: true
@@ -6427,7 +6443,7 @@ snapshots:
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.6
       '@types/istanbul-reports': 3.0.4
-      '@types/node': 18.19.123
+      '@types/node': 24.3.0
       '@types/yargs': 16.0.9
       chalk: 4.1.2
     optional: true
@@ -7271,8 +7287,7 @@ snapshots:
 
   ansi-regex@5.0.1: {}
 
-  ansi-regex@6.2.0:
-    optional: true
+  ansi-regex@6.2.0: {}
 
   ansi-styles@3.2.1:
     dependencies:
@@ -7285,8 +7300,7 @@ snapshots:
 
   ansi-styles@5.2.0: {}
 
-  ansi-styles@6.2.1:
-    optional: true
+  ansi-styles@6.2.1: {}
 
   any-promise@1.3.0:
     optional: true
@@ -7584,6 +7598,7 @@ snapshots:
   brace-expansion@2.0.2:
     dependencies:
       balanced-match: 1.0.2
+    optional: true
 
   braces@3.0.3:
     dependencies:
@@ -7665,7 +7680,7 @@ snapshots:
 
   chrome-launcher@0.15.2:
     dependencies:
-      '@types/node': 18.19.123
+      '@types/node': 24.3.0
       escape-string-regexp: 4.0.0
       is-wsl: 2.2.0
       lighthouse-logger: 1.4.2
@@ -7674,7 +7689,7 @@ snapshots:
 
   chromium-edge-launcher@0.2.0:
     dependencies:
-      '@types/node': 18.19.123
+      '@types/node': 24.3.0
       escape-string-regexp: 4.0.0
       is-wsl: 2.2.0
       lighthouse-logger: 1.4.2
@@ -7961,8 +7976,7 @@ snapshots:
       es-errors: 1.3.0
       gopd: 1.2.0
 
-  eastasianwidth@0.2.0:
-    optional: true
+  eastasianwidth@0.2.0: {}
 
   ec-compression@0.0.1-alpha.11: {}
 
@@ -7978,8 +7992,7 @@ snapshots:
 
   emoji-regex@8.0.0: {}
 
-  emoji-regex@9.2.2:
-    optional: true
+  emoji-regex@9.2.2: {}
 
   encodeurl@1.0.2: {}
 
@@ -8289,7 +8302,6 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
-    optional: true
 
   form-data@4.0.4:
     dependencies:
@@ -8385,6 +8397,15 @@ snapshots:
       path-scurry: 1.11.1
     optional: true
 
+  glob@11.0.3:
+    dependencies:
+      foreground-child: 3.3.1
+      jackspeak: 4.1.1
+      minimatch: 10.0.3
+      minipass: 7.1.2
+      package-json-from-dist: 1.0.1
+      path-scurry: 2.0.0
+
   glob@7.2.3:
     dependencies:
       fs.realpath: 1.0.0
@@ -8393,13 +8414,6 @@ snapshots:
       minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
-
-  glob@9.3.5:
-    dependencies:
-      fs.realpath: 1.0.0
-      minimatch: 8.0.4
-      minipass: 4.2.8
-      path-scurry: 1.11.1
 
   globby@11.1.0:
     dependencies:
@@ -8655,6 +8669,10 @@ snapshots:
       '@pkgjs/parseargs': 0.11.0
     optional: true
 
+  jackspeak@4.1.1:
+    dependencies:
+      '@isaacs/cliui': 8.0.2
+
   jest-changed-files@29.7.0:
     dependencies:
       execa: 5.1.1
@@ -8899,7 +8917,7 @@ snapshots:
 
   jest-serializer@27.5.1:
     dependencies:
-      '@types/node': 18.19.123
+      '@types/node': 24.3.0
       graceful-fs: 4.2.11
     optional: true
 
@@ -8931,7 +8949,7 @@ snapshots:
   jest-util@27.5.1:
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 18.19.123
+      '@types/node': 24.3.0
       chalk: 4.1.2
       ci-info: 3.9.0
       graceful-fs: 4.2.11
@@ -8979,7 +8997,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 18.19.123
+      '@types/node': 24.3.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
     optional: true
@@ -9212,7 +9230,10 @@ snapshots:
     dependencies:
       js-tokens: 4.0.0
 
-  lru-cache@10.4.3: {}
+  lru-cache@10.4.3:
+    optional: true
+
+  lru-cache@11.2.1: {}
 
   lru-cache@5.1.1:
     dependencies:
@@ -9716,13 +9737,13 @@ snapshots:
 
   mimic-fn@2.1.0: {}
 
+  minimatch@10.0.3:
+    dependencies:
+      '@isaacs/brace-expansion': 5.0.0
+
   minimatch@3.1.2:
     dependencies:
       brace-expansion: 1.1.12
-
-  minimatch@8.0.4:
-    dependencies:
-      brace-expansion: 2.0.2
 
   minimatch@9.0.5:
     dependencies:
@@ -9730,8 +9751,6 @@ snapshots:
     optional: true
 
   minimist@1.2.8: {}
-
-  minipass@4.2.8: {}
 
   minipass@7.1.2: {}
 
@@ -9948,8 +9967,7 @@ snapshots:
 
   p-try@2.2.0: {}
 
-  package-json-from-dist@1.0.1:
-    optional: true
+  package-json-from-dist@1.0.1: {}
 
   package-manager-detector@0.2.11:
     dependencies:
@@ -9990,6 +10008,12 @@ snapshots:
   path-scurry@1.11.1:
     dependencies:
       lru-cache: 10.4.3
+      minipass: 7.1.2
+    optional: true
+
+  path-scurry@2.0.0:
+    dependencies:
+      lru-cache: 11.2.1
       minipass: 7.1.2
 
   path-type@4.0.0: {}
@@ -10322,9 +10346,10 @@ snapshots:
     dependencies:
       glob: 7.2.3
 
-  rimraf@4.4.1:
+  rimraf@6.0.1:
     dependencies:
-      glob: 9.3.5
+      glob: 11.0.3
+      package-json-from-dist: 1.0.1
 
   run-parallel@1.2.0:
     dependencies:
@@ -10518,7 +10543,6 @@ snapshots:
       eastasianwidth: 0.2.0
       emoji-regex: 9.2.2
       strip-ansi: 7.1.0
-    optional: true
 
   string_decoder@1.1.1:
     dependencies:
@@ -10541,7 +10565,6 @@ snapshots:
   strip-ansi@7.1.0:
     dependencies:
       ansi-regex: 6.2.0
-    optional: true
 
   strip-bom@3.0.0: {}
 
@@ -10908,7 +10931,6 @@ snapshots:
       ansi-styles: 6.2.1
       string-width: 5.1.2
       strip-ansi: 7.1.0
-    optional: true
 
   wrappy@1.0.2: {}
 

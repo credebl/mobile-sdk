@@ -1,20 +1,19 @@
 import type { Agent } from '@credo-ts/core'
 import type { PropsWithChildren } from 'react'
 
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext } from 'react'
+import { W3cCredentialRecordProvider } from './W3cCredentialsProvider'
 
-interface AgentContextInterface<AppAgent extends Agent = Agent> {
-  agent: AppAgent
-}
+const AgentContext = createContext<Agent | undefined>(undefined)
 
-const AgentContext = createContext<AgentContextInterface | undefined>(undefined)
-
-export const useAgent = <AppAgent extends Agent>() => {
+export const useAgent = <AppAgent extends Agent = Agent>() => {
   const agentContext = useContext(AgentContext)
   if (!agentContext) {
     throw new Error('useAgent must be used within a AgentContextProvider')
   }
-  return agentContext as AgentContextInterface<AppAgent>
+  return {
+    agent: agentContext,
+  }
 }
 
 interface Props {
@@ -22,11 +21,11 @@ interface Props {
 }
 
 const AgentProvider: React.FC<PropsWithChildren<Props>> = ({ agent, children }) => {
-  const [agentState] = useState<AgentContextInterface>({
-    agent,
-  })
-
-  return <AgentContext.Provider value={agentState}>{children}</AgentContext.Provider>
+  return (
+    <AgentContext.Provider value={agent}>
+      <W3cCredentialRecordProvider agent={agent}>{children}</W3cCredentialRecordProvider>
+    </AgentContext.Provider>
+  )
 }
 
 export default AgentProvider
