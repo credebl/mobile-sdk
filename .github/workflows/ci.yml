@@ -10,6 +10,10 @@ on:
       - main
   pull_request_review:
 
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
 # on:
 #   push:
 #     branches: ['main']
@@ -55,6 +59,10 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      # Ensure npm 11.5.1 or later required by trusted publishing
+      - name: Update npm
+        run: npm install -g npm@11.5.1
+      
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -91,14 +99,11 @@ jobs:
   #       run: pnpm build
 
   #     - name: Initialize the NPM config
-  #       env:
-  #         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   #       run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
 
   #     - name: Publish
   #       env:
   #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   #       shell: bash
   #       run: |
   #         git config --global user.name "lfdt-bot"
