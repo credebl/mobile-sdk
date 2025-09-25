@@ -1,6 +1,7 @@
 name: Release
 
 permissions:
+  id-token: write  # Required for OIDC
   pull-requests: write
   contents: write
 
@@ -26,6 +27,10 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      # Ensure npm 11.5.1 or later required by trusted publishing
+      - name: Update npm
+        run: npm install -g npm@11.5.1
+
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
@@ -34,7 +39,6 @@ jobs:
         uses: changesets/action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         with:
           title: 'chore(release): new version'
           commit: 'chore(release): new version'
