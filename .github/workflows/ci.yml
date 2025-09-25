@@ -99,7 +99,7 @@ jobs:
   #       run: pnpm build
 
   #     - name: Initialize the NPM config
-  #       run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
+  #       run: npm config set //registry.npmjs.org/
 
   #     - name: Publish
   #       env:
