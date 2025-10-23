@@ -82,12 +82,9 @@ jobs:
 
       - name: Create unstable release
         env:
+          TAG: ${{ github.event_name == 'push' && 'alpha' || format('pr-{0}', github.event.number) }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Create a unique snapshot tag with timestamp
-          TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          SNAPSHOT_TAG="alpha-${TIMESTAMP}"
-
           # this ensures there's always a patch release created
           cat << 'EOF' > .changeset/snapshot-template-changeset.md
           ---
@@ -97,9 +94,9 @@ jobs:
           snapshot release
           EOF
 
-          pnpm changeset version --snapshot $SNAPSHOT_TAG
+          pnpm changeset version --snapshot ${{ env.TAG }}
           pnpm build
-          pnpm changeset publish --tag alpha
+          pnpm changeset publish --tag ${{ env.TAG }}
 
           CURRENT_PACKAGE_VERSION=$(node -p "require('./packages/core/package.json').version")
           git config --global user.name "github-actions[bot]"
