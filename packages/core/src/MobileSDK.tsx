@@ -2,6 +2,8 @@ import { AskarModule } from '@credo-ts/askar'
 import {
   Agent,
   CacheModule,
+  type DidCreateOptions,
+  DidRepository,
   DidsModule,
   type InitConfig,
   JwkDidRegistrar,
@@ -9,6 +11,7 @@ import {
   KeyDidRegistrar,
   KeyDidResolver,
   SingleContextStorageLruCache,
+  type TagValue,
 } from '@credo-ts/core'
 import type { AgentModulesInput } from '@credo-ts/core/build/agent/AgentModules'
 import { agentDependencies } from '@credo-ts/react-native'
@@ -102,5 +105,59 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     }
 
     return <AgentProvider agent={sdk.agent}>{children}</AgentProvider>
+  }
+
+  public async createDid<T extends DidCreateOptions>(options: T) {
+    const agent = this.assertAndGetAgent()
+
+    const did = await agent.dids.create<T>(options)
+
+    return did
+  }
+
+  public async getDids({
+    method,
+    did,
+    tag,
+    tagValue,
+  }: { method?: string; did?: string; tag?: string; tagValue?: TagValue }) {
+    const agent = this.assertAndGetAgent()
+
+    if (tag) {
+      const didRepository = await agent.dependencyManager.resolve(DidRepository)
+
+      const didRecord = await didRepository.findSingleByQuery(agent.context, tagValue ? { [tag]: tagValue } : { tag })
+      return didRecord ? [didRecord] : []
+    }
+
+    const dids = await agent.dids.getCreatedDids({
+      method,
+      did,
+    })
+    return dids
+  }
+
+  public async addTagToDid({ did, tag, tagValue }: { did: string; tag: string; tagValue: TagValue }) {
+    const agent = this.assertAndGetAgent()
+    const didRecords = await this.getDids({ did })
+
+    if (didRecords.length === 0) {
+      throw new Error('Did not found')
+    }
+
+    const didRecord = didRecords[0]
+    await didRecord.setTag(tag, tagValue)
+
+    const didRepository = await agent.dependencyManager.resolve(DidRepository)
+
+    await didRepository.update(agent.context, didRecord)
+
+    return didRecord
+  }
+
+  public async resolveDid({ did }: { did: string }) {
+    const agent = this.assertAndGetAgent()
+    const didResolutionResult = await agent.dids.resolve(did)
+    return didResolutionResult
   }
 }

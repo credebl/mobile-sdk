@@ -9,9 +9,10 @@ import {
   getJwkFromKey,
 } from '@credo-ts/core'
 
-import { type JwkJson, type MdocRecord, W3cCredentialRecord } from '@credo-ts/core'
+import { type JwkJson, MdocRecord, W3cCredentialRecord } from '@credo-ts/core'
 import {
   type OpenId4VcCredentialMetadata,
+  getMdocCredentialDisplay,
   getOpenId4VcCredentialMetadata,
   getRefreshCredentialMetadata,
 } from '../metadata'
@@ -508,6 +509,9 @@ export function getCredentialForDisplayId(
   if (credentialRecord instanceof W3cCredentialRecord) {
     return `w3c-credential-${credentialRecord.id}`
   }
+  if (credentialRecord instanceof MdocRecord) {
+    return `mdoc-${credentialRecord.id}`
+  }
 
   throw new Error('Unsupported credential record type')
 }
@@ -566,7 +570,7 @@ export function getCredentialForDisplay(
       metadata,
       claimFormat: ClaimFormat.SdJwtVc,
       record: credentialRecord,
-      category: credentialCategoryMetadata ?? undefined,
+      category: credentialCategoryMetadata,
       hasRefreshToken,
     }
   }
@@ -621,7 +625,34 @@ export function getCredentialForDisplay(
       },
       claimFormat: credentialRecord.credential.claimFormat,
       record: credentialRecord,
-      category: credentialCategoryMetadata ?? undefined,
+      category: credentialCategoryMetadata,
+      hasRefreshToken,
+    }
+  }
+  if (credentialRecord instanceof MdocRecord) {
+    const mdocInstance = credentialRecord.credential
+
+    const openId4VcMetadata = getOpenId4VcCredentialMetadata(credentialRecord)
+    const credentialDisplay = getMdocCredentialDisplay(mdocInstance, openId4VcMetadata)
+    const issuerDisplay = getOpenId4VcIssuerDisplay(openId4VcMetadata, preferredLocale)
+    const { attributes, metadata } = getAttributesAndMetadataForMdocPayload(
+      mdocInstance.issuerSignedNamespaces,
+      mdocInstance
+    )
+
+    return {
+      id: credentialForDisplayId,
+      createdAt: credentialRecord.createdAt,
+      display: {
+        ...credentialDisplay,
+        issuer: issuerDisplay,
+      },
+      attributes,
+      rawAttributes: attributes,
+      metadata,
+      claimFormat: ClaimFormat.MsoMdoc,
+      record: credentialRecord,
+      category: credentialCategoryMetadata,
       hasRefreshToken,
     }
   }

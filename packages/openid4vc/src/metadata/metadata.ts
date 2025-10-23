@@ -1,17 +1,18 @@
-import type { MdocRecord, SdJwtVcRecord, W3cCredentialRecord } from '@credo-ts/core'
+import type { Mdoc, MdocRecord, SdJwtVcRecord, W3cCredentialRecord } from '@credo-ts/core'
 import type {
   OpenId4VciCredentialConfigurationSupported,
   OpenId4VciCredentialConfigurationSupportedWithFormats,
   OpenId4VciCredentialIssuerMetadataDisplay,
 } from '@credo-ts/openid4vc'
+import { type CredentialDisplay, getOpenId4VcCredentialDisplay } from '../display'
 
 export type CredentialDisplayClaims =
   | (OpenId4VciCredentialConfigurationSupportedWithFormats & {
-      format: 'vc+sd-jwt'
-    })['claims']
+    format: 'vc+sd-jwt'
+  })['claims']
   | (OpenId4VciCredentialConfigurationSupportedWithFormats & {
-      format: 'dc+sd-jwt'
-    })['claims']
+    format: 'dc+sd-jwt'
+  })['claims']
 
 export interface OpenId4VcCredentialMetadata {
   credential: {
@@ -76,6 +77,20 @@ export function getOpenId4VcCredentialMetadata(
         logo: logo ? { ...logo, uri: logo.uri ?? (logo.url as string) } : undefined,
       })),
     },
+  }
+}
+
+export function getMdocCredentialDisplay(mdoc: Mdoc, openId4VcMetadata?: OpenId4VcCredentialMetadata | null) {
+  let credentialDisplay: Partial<CredentialDisplay> = {}
+
+  if (openId4VcMetadata) {
+    credentialDisplay = getOpenId4VcCredentialDisplay(openId4VcMetadata)
+  }
+
+  return {
+    ...credentialDisplay,
+    // If there's no name for the credential, we extract it from the doctype
+    name: credentialDisplay.name ?? mdoc.docType,
   }
 }
 

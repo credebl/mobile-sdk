@@ -6,6 +6,7 @@ interface MobileSDKContextType {
   sdk: MobileSDK | null
   isInitialized: boolean
   initialize: (sdk: MobileSDK) => void
+  shutdown: () => void
 }
 
 const MobileSDKContext = createContext<MobileSDKContextType | undefined>(undefined)
@@ -19,6 +20,7 @@ export const useMobileSDK = <T extends Record<string, MobileSDKModule> = Record<
     sdk: context.sdk as MobileSDK<T>,
     isInitialized: context.isInitialized,
     initialize: context.initialize,
+    shutdown: context.shutdown,
   }
 }
 

@@ -6,8 +6,10 @@ import {
   JwaSignatureAlgorithm,
   MdocRecord,
   MdocRepository,
+  type SdJwtVcPayload,
   SdJwtVcRecord,
   SdJwtVcRepository,
+  type SdJwtVcSignOptions,
   TypedArrayEncoder,
   W3cCredentialRecord,
   W3cCredentialRepository,
@@ -32,6 +34,7 @@ import {
   type FormattedSubmissionEntrySatisfiedCredential,
   getAttributesAndMetadataForMdocPayload,
   getCredentialForDisplay,
+  getSelectedCredentialsForRequest,
 } from './display'
 import {
   extractOpenId4VcCredentialMetadata,
@@ -39,7 +42,11 @@ import {
   setOpenId4VcCredentialMetadata,
 } from './metadata'
 import { MdocRecordProvider, SdJwtVcRecordProvider } from './providers'
-import { type GetCredentialsForProofRequestOptions, formatDifPexCredentialsForRequest } from './resolverProof'
+import {
+  type GetCredentialsForProofRequestOptions,
+  formatDcqlCredentialsForRequest,
+  formatDifPexCredentialsForRequest,
+} from './resolverProof'
 import { credentialRecordFromCredential, encodeCredential } from './utils'
 
 export type CredentialsForProofRequest = Awaited<ReturnType<OpenID4VCSDK['getCredentialsForProofRequest']>>
@@ -200,7 +207,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
       credentialConfigurationIds: Object.keys(offeredCredentialsToRequest),
       verifyCredentialStatus: false,
       allowedProofOfPossessionSignatureAlgorithms: [JwaSignatureAlgorithm.ES256, JwaSignatureAlgorithm.EdDSA],
-      credentialBindingResolver: getCredentialBindingResolver(requestBatch),
+      credentialBindingResolver: getCredentialBindingResolver(pidSchemes, requestBatch),
     })
 
     return credentials.credentials.map(({ credentials, ...credentialResponse }) => {
@@ -297,7 +304,9 @@ export class OpenID4VCSDK implements MobileSDKModule {
       request,
     })
 
-    const resolved = await agent.modules.openId4VcHolder.resolveOpenId4VpAuthorizationRequest(request, {})
+    const resolved = await agent.modules.openId4VcHolder.resolveOpenId4VpAuthorizationRequest(request, {
+      origin,
+    })
 
     const { authorizationRequestPayload } = resolved
     const clientMetadata = authorizationRequestPayload.client_metadata
@@ -317,6 +326,8 @@ export class OpenID4VCSDK implements MobileSDKModule {
         resolved.presentationExchange.definition as DifPresentationExchangeDefinitionV2,
         preferredLocale
       )
+    } else if (resolved.dcql) {
+      formattedSubmission = formatDcqlCredentialsForRequest(resolved.dcql.queryResult)
     } else {
       throw new Error('No presentation exchange or dcql found in authorization request.')
     }
@@ -379,11 +390,30 @@ export class OpenID4VCSDK implements MobileSDKModule {
         )
       : undefined
 
+    const dcqlCredentials = resolvedRequest.queryResult
+      ? Object.fromEntries(
+          await Promise.all(
+            Object.entries(
+              Object.keys(selectedCredentials).length > 0
+                ? getSelectedCredentialsForRequest(resolvedRequest.queryResult, selectedCredentials)
+                : agent.modules.openId4VcHolder.selectCredentialsForDcqlRequest(resolvedRequest.queryResult)
+            ).map(async ([queryCredentialId, credential]) => {
+              return [queryCredentialId, { ...credential }]
+            })
+          )
+        )
+      : undefined
+
     const result = await agent.modules.openId4VcHolder.acceptOpenId4VpAuthorizationRequest({
       authorizationRequestPayload: authorizationRequest,
       presentationExchange: presentationExchangeCredentials
         ? {
             credentials: presentationExchangeCredentials,
+          }
+        : undefined,
+      dcql: dcqlCredentials
+        ? {
+            credentials: dcqlCredentials,
           }
         : undefined,
       transactionData: undefined,
@@ -503,5 +533,23 @@ export class OpenID4VCSDK implements MobileSDKModule {
       areAllSatisfied: entries.every((entry) => entry.isSatisfied),
       entries,
     }
+  }
+
+  public async signAndStoreCredential({
+    format,
+    payload,
+  }: {
+    format: 'sd-jwt'
+    payload: SdJwtVcSignOptions<SdJwtVcPayload>
+  }) {
+    const agent = this.assertAndGetAgent()
+
+    if (format === 'sd-jwt') {
+      const credential = await agent.sdJwtVc.sign(payload)
+      const record = await agent.sdJwtVc.store(credential.compact)
+      return record
+    }
+
+    throw new Error(`Unsupported format ${format}`)
   }
 }

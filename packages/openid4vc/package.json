@@ -2,10 +2,8 @@
   "name": "@credebl/ssi-mobile-openid4vc",
   "main": "src/index",
   "types": "src/index",
-  "version": "0.0.2",
-  "files": [
-    "build"
-  ],
+  "version": "0.0.5",
+  "files": ["build"],
   "license": "Apache-2.0",
   "publishConfig": {
     "main": "build/index",
@@ -22,7 +20,7 @@
     "check-types": "pnpm compile --noEmit",
     "build": "pnpm clean && pnpm compile",
     "clean": "rimraf -rf ./build",
-    "compile": "tsc -p tsconfig.build.json"
+    "compile": "tsdown -p tsconfig.build.json"
   },
   "dependencies": {
     "@animo-id/mdoc": "0.5.2",

@@ -1,5 +1,5 @@
-import { DateOnly, Hasher, type JwkJson, TypedArrayEncoder } from '@credo-ts/core'
-import type { DifPexCredentialsForRequest } from '@credo-ts/core'
+import { ClaimFormat, DateOnly, Hasher, type JwkJson, TypedArrayEncoder } from '@credo-ts/core'
+import type { BaseRecord, DcqlCredentialsForRequest, DcqlQueryResult, DifPexCredentialsForRequest, MdocRecord, SdJwtVcRecord, W3cCredentialRecord } from '@credo-ts/core'
 import type { OpenId4VpResolvedAuthorizationRequest } from '@credo-ts/openid4vc'
 import { formatDate, isDateString } from '../utils'
 import { detectImageMimeType } from '../utils/attributes'
@@ -15,7 +15,7 @@ type MappedAttributesReturnType =
   | Array<MappedAttributesReturnType>
 
 export interface FormattedSubmission {
-  name: string
+  name?: string
   purpose?: string
   areAllSatisfied: boolean
   entries: FormattedSubmissionEntry[]
@@ -177,4 +177,57 @@ export function recursivelyMapAttributes(value: unknown): MappedAttributesReturn
   if (Array.isArray(value)) return value.map(recursivelyMapAttributes)
 
   return Object.fromEntries(Object.entries(value).map(([key, value]) => [key, recursivelyMapAttributes(value)]))
+}
+
+export function getSelectedCredentialsForRequest(
+  dcqlQueryResult: DcqlQueryResult,
+  selectedCredentials: { [credentialQueryId: string]: string }
+): DcqlCredentialsForRequest {
+  if (!dcqlQueryResult.canBeSatisfied) {
+    throw new Error('Cannot select the credentials for the dcql query presentation if the request cannot be satisfied')
+  }
+
+  const credentials: DcqlCredentialsForRequest = {}
+
+  for (const [credentialQueryId, credentialRecordId] of Object.entries(selectedCredentials)) {
+    const matchesForCredentialQuery = dcqlQueryResult.credential_matches[credentialQueryId]
+    if (matchesForCredentialQuery.success) {
+      const match = matchesForCredentialQuery.all
+        .map((credential) =>
+          credential.find((claimSet) =>
+            claimSet?.success && 'record' in claimSet && (claimSet.record as BaseRecord).id === credentialRecordId
+              ? claimSet
+              : undefined
+          )
+        )
+        .find((i) => i !== undefined)
+      // TODO: fix the typing, make selection in Credo easier
+      const matchWithRecord = match as typeof match & { record: MdocRecord | SdJwtVcRecord | W3cCredentialRecord }
+
+      if (
+        matchWithRecord?.success &&
+        matchWithRecord.record.type === 'MdocRecord' &&
+        matchWithRecord.output.credential_format === 'mso_mdoc'
+      ) {
+        credentials[credentialQueryId] = {
+          claimFormat: ClaimFormat.MsoMdoc,
+          credentialRecord: matchWithRecord.record,
+          disclosedPayload: matchWithRecord.output.namespaces,
+        }
+      } else if (
+        matchWithRecord?.success &&
+        matchWithRecord.record.type === 'SdJwtVcRecord' &&
+        (matchWithRecord.output.credential_format === 'dc+sd-jwt' ||
+          matchWithRecord.output.credential_format === 'vc+sd-jwt')
+      ) {
+        credentials[credentialQueryId] = {
+          claimFormat: ClaimFormat.SdJwtVc,
+          credentialRecord: matchWithRecord.record,
+          disclosedPayload: matchWithRecord.output.claims,
+        }
+      }
+    }
+  }
+
+  return credentials
 }
