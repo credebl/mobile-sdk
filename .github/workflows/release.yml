@@ -86,8 +86,7 @@ jobs:
         run: |
           # Create a unique snapshot tag with timestamp
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          SHORT_SHA=$(git rev-parse --short HEAD)
-          SNAPSHOT_TAG="alpha-${TIMESTAMP}-${SHORT_SHA}"
+          SNAPSHOT_TAG="alpha-${TIMESTAMP}"
 
           # this ensures there's always a patch release created
           cat << 'EOF' > .changeset/snapshot-template-changeset.md
