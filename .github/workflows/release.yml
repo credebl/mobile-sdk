@@ -1,7 +1,7 @@
 name: Release
 
 permissions:
-  id-token: write  # Required for OIDC
+  id-token: write # Required for OIDC
   pull-requests: write
   contents: write
 
@@ -11,7 +11,7 @@ env:
 on:
   push:
     branches:
-      - main
+      - alpha-release
 jobs:
   release:
     name: Release
@@ -40,7 +40,72 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          title: 'chore(release): new version'
-          commit: 'chore(release): new version'
+          title: "chore(release): new version"
+          commit: "chore(release): new version"
           publish: pnpm release
           version: pnpm changeset-version
+          createGithubReleases: false
+
+      - name: Get current package version
+        id: get_version
+        run: echo "CURRENT_PACKAGE_VERSION=$(node -p "require('./packages/core/package.json').version")" >> $GITHUB_ENV
+
+      - name: Create Github Release
+        if: "startsWith(github.event.head_commit.message, 'chore(release): new version')"
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.CURRENT_PACKAGE_VERSION }}
+
+  release-unstable:
+    name: Release Unstable
+    runs-on: ubuntu-latest
+    # We don't want to run release and release-unstable concurrently as NPM doesn't allow publishing packages while another version of the same package is
+    # still processing. So we wait for release to finish, and the always() ensure that it will run no matter the result of release.
+    needs: [release]
+    if: "always() && github.event_name == 'push' && github.ref == 'refs/heads/alpha-release' && !startsWith(github.event.head_commit.message, 'chore(release): new version')"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # Ensure npm 11.5.1 or later required by trusted publishing
+      - name: Update npm
+        run: npm install -g npm@11.5.1
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create unstable release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Create a unique snapshot tag with timestamp
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          SNAPSHOT_TAG="alpha-${TIMESTAMP}-${SHORT_SHA}"
+
+          # this ensures there's always a patch release created
+          cat << 'EOF' > .changeset/snapshot-template-changeset.md
+          ---
+          '@credebl/ssi-mobile-core': patch
+          ---
+
+          snapshot release
+          EOF
+
+          pnpm changeset version --snapshot $SNAPSHOT_TAG
+          pnpm build
+          pnpm changeset publish --tag alpha
+
+          CURRENT_PACKAGE_VERSION=$(node -p "require('./packages/core/package.json').version")
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag v$CURRENT_PACKAGE_VERSION
+          git push origin v$CURRENT_PACKAGE_VERSION --no-verify
+
+          echo "Published version: $CURRENT_PACKAGE_VERSION with tag: alpha"
