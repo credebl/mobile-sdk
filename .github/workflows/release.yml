@@ -84,7 +84,6 @@ jobs:
         env:
           TAG: ${{ github.event_name == 'push' && 'alpha' || format('pr-{0}', github.event.number) }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
         run: |
           # this ensures there's always a patch release created
           cat << 'EOF' > .changeset/snapshot-template-changeset.md
