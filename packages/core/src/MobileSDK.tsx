@@ -176,8 +176,9 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
       await agent.mdoc.deleteById(id)
     } else if (format === 'w3c') {
       await agent.w3cCredentials.removeCredentialRecord(id)
+      return
+    } else {
+      throw new Error('Credential format not supported')
     }
-
-    throw new Error('Credential format not supported')
   }
 }
