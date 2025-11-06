@@ -9,7 +9,7 @@ import {
 } from '@credo-ts/core'
 import {
   type OpenId4VcCredentialHolderBinding,
-  OpenId4VcCredentialHolderDidBinding,
+  type OpenId4VcCredentialHolderDidBinding,
   type OpenId4VciCredentialBindingResolver,
   OpenId4VciCredentialFormatProfile,
 } from '@credo-ts/openid4vc'

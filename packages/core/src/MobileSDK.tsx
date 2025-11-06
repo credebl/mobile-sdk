@@ -160,4 +160,24 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     const didResolutionResult = await agent.dids.resolve(did)
     return didResolutionResult
   }
+
+  public async deleteCredential({
+    id,
+    format,
+  }: {
+    id: string
+    format: 'sd-jwt' | 'mdoc' | 'w3c'
+  }) {
+    const agent = this.assertAndGetAgent()
+
+    if (format === 'sd-jwt') {
+      await agent.sdJwtVc.deleteById(id)
+    } else if (format === 'mdoc') {
+      await agent.mdoc.deleteById(id)
+    } else if (format === 'w3c') {
+      await agent.w3cCredentials.removeCredentialRecord(id)
+    }
+
+    throw new Error('Credential format not supported')
+  }
 }
