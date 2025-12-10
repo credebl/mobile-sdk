@@ -47,7 +47,6 @@ export type MobileSDKOptions<T extends Record<string, MobileSDKModule> = Record<
   modules: T
   defaultModules?: AgentModulesInput
 }
-
 export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string, MobileSDKModule>> {
   private localAgent: Agent | null = null
   public readonly configuration: MobileSDKOptions<T>
@@ -58,7 +57,13 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     this.modules = options.modules
   }
 
-  public async initialize() {
+  public static async initializeSDK(options: MobileSDKOptions<any>) {
+    const sdk = new MobileSDK(options)
+    const agent = await sdk.initialize()
+    return { sdk, agent }
+  }
+
+  async initialize() {
     const defaultModules = this.configuration.defaultModules ?? {}
     const coreModules = getCoreModules()
     Object.assign(defaultModules, coreModules)
