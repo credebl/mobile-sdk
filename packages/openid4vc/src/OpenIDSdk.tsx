@@ -48,7 +48,7 @@ import {
   formatDifPexCredentialsForRequest,
 } from './resolverProof'
 import { applySelectedCredentialFilter, credentialRecordFromCredential, encodeCredential, ensureSingleCredentialRequest, extractProviderRequest, getHostNameFromUrl } from './utils'
-import { DigitalCredentialsRequest, registerCredentials, sendErrorResponse, sendResponse } from '@animo-id/expo-digital-credentials-api'
+import { DigitalCredentialsRequest, registerCredentials, sendResponse } from '@animo-id/expo-digital-credentials-api'
 import { CredentialItem, loadCachedImageAsBase64DataUrl, mapMdocAttributes, mapMdocAttributesToClaimDisplay, mapSdJwtAttributesToClaimDisplay } from './dcapi/mapAttributes'
 import { Platform } from 'react-native'
 
@@ -631,10 +631,6 @@ export class OpenID4VCSDK implements MobileSDKModule {
     })
   }
   
-  public async sendErrorResponseForDcApi(errorMessage: string) {
-    sendErrorResponse({ errorMessage })
-  }
-
   public async registerCredentialsForDcApi() {
     const agent = this.assertAndGetAgent()
     
@@ -700,7 +696,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
     await registerCredentials({
       credentials,
-      matcher: 'ubique',
+      matcher: 'cmwallet',
     })
   }
 }

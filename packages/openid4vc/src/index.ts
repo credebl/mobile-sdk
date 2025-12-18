@@ -21,3 +21,4 @@ export { MdocRecord, SdJwtVcRecord, W3cCredentialRecord, GenericRecord }
 export * from './OpenIDSdk'
 export * from './display'
 export * from './providers'
+export * from './dcapi'
