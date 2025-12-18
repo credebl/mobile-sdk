@@ -243,7 +243,9 @@ export class MobileSDK<
     }
   }
 
-  private async getRepositories(agent: any, format?: CredentialFormat) {
+  private async getRepositories(agent: Agent, format?: CredentialFormat): Promise<
+    (SdJwtVcRepository | MdocRepository | W3cCredentialRepository)[]
+  > {
     const repos = {
       "sd-jwt": SdJwtVcRepository,
       mdoc: MdocRepository,
@@ -261,14 +263,13 @@ export class MobileSDK<
 
   public async setTagsToCredential({
     credId,
-    format,
     tags,
+    format,
   }: {
     credId: string;
-    format?: CredentialFormat;
     tags: Record<string, TagValue>;
+    format?: CredentialFormat;
   }) {
-    // Validate inputs
     if (!credId?.trim()) {
       throw new Error("credId is required and cannot be empty");
     }
@@ -284,11 +285,9 @@ export class MobileSDK<
     for (const repository of repositories) {
       try {
         const credRecord = await repository.getById(agent.context, credId);
-
         for (const [tag, value] of Object.entries(tags)) {
           await credRecord.setTag(tag, value);
         }
-
         await repository.update(agent.context, credRecord);
         return credRecord;
       } catch (error) {
@@ -297,7 +296,6 @@ export class MobileSDK<
       }
     }
 
-    // If we get here, credential was not found in any repository
     throw new Error(
       `Credential with id '${credId}' not found in any supported repository${
         lastError ? `. Last error: ${lastError.message}` : ""
@@ -308,20 +306,17 @@ export class MobileSDK<
   public async getCredentialsByTag({
     format,
     tag,
-    tagValue,
   }: {
+    tag: Record<string, any>;
     format?: CredentialFormat;
-    tag: string;
-    tagValue?: TagValue;
   }) {
     const agent = this.assertAndGetAgent();
     const repositories = await this.getRepositories(agent, format);
 
-    const query = tagValue ? { [tag]: tagValue } : { tag };
-    const results: any[] = [];
+    const results: (SdJwtVcRecord | MdocRecord | W3cCredentialRecord)[] = [];
 
     for (const repository of repositories) {
-      const records = await repository.findByQuery(agent.context, query);
+      const records = await repository.findByQuery(agent.context, tag);
       results.push(...records);
     }
 
