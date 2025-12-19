@@ -26,8 +26,11 @@ import type { PropsWithChildren } from "react";
 import { useMobileSDK } from "./contexts";
 import AgentProvider from "./providers/AgentProvider";
 
-export type CredentialFormat = "sd-jwt" | "mdoc" | "w3c";
-
+export enum CredentialRecord {
+  SdJwt = 'sd-jwt',
+  Mdoc = 'mdoc',
+  W3c = 'w3c',
+}
 const getCoreModules = () => {
   return {
     askar: new AskarModule({
@@ -206,15 +209,15 @@ export class MobileSDK<
     format,
   }: {
     id: string;
-    format: CredentialFormat;
+    format: CredentialRecord;
   }) {
     const agent = this.assertAndGetAgent();
 
-    if (format === "sd-jwt") {
+    if (format === CredentialRecord.SdJwt) {
       await agent.sdJwtVc.deleteById(id);
-    } else if (format === "mdoc") {
+    } else if (format === CredentialRecord.Mdoc) {
       await agent.mdoc.deleteById(id);
-    } else if (format === "w3c") {
+    } else if (format === CredentialRecord.W3c) {
       await agent.w3cCredentials.removeCredentialRecord(id);
       return;
     } else {
@@ -243,22 +246,22 @@ export class MobileSDK<
     }
   }
 
-  private async getRepositories(agent: Agent, format?: CredentialFormat): Promise<
+  private async getRepositories(agent: Agent, format?: CredentialRecord): Promise<
     (SdJwtVcRepository | MdocRepository | W3cCredentialRepository)[]
   > {
-    const repos = {
-      "sd-jwt": SdJwtVcRepository,
-      mdoc: MdocRepository,
-      w3c: W3cCredentialRepository,
-    };
-
-    if (format) {
-      return [await agent.dependencyManager.resolve(repos[format])];
+    if (format === CredentialRecord.SdJwt) {
+      return [await agent.dependencyManager.resolve(SdJwtVcRepository)];
+    } else if (format === CredentialRecord.Mdoc) {
+      return [await agent.dependencyManager.resolve(MdocRepository)];
+    } else if (format === CredentialRecord.W3c) {
+      return [await agent.dependencyManager.resolve(W3cCredentialRepository)];
     }
 
-    return Promise.all(
-      Object.values(repos).map((repo) => agent.dependencyManager.resolve(repo))
-    );
+    return Promise.all([
+      agent.dependencyManager.resolve(SdJwtVcRepository),
+      agent.dependencyManager.resolve(MdocRepository),
+      agent.dependencyManager.resolve(W3cCredentialRepository),
+    ]);
   }
 
   public async setTagsToCredential({
@@ -268,7 +271,7 @@ export class MobileSDK<
   }: {
     credId: string;
     tags: Record<string, TagValue>;
-    format?: CredentialFormat;
+    format?: CredentialRecord;
   }) {
     if (!credId?.trim()) {
       throw new Error("credId is required and cannot be empty");
@@ -288,7 +291,14 @@ export class MobileSDK<
         for (const [tag, value] of Object.entries(tags)) {
           await credRecord.setTag(tag, value);
         }
-        await repository.update(agent.context, credRecord);
+        
+        if (repository instanceof W3cCredentialRepository) {
+          await repository.update(agent.context, credRecord as W3cCredentialRecord);
+        } else if (repository instanceof SdJwtVcRepository) {
+          await repository.update(agent.context, credRecord as SdJwtVcRecord);
+        } else if (repository instanceof MdocRepository) {
+          await repository.update(agent.context, credRecord as MdocRecord);
+        }
         return credRecord;
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
@@ -308,7 +318,7 @@ export class MobileSDK<
     tag,
   }: {
     tag: Record<string, any>;
-    format?: CredentialFormat;
+    format?: CredentialRecord;
   }) {
     const agent = this.assertAndGetAgent();
     const repositories = await this.getRepositories(agent, format);
