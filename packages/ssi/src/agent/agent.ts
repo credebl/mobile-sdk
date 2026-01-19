@@ -1,7 +1,3 @@
-import type { InitConfig, MediatorPickupStrategy } from '@credo-ts/core'
-import type { AgentModulesInput } from '@credo-ts/core/build/agent/AgentModules'
-import type { IndyVdrPoolConfig } from '@credo-ts/indy-vdr'
-
 import {
   AnonCredsCredentialFormatService,
   AnonCredsModule,
@@ -13,70 +9,56 @@ import {
   V1ProofProtocol,
 } from '@credo-ts/anoncreds'
 import { AskarModule } from '@credo-ts/askar'
+import { Agent, DidsModule, PeerDidNumAlgo, WebDidResolver, X509Module } from '@credo-ts/core'
+import type { InitConfig } from '@credo-ts/core'
 import {
-  Agent,
   AutoAcceptCredential,
   AutoAcceptProof,
+  BasicMessagesModule,
   ConnectionsModule,
   CredentialsModule,
-  DidsModule,
+  DidCommModule,
   DifPresentationExchangeProofFormatService,
+  DiscoverFeaturesModule,
   HttpOutboundTransport,
   JsonLdCredentialFormatService,
   MediationRecipientModule,
+  type MediatorPickupStrategy,
+  MessagePickupModule,
+  OutOfBandModule,
   ProofsModule,
   V2CredentialProtocol,
   V2ProofProtocol,
-  WebDidResolver,
   WsOutboundTransport,
-} from '@credo-ts/core'
-import {
-  IndyVdrAnonCredsRegistry,
-  IndyVdrIndyDidResolver,
-  IndyVdrModule,
-  IndyVdrSovDidResolver,
-} from '@credo-ts/indy-vdr'
-import { PushNotificationsFcmModule } from '@credo-ts/push-notifications'
+} from '@credo-ts/didcomm'
+import { IndyVdrAnonCredsRegistry } from '@credo-ts/indy-vdr'
+import { OpenId4VcHolderModule } from '@credo-ts/openid4vc'
 import { QuestionAnswerModule } from '@credo-ts/question-answer'
 import { agentDependencies } from '@credo-ts/react-native'
 import { anoncreds } from '@hyperledger/anoncreds-react-native'
-import { ariesAskar } from '@hyperledger/aries-askar-react-native'
-import { indyVdr } from '@hyperledger/indy-vdr-react-native'
+import { askar } from '@openwallet-foundation/askar-react-native'
 
 export type AdeyaAgentModuleOptions = {
   mediatorInvitationUrl: string
   mediatorPickupStrategy: MediatorPickupStrategy
-  indyNetworks: [IndyVdrPoolConfig, ...IndyVdrPoolConfig[]]
   maximumMessagePickup?: number
+  trustedCertificates?: [string, ...string[]]
 }
 
-export const getAgentModules = ({
-  mediatorInvitationUrl,
-  mediatorPickupStrategy,
-  indyNetworks,
-  maximumMessagePickup = 5,
-}: AdeyaAgentModuleOptions) => {
-  return {
+export type AdeyaAgentModules = ReturnType<typeof getAgentModules>
+
+export type AdeyaAgent = Agent<AdeyaAgentModules>
+
+export const getAgentModules = (options: AdeyaAgentModuleOptions) => {
+  const modules = {
     askar: new AskarModule({
-      ariesAskar,
-    }),
-    anoncreds: new AnonCredsModule({
-      registries: [new IndyVdrAnonCredsRegistry()],
-      anoncreds,
-    }),
-    mediationRecipient: new MediationRecipientModule({
-      mediatorInvitationUrl,
-      mediatorPickupStrategy,
-      maximumMessagePickup,
+      askar,
     }),
     dids: new DidsModule({
       registrars: [],
-      resolvers: [new WebDidResolver(), new IndyVdrSovDidResolver(), new IndyVdrIndyDidResolver()],
+      resolvers: [new WebDidResolver()],
     }),
-    indyVdr: new IndyVdrModule({
-      indyVdr,
-      networks: indyNetworks,
-    }),
+    didcomm: new DidCommModule(),
     credentials: new CredentialsModule({
       autoAcceptCredentials: AutoAcceptCredential.ContentApproved,
       credentialProtocols: [
@@ -110,10 +92,42 @@ export const getAgentModules = ({
     }),
     connections: new ConnectionsModule({
       autoAcceptConnections: true,
+      peerNumAlgoForDidExchangeRequests: PeerDidNumAlgo.GenesisDoc,
+      peerNumAlgoForDidRotation: PeerDidNumAlgo.ShortFormAndLongForm,
     }),
-    pushNotificationsFcm: new PushNotificationsFcmModule(),
+    basicMessages: new BasicMessagesModule(),
+    oob: new OutOfBandModule(),
+    messagePickup: new MessagePickupModule(),
+    discovery: new DiscoverFeaturesModule(),
     questionAnswer: new QuestionAnswerModule(),
+    openId4VcHolder: new OpenId4VcHolderModule(),
+    x509: new X509Module({
+      trustedCertificates: options?.trustedCertificates
+    }),
+    anoncreds: new AnonCredsModule({
+      registries: [new IndyVdrAnonCredsRegistry()],
+      anoncreds,
+    }),
+    mediationRecipient: new MediationRecipientModule({
+      mediatorInvitationUrl: options.mediatorInvitationUrl,
+      mediatorPickupStrategy: options.mediatorPickupStrategy,
+      maximumMessagePickup: options.maximumMessagePickup ?? 5,
+    }),
   }
+
+  // Only add mediation if options are provided
+  // if (options?.mediatorInvitationUrl && options?.mediatorPickupStrategy) {
+  //   return {
+  //     ...modules,
+  //     mediationRecipient: new MediationRecipientModule({
+  //       mediatorInvitationUrl: options.mediatorInvitationUrl,
+  //       mediatorPickupStrategy: options.mediatorPickupStrategy,
+  //       maximumMessagePickup: options.maximumMessagePickup ?? 5,
+  //     }),
+  //   }
+  // }
+
+  return modules
 }
 
 export const initializeAgent = async ({
@@ -121,7 +135,7 @@ export const initializeAgent = async ({
   modules,
 }: {
   agentConfig: InitConfig
-  modules: AgentModulesInput
+  modules: AdeyaAgentModules
 }) => {
   const agent = new Agent({
     dependencies: agentDependencies,
@@ -132,10 +146,11 @@ export const initializeAgent = async ({
     modules,
   })
 
-  agent.registerOutboundTransport(new HttpOutboundTransport())
-  agent.registerOutboundTransport(new WsOutboundTransport())
+  agent.modules.didcomm.registerOutboundTransport(new HttpOutboundTransport())
+  agent.modules.didcomm.registerOutboundTransport(new WsOutboundTransport())
 
   await agent.initialize()
+  await agent.modules.mediationRecipient.initialize()
 
   return agent
 }

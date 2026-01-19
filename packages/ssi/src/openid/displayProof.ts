@@ -1,10 +1,31 @@
-import type { DifPexCredentialsForRequest } from '@credo-ts/core'
-import type { OpenId4VcSiopResolvedAuthorizationRequest } from '@credo-ts/openid4vc'
-import type { DisplayImage } from './openIdHelpers'
+import { ClaimFormat, DateOnly, Hasher, type JwkJson, TypedArrayEncoder } from '@credo-ts/core'
+import type { BaseRecord, DcqlCredentialsForRequest, DcqlQueryResult, DifPexCredentialsForRequest, MdocRecord, SdJwtVcRecord, W3cCredentialRecord } from '@credo-ts/core'
+import type { OpenId4VpResolvedAuthorizationRequest } from '@credo-ts/openid4vc'
+import { formatDate, isDateString } from '../utils/format'
+import { detectImageMimeType } from '../utils/image'
+import type { CredentialForDisplay } from './display'
+export interface FormattedSubmissionEntrySatisfiedCredential {
+  credential: CredentialForDisplay
 
-import { ClaimFormat } from '@credo-ts/core'
+  /**
+   * If not present the whole credential will be disclosed
+   */
+  disclosed: {
+    attributes: CredentialForDisplay['attributes']
+    metadata: CredentialForDisplay['metadata'] | undefined
 
-import { filterAndMapSdJwtKeys, getCredentialForDisplay } from './display'
+    paths: string[][]
+  }
+}
+
+type MappedAttributesReturnType =
+  | string
+  | number
+  | boolean
+  | { [key: string]: MappedAttributesReturnType }
+  | null
+  | undefined
+  | Array<MappedAttributesReturnType>
 
 export interface FormattedSubmission {
   name: string
@@ -13,83 +34,228 @@ export interface FormattedSubmission {
   entries: FormattedSubmissionEntry[]
 }
 
-export interface OpenId4VPRequestRecord extends OpenId4VcSiopResolvedAuthorizationRequest {
+export interface OpenId4VPRequestRecord extends OpenId4VpResolvedAuthorizationRequest {
   verifierHostName: string | undefined
   createdAt: string | Date
   credentialsForRequest: DifPexCredentialsForRequest | undefined
   type: string
 }
 
-export enum CredentialMetadata {
-  customMetadata = 'customMetadata',
-  metaData = 'metaData',
-}
-export interface FormattedSubmissionEntry {
-  /** can be either AnonCreds groupName or PEX inputDescriptorId */
-  inputDescriptorId: string
-  isSatisfied: boolean
+// export enum CredentialMetadata {
+//   customMetadata = 'customMetadata',
+//   metaData = 'metaData',
+// }
 
-  name: string
+export interface CredentialMetadata {
+  type: string
+  issuer: string
+  holder?: string
+  validUntil?: string
+  validFrom?: string
+  issuedAt?: string
+}
+
+export interface FormattedSubmissionEntrySatisfied {
+  /**
+   * can be either:
+   *  - AnonCreds groupName
+   *  - PEX inputDescriptorId
+   *  - DCQL credential query id
+   */
+  inputDescriptorId: string
+
+  name?: string
   description?: string
 
-  credentials: {
-    id: string
-    credentialName: string
-    issuerName?: string
-    requestedAttributes?: string[]
-    disclosedPayload?: Record<string, unknown>
-    metadata?: CredentialMetadata
-    backgroundColor?: string
-    backgroundImage?: DisplayImage
-    claimFormat: ClaimFormat | undefined | 'AnonCreds'
-  }[]
+  /**
+   * Whether the entry is satisfied
+   */
+  isSatisfied: true
+
+  /**
+   * Credentials that match the request entry. Wallet always needs to pick one.
+   */
+  credentials: [FormattedSubmissionEntrySatisfiedCredential, ...FormattedSubmissionEntrySatisfiedCredential[]]
 }
 
-export function formatDifPexCredentialsForRequest(
-  credentialsForRequest: DifPexCredentialsForRequest
-): FormattedSubmission {
-  const entries = credentialsForRequest.requirements.flatMap((requirement) => {
-    return requirement.submissionEntry.map((submission): FormattedSubmissionEntry => {
-      return {
-        inputDescriptorId: submission.inputDescriptorId,
-        name: submission.name ?? 'Unknown',
-        description: submission.purpose,
-        isSatisfied: submission.verifiableCredentials.length >= 1,
+export interface FormattedSubmissionEntryNotSatisfied {
+  /**
+   * can be either:
+   *  - AnonCreds groupName
+   *  - PEX inputDescriptorId
+   *  - DCQL credential query id
+   */
+  inputDescriptorId: string
 
-        credentials: submission.verifiableCredentials.map((verifiableCredential) => {
-          const { display, attributes, metadata, claimFormat } = getCredentialForDisplay(
-            verifiableCredential.credentialRecord
-          )
+  name?: string
+  description?: string
 
-          let disclosedPayload = attributes
-          if (verifiableCredential.type === ClaimFormat.SdJwtVc) {
-            disclosedPayload = filterAndMapSdJwtKeys(verifiableCredential.disclosedPayload).visibleProperties
-          } /* else if (verifiableCredential.type === ClaimFormat.MsoMdoc) {
-            disclosedPayload = Object.fromEntries(
-              Object.values(verifiableCredential.disclosedPayload).flatMap((entry) => Object.entries(entry))
-            )
-          } */
+  /**
+   * Whether the entry is satisfied
+   */
+  isSatisfied: false
 
-          return {
-            id: verifiableCredential.credentialRecord.id,
-            credentialName: display.name,
-            issuerName: display.issuer.name,
-            requestedAttributes: [...Object.keys(disclosedPayload)],
-            disclosedPayload,
-            metadata,
-            backgroundColor: display.backgroundColor,
-            backgroundImage: display.backgroundImage,
-            claimFormat,
-          }
-        }),
-      }
-    })
-  })
+  requestedAttributePaths: Array<Array<string | number | null>>
+}
+
+export type FormattedSubmissionEntry = FormattedSubmissionEntryNotSatisfied | FormattedSubmissionEntrySatisfied
+
+export function getDisclosedAttributePathArrays(
+  payload: object,
+  maxDepth: number | undefined = undefined,
+  prefix: string[] = []
+): string[][] {
+  let attributePaths: string[][] = []
+
+  for (const [key, value] of Object.entries(payload)) {
+    if (!value) continue
+
+    // TODO: handle arrays
+    const newPath = [...prefix, key]
+    if (value && typeof value === 'object' && maxDepth !== 0) {
+      // If the value is a nested object, recurse
+      attributePaths = [
+        ...attributePaths,
+        ...getDisclosedAttributePathArrays(value, maxDepth !== undefined ? maxDepth - 1 : undefined, newPath),
+      ]
+    } else {
+      // If the value is a primitive or maxDepth is reached, add the key to the list
+      attributePaths.push(newPath)
+    }
+  }
+
+  return attributePaths
+}
+
+export function getAttributesAndMetadataForSdJwtPayload(sdJwtVcPayload: Record<string, unknown>) {
+  type SdJwtVcPayload = {
+    iss: string
+    cnf: Record<string, unknown>
+    vct: string
+    iat?: number
+    nbf?: number
+    exp?: number
+    [key: string]: unknown
+  }
+  const { _sd_alg, _sd_hash, iss, vct, cnf, iat, exp, nbf, ...visibleProperties } = sdJwtVcPayload as SdJwtVcPayload
+
+  const holder = (cnf.kid ?? cnf.jwk) ? safeCalculateJwkThumbprint(cnf.jwk as JwkJson) : undefined
+  const credentialMetadata: CredentialMetadata = {
+    type: vct,
+    issuer: iss,
+    holder,
+  }
+
+  if (iat) {
+    credentialMetadata.issuedAt = formatDate(new Date(iat * 1000))
+  }
+  if (exp) {
+    credentialMetadata.validUntil = formatDate(new Date(exp * 1000))
+  }
+  if (nbf) {
+    credentialMetadata.validFrom = formatDate(new Date(nbf * 1000))
+  }
 
   return {
-    areAllSatisfied: entries.every((entry) => entry.isSatisfied),
-    name: credentialsForRequest.name ?? 'Unknown',
-    purpose: credentialsForRequest.purpose,
-    entries,
+    attributes: Object.fromEntries(
+      Object.entries(visibleProperties).map(([key, value]) => [key, recursivelyMapAttributes(value)])
+    ),
+    metadata: credentialMetadata,
+    raw: {
+      issuedAt: iat ? new Date(iat * 1000) : undefined,
+      validUntil: exp ? new Date(exp * 1000) : undefined,
+      validFrom: nbf ? new Date(nbf * 1000) : undefined,
+    },
   }
+}
+
+export function safeCalculateJwkThumbprint(jwk: JwkJson): string | undefined {
+  try {
+    const thumbprint = TypedArrayEncoder.toBase64URL(
+      Hasher.hash(
+        JSON.stringify({ k: jwk.k, e: jwk.e, crv: jwk.crv, kty: jwk.kty, n: jwk.n, x: jwk.x, y: jwk.y }),
+        'sha-256'
+      )
+    )
+    return `urn:ietf:params:oauth:jwk-thumbprint:sha-256:${thumbprint}`
+  } catch (e) {
+    return undefined
+  }
+}
+
+export function recursivelyMapAttributes(value: unknown): MappedAttributesReturnType {
+  if (value instanceof Uint8Array) {
+    const imageMimeType = detectImageMimeType(value)
+    if (imageMimeType) {
+      return `data:${imageMimeType};base64,${TypedArrayEncoder.toBase64(value)}`
+    }
+
+    // TODO: what to do with a buffer that is not an image?
+    return TypedArrayEncoder.toUtf8String(value)
+  }
+  if (value === null || value === undefined || typeof value === 'number' || typeof value === 'boolean') return value
+
+  if (value instanceof Date || value instanceof DateOnly || (typeof value === 'string' && isDateString(value))) {
+    return formatDate(value instanceof DateOnly ? value.toISOString() : value)
+  }
+  if (typeof value === 'string') return value
+  if (value instanceof Map) {
+    return Object.fromEntries(Array.from(value.entries()).map(([key, value]) => [key, recursivelyMapAttributes(value)]))
+  }
+  if (Array.isArray(value)) return value.map(recursivelyMapAttributes)
+
+  return Object.fromEntries(Object.entries(value).map(([key, value]) => [key, recursivelyMapAttributes(value)]))
+}
+
+export function getSelectedCredentialsForRequest(
+  dcqlQueryResult: DcqlQueryResult,
+  selectedCredentials: { [credentialQueryId: string]: string }
+): DcqlCredentialsForRequest {
+  if (!dcqlQueryResult.canBeSatisfied) {
+    throw new Error('Cannot select the credentials for the dcql query presentation if the request cannot be satisfied')
+  }
+
+  const credentials: DcqlCredentialsForRequest = {}
+
+  for (const [credentialQueryId, credentialRecordId] of Object.entries(selectedCredentials)) {
+    const matchesForCredentialQuery = dcqlQueryResult.credential_matches[credentialQueryId]
+    if (matchesForCredentialQuery.success) {
+      const match = matchesForCredentialQuery.all
+        .map((credential) =>
+          credential.find((claimSet) =>
+            claimSet?.success && 'record' in claimSet && (claimSet.record as BaseRecord).id === credentialRecordId
+              ? claimSet
+              : undefined
+          )
+        )
+        .find((i) => i !== undefined)
+      // TODO: fix the typing, make selection in Credo easier
+      const matchWithRecord = match as typeof match & { record: MdocRecord | SdJwtVcRecord | W3cCredentialRecord }
+
+      if (
+        matchWithRecord?.success &&
+        matchWithRecord.record.type === 'MdocRecord' &&
+        matchWithRecord.output.credential_format === 'mso_mdoc'
+      ) {
+        credentials[credentialQueryId] = {
+          claimFormat: ClaimFormat.MsoMdoc,
+          credentialRecord: matchWithRecord.record,
+          disclosedPayload: matchWithRecord.output.namespaces,
+        }
+      } else if (
+        matchWithRecord?.success &&
+        matchWithRecord.record.type === 'SdJwtVcRecord' &&
+        (matchWithRecord.output.credential_format === 'dc+sd-jwt' ||
+          matchWithRecord.output.credential_format === 'vc+sd-jwt')
+      ) {
+        credentials[credentialQueryId] = {
+          claimFormat: ClaimFormat.SdJwtVc,
+          credentialRecord: matchWithRecord.record,
+          disclosedPayload: matchWithRecord.output.claims,
+        }
+      }
+    }
+  }
+
+  return credentials
 }

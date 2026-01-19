@@ -1,52 +1,105 @@
-import type { SdJwtVcRecord, W3cCredentialRecord } from '@credo-ts/core'
-import type { OpenId4VciCredentialSupported, OpenId4VciIssuerMetadataDisplay } from '@credo-ts/openid4vc'
+import type { Mdoc, MdocRecord, SdJwtVcRecord, W3cCredentialRecord } from '@credo-ts/core'
+import type {
+  OpenId4VciCredentialConfigurationSupported,
+  OpenId4VciCredentialConfigurationSupportedWithFormats,
+  OpenId4VciCredentialIssuerMetadataDisplay,
+} from '@credo-ts/openid4vc'
+import { getOpenId4VcCredentialDisplay } from './display'
+import type { CredentialDisplay } from './openIdHelpers'
+
+export type CredentialDisplayClaims =
+  | (OpenId4VciCredentialConfigurationSupportedWithFormats & {
+    format: 'vc+sd-jwt'
+  })['claims']
+  | (OpenId4VciCredentialConfigurationSupportedWithFormats & {
+    format: 'dc+sd-jwt'
+  })['claims']
 
 export interface OpenId4VcCredentialMetadata {
   credential: {
-    display?: OpenId4VciCredentialSupported['display']
-    order?: OpenId4VciCredentialSupported['order']
+    display?: OpenId4VciCredentialConfigurationSupported['display']
+    claims?: CredentialDisplayClaims
+    order?: OpenId4VciCredentialConfigurationSupportedWithFormats['order']
   }
   issuer: {
-    display?: OpenId4VciIssuerMetadataDisplay[]
+    display?: OpenId4VciCredentialIssuerMetadataDisplay[]
     id: string
   }
 }
 
-export const openId4VcCredentialMetadataKey = '_Adeya/openId4VcCredentialMetadata'
+export const openId4VcCredentialMetadataKey = '_credebl/openId4VcCredentialMetadata'
 
 export function extractOpenId4VcCredentialMetadata(
-  credentialMetadata: OpenId4VciCredentialSupported,
-  // biome-ignore lint/suspicious/noExplicitAny: We need to use any here because the type is not exported from the package.
-  serverMetadata: any
+  credentialMetadata: OpenId4VciCredentialConfigurationSupportedWithFormats,
+  serverMetadata: { display?: OpenId4VciCredentialIssuerMetadataDisplay[]; id: string }
 ): OpenId4VcCredentialMetadata {
   return {
     credential: {
       display: credentialMetadata.display,
       order: credentialMetadata.order,
+      claims: credentialMetadata.claims ? (credentialMetadata.claims as CredentialDisplayClaims) : undefined,
     },
     issuer: {
-      display: serverMetadata.credentialIssuerMetadata?.display,
-      id: serverMetadata.issuer,
+      display: serverMetadata.display,
+      id: serverMetadata.id,
     },
   }
 }
 
 /**
- * Gets the OpenId4Vc credential metadata from the given W3C credential record.
+ * Gets the OpenId4Vc credential metadata from the given credential record.
  */
 export function getOpenId4VcCredentialMetadata(
-  credentialRecord: W3cCredentialRecord | SdJwtVcRecord
+  credentialRecord: W3cCredentialRecord | SdJwtVcRecord | MdocRecord
 ): OpenId4VcCredentialMetadata | null {
-  return credentialRecord.metadata.get(openId4VcCredentialMetadataKey)
+  const recordMetadata: OpenId4VcCredentialMetadata | null =
+    credentialRecord.metadata.get(openId4VcCredentialMetadataKey)
+
+  if (!recordMetadata) return null
+
+  return {
+    issuer: {
+      ...recordMetadata.issuer,
+      display: recordMetadata.issuer.display?.map(({ logo, ...displayRest }) => ({
+        ...displayRest,
+        // We need to map the url values to uri
+        logo: logo ? { ...logo, uri: logo.uri ?? (logo.url as string) } : undefined,
+      })),
+    },
+    credential: {
+      ...recordMetadata.credential,
+      display: recordMetadata.credential.display?.map(({ background_image, logo, ...displayRest }) => ({
+        ...displayRest,
+        // We need to map the url values to uri
+        background_image: background_image
+          ? { ...background_image, uri: background_image.uri ?? (background_image.url as string) }
+          : undefined,
+        // We need to map the url values to uri
+        logo: logo ? { ...logo, uri: logo.uri ?? (logo.url as string) } : undefined,
+      })),
+    },
+  }
+}
+
+export function getMdocCredentialDisplay(mdoc: Mdoc, openId4VcMetadata?: OpenId4VcCredentialMetadata | null) {
+  let credentialDisplay: Partial<CredentialDisplay> = {}
+
+  if (openId4VcMetadata) {
+    credentialDisplay = getOpenId4VcCredentialDisplay(openId4VcMetadata)
+  }
+
+  return {
+    ...credentialDisplay,
+    // If there's no name for the credential, we extract it from the doctype
+    name: credentialDisplay.name ?? mdoc.docType,
+  }
 }
 
 /**
- * Sets the OpenId4Vc credential metadata on the given W3cCredentialRecord or SdJwtVcRecord.
- *
- * NOTE: this does not save the record.
+ * Sets the OpenId4Vc credential metadata on the given credential record
  */
 export function setOpenId4VcCredentialMetadata(
-  credentialRecord: W3cCredentialRecord | SdJwtVcRecord,
+  credentialRecord: W3cCredentialRecord | SdJwtVcRecord | MdocRecord,
   metadata: OpenId4VcCredentialMetadata
 ) {
   credentialRecord.metadata.set(openId4VcCredentialMetadataKey, metadata)

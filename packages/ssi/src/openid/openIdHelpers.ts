@@ -1,14 +1,15 @@
-import type { Agent, CredentialExchangeRecord } from '@credo-ts/core'
-import type { CredentialMetadata } from './displayProof'
-
 import {
   ClaimFormat,
+  MdocRepository,
   SdJwtVcRecord,
   SdJwtVcRepository,
   W3cCredentialRecord,
   W3cCredentialRepository,
 } from '@credo-ts/core'
 
+import { type Agent, MdocRecord } from '@credo-ts/core'
+import type { CredentialExchangeRecord } from '@credo-ts/didcomm'
+import type { CredentialMetadata } from './displayProof'
 import { getOID4VCCredentialsForProofRequest } from './resolverProof'
 
 export type GenericCredentialExchangeRecord = CredentialExchangeRecord | W3cCredentialRecord | SdJwtVcRecord
@@ -22,13 +23,13 @@ export enum InvitationQrTypesSupported {
 }
 export type ParseInvitationResult =
   | {
-      success: true
-      result: ParsedInvitation
-    }
+    success: true
+    result: ParsedInvitation
+  }
   | {
-      success: false
-      error: string
-    }
+    success: false
+    error: string
+  }
 
 export type ParsedInvitation = {
   type: 'openid-credential-offer' | 'openid-authorization-request'
@@ -102,13 +103,13 @@ export type JffW3cCredentialJson = W3cCredentialJson & {
   }
 
   issuer:
-    | string
-    | (W3cIssuerJson & {
-        name?: string
-        iconUrl?: string
-        logoUrl?: string
-        image?: string | { id?: string; type?: 'Image' }
-      })
+  | string
+  | (W3cIssuerJson & {
+    name?: string
+    iconUrl?: string
+    logoUrl?: string
+    image?: string | { id?: string; type?: 'Image' }
+  })
 }
 
 export interface DisplayImage {
@@ -128,6 +129,7 @@ export interface CredentialDisplay {
 
 export interface CredentialIssuerDisplay {
   name: string
+  domain?: string
   locale?: string
   logo?: DisplayImage
 }
@@ -147,7 +149,7 @@ export const sanitizeString = (str: string) => {
   return words.join(' ')
 }
 
-export type CredentialForDisplayId = `w3c-credential-${string}` | `sd-jwt-vc-${string}`
+export type CredentialForDisplayId = `w3c-credential-${string}` | `sd-jwt-vc-${string}` | `mdoc-${string}`
 
 export type W3cIssuerJson = {
   id: string
@@ -172,8 +174,10 @@ export type W3cCredentialDisplay = {
   display: CredentialDisplay
   credential?: W3cCredentialJson
   attributes: W3cCredentialSubjectJson
-  metadata?: CredentialMetadata
-  claimFormat?: ClaimFormat
+  metadata: CredentialMetadata
+  claimFormat: ClaimFormat
+  validUntil: Date | undefined
+  validFrom: Date | undefined
 }
 
 export const isW3CCredentialRecord = (record: W3cCredentialRecord) => {
@@ -188,7 +192,7 @@ export type OpenIDCredentialRecord = W3cCredentialRecord | SdJwtVcRecord | undef
 
 export type OpenIDCredentialContext = {
   openIdState: OpenIDCredentialRecordState
-  storeOpenIdCredential: (agent: Agent, cred: W3cCredentialRecord | SdJwtVcRecord) => Promise<void>
+  storeOpenIdCredential: (agent: Agent, cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord) => Promise<void>
   removeCredential: (agent: Agent, cred: W3cCredentialRecord | SdJwtVcRecord) => Promise<void>
 }
 
@@ -242,12 +246,19 @@ function checkAgent(agent: Agent) {
   }
 }
 
-export async function storeOpenIdCredential(agent: Agent, cred: W3cCredentialRecord | SdJwtVcRecord): Promise<void> {
+export async function storeOpenIdCredential(
+  agent: Agent,
+  cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord
+): Promise<void> {
   checkAgent(agent)
   if (cred instanceof W3cCredentialRecord) {
-    await agent?.dependencyManager.resolve(W3cCredentialRepository).save(agent.context, cred)
+    await agent.dependencyManager.resolve(W3cCredentialRepository).save(agent.context, cred)
+  } else if (cred instanceof SdJwtVcRecord) {
+    await agent.dependencyManager.resolve(SdJwtVcRepository).save(agent.context, cred)
+  } else if (cred instanceof MdocRecord) {
+    await agent.dependencyManager.resolve(MdocRepository).save(agent.context, cred)
   } else {
-    await agent?.dependencyManager.resolve(SdJwtVcRepository).save(agent.context, cred)
+    throw new Error('Credential format not supported')
   }
 }
 

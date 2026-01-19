@@ -1,12 +1,13 @@
 import type {
   AcceptCredentialOfferOptions,
-  Agent,
   CredentialExchangeRecord,
   CredentialProtocol,
   DeleteCredentialOptions,
   ProposeCredentialOptions,
   SendCredentialProblemReportOptions,
-} from '@credo-ts/core'
+} from '@credo-ts/didcomm'
+
+import type { Agent } from '@credo-ts/core'
 
 /**
  * Retrieves all credential exchange records from the agent.
@@ -15,7 +16,7 @@ import type {
  * @returns A promise that resolves to an array of credential exchange records.
  */
 export const getAllCredentialExchangeRecords = async (agent: Agent) => {
-  return agent.credentials.getAll()
+  return agent.modules.credentials.getAll()
 }
 
 /**
@@ -26,7 +27,7 @@ export const getAllCredentialExchangeRecords = async (agent: Agent) => {
  * @returns A Promise that resolves with the formatted data for the given credential record ID.
  */
 export const getFormattedCredentialData = async (agent: Agent, credentialRecordId: string) => {
-  return agent.credentials.getFormatData(credentialRecordId)
+  return agent.modules.credentials.getFormatData(credentialRecordId)
 }
 
 /**
@@ -37,7 +38,7 @@ export const getFormattedCredentialData = async (agent: Agent, credentialRecordI
  * @returns A promise that resolves with the proposed credential.
  */
 export const proposeCredential = async (agent: Agent, options: ProposeCredentialOptions<[]>) => {
-  return agent.credentials.proposeCredential(options)
+  return agent.modules.credentials.proposeCredential(options)
 }
 
 /**
@@ -51,7 +52,7 @@ export const acceptCredentialOffer = async <CredentialProtocols extends Credenti
   agent: Agent,
   options: AcceptCredentialOfferOptions<CredentialProtocols>
 ) => {
-  return agent.credentials.acceptOffer(options)
+  return agent.modules.credentials.acceptOffer(options)
 }
 
 /**
@@ -62,7 +63,7 @@ export const acceptCredentialOffer = async <CredentialProtocols extends Credenti
  * @returns A promise that resolves with the updated credential exchange record.
  */
 export const updateCredentialExchangeRecord = async (agent: Agent, credentialRecord: CredentialExchangeRecord) => {
-  return agent.credentials.update(credentialRecord)
+  return agent.modules.credentials.update(credentialRecord)
 }
 
 /**
@@ -73,7 +74,7 @@ export const updateCredentialExchangeRecord = async (agent: Agent, credentialRec
  * @returns A Promise that resolves CredentialExchangeRecord when the credential offer has been declined.
  */
 export const declineCredentialOffer = async (agent: Agent, credentialId: string) => {
-  return agent.credentials.declineOffer(credentialId)
+  return agent.modules.credentials.declineOffer(credentialId)
 }
 
 /**
@@ -90,7 +91,7 @@ export const deleteCredentialExchangeRecordById = async (
   credentialRecordId: string,
   options?: DeleteCredentialOptions
 ) => {
-  return agent.credentials.deleteById(credentialRecordId, options)
+  return agent.modules.credentials.deleteById(credentialRecordId, options)
 }
 
 /**
@@ -101,7 +102,7 @@ export const deleteCredentialExchangeRecordById = async (
  * @returns A Promise that resolves CredentialExchangeRecord when the problem report has been sent.
  */
 export const sendCredentialProblemReport = async (agent: Agent, options: SendCredentialProblemReportOptions) => {
-  return agent.credentials.sendProblemReport(options)
+  return agent.modules.credentials.sendProblemReport(options)
 }
 
 // W3C Credential

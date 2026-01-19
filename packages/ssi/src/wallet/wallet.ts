@@ -1,25 +1,15 @@
-// NOTE: We need to import these to be able to use the AskarWallet in this file.
-import '@hyperledger/aries-askar-react-native'
-
-import type { InitConfig, WalletConfig, WalletExportImportConfig } from '@credo-ts/core'
-import type { AgentModulesInput } from '@credo-ts/core/build/agent/AgentModules'
-
+import '@openwallet-foundation/askar-react-native'
 import { AskarWallet } from '@credo-ts/askar'
-import {
-  Agent,
-  ConsoleLogger,
-  HttpOutboundTransport,
-  LogLevel,
-  SigningProviderRegistry,
-  WsOutboundTransport,
-  utils,
-} from '@credo-ts/core'
+import { Agent, ConsoleLogger, LogLevel, SigningProviderRegistry, utils } from '@credo-ts/core'
+import type { InitConfig, WalletConfig, WalletExportImportConfig } from '@credo-ts/core'
+import { HttpOutboundTransport, WsOutboundTransport } from '@credo-ts/didcomm'
 import { agentDependencies } from '@credo-ts/react-native'
+import type { AdeyaAgentModules } from '../agent'
 
 interface WalletImportConfigWithAgent {
   agentConfig: InitConfig
   importConfig: WalletExportImportConfig
-  modules: AgentModulesInput
+  modules: AdeyaAgentModules
 }
 
 /**
@@ -116,8 +106,8 @@ export const importWalletWithAgent = async ({ importConfig, agentConfig, modules
     modules,
   })
 
-  agent.registerOutboundTransport(new HttpOutboundTransport())
-  agent.registerOutboundTransport(new WsOutboundTransport())
+  agent.modules.didcomm.registerOutboundTransport(new HttpOutboundTransport())
+  agent.modules.didcomm.registerOutboundTransport(new WsOutboundTransport())
 
   await agent.wallet.import(agentConfig.walletConfig, importConfig)
 

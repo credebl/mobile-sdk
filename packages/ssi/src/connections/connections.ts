@@ -1,5 +1,4 @@
 import type {
-  Agent,
   AgentMessage,
   ConnectionInvitationMessage,
   CreateLegacyInvitationConfig,
@@ -7,7 +6,9 @@ import type {
   OutOfBandInvitation,
   ReceiveOutOfBandInvitationConfig,
   Routing,
-} from '@credo-ts/core'
+} from '@credo-ts/didcomm'
+
+import type { Agent } from '@credo-ts/core'
 
 /**
  * Creates an invitation with RFC 0160: Connection Protocol and returns it together with out-of-band record and invitationUrl.
@@ -18,7 +19,7 @@ import type {
  * @returns out-of-band record and connection invitation together with invitationUrl
  */
 export const createLegacyInvitation = async (agent: Agent, domain: string, config?: CreateLegacyInvitationConfig) => {
-  const record = await agent.oob.createLegacyInvitation(config)
+  const record = await agent.modules.oob.createLegacyInvitation(config)
 
   const invitationUrl = record.invitation.toUrl({ domain })
 
@@ -50,7 +51,7 @@ export const createLegacyConnectionlessInvitation = async (
     routing?: Routing | undefined
   }
 ) => {
-  return agent.oob.createLegacyConnectionlessInvitation(config)
+  return agent.modules.oob.createLegacyConnectionlessInvitation(config)
 }
 
 /**
@@ -62,7 +63,7 @@ export const createLegacyConnectionlessInvitation = async (
  * @returns An object containing the invitation record, the invitation object, and the invitation URL.
  */
 export const createInvitation = async (agent: Agent, domain: string, config?: CreateOutOfBandInvitationConfig) => {
-  const record = await agent.oob.createInvitation(config)
+  const record = await agent.modules.oob.createInvitation(config)
 
   const invitationUrl = record.outOfBandInvitation.toUrl({ domain })
 
@@ -87,7 +88,7 @@ export const acceptInvitation = async (
   invitation: ConnectionInvitationMessage | OutOfBandInvitation,
   config?: ReceiveOutOfBandInvitationConfig
 ) => {
-  const record = await agent.oob.receiveInvitation(invitation, config)
+  const record = await agent.modules.oob.receiveInvitation(invitation, config)
 
   return record
 }
@@ -100,7 +101,7 @@ export const acceptInvitation = async (
  * @returns A Promise that resolves with the parsed invitation.
  */
 export const parseInvitationFromUrl = async (agent: Agent, invitationUrl: string) => {
-  return agent.oob.parseInvitation(invitationUrl)
+  return agent.modules.oob.parseInvitation(invitationUrl)
 }
 
 /**
@@ -117,13 +118,13 @@ export const acceptInvitationFromUrl = async (
   invitationUrl: string,
   config?: ReceiveOutOfBandInvitationConfig
 ) => {
-  const invitation = await agent.oob.parseInvitation(invitationUrl)
+  const invitation = await agent.modules.oob.parseInvitation(invitationUrl)
 
   if (!invitation) {
     throw new Error('Could not parse invitation from URL')
   }
 
-  const record = await agent.oob.receiveInvitation(invitation, config)
+  const record = await agent.modules.oob.receiveInvitation(invitation, config)
   const connectionRecord = record?.connectionRecord
   if (!connectionRecord?.id) {
     throw new Error('Connection does not have an ID')
@@ -139,7 +140,7 @@ export const acceptInvitationFromUrl = async (
  * @returns A promise that resolves to an array of Connection objects.
  */
 export const getAllConnections = async (agent: Agent) => {
-  return agent.connections.getAll()
+  return agent.modules.connections.getAll()
 }
 
 /**
@@ -150,7 +151,7 @@ export const getAllConnections = async (agent: Agent) => {
  * @returns A Promise that resolves to the connection object.
  */
 export const getConnectionById = async (agent: Agent, connectionId: string) => {
-  return agent.connections.getById(connectionId)
+  return agent.modules.connections.getById(connectionId)
 }
 
 /**
@@ -161,7 +162,7 @@ export const getConnectionById = async (agent: Agent, connectionId: string) => {
  * @returns A Promise that resolves with the connection object, or null if not found.
  */
 export const findConnectionById = async (agent: Agent, connectionId: string) => {
-  return await agent.connections.findById(connectionId)
+  return await agent.modules.connections.findById(connectionId)
 }
 
 /**
@@ -172,7 +173,7 @@ export const findConnectionById = async (agent: Agent, connectionId: string) => 
  * @returns A Promise that resolves to the out-of-band record with the given ID.
  */
 export const findOutOfBandRecordById = async (agent: Agent, connectionId: string) => {
-  return agent.oob.findById(connectionId)
+  return agent.modules.oob.findById(connectionId)
 }
 
 /**
@@ -183,7 +184,7 @@ export const findOutOfBandRecordById = async (agent: Agent, connectionId: string
  * @returns A Promise that resolves to the out-of-band record with the given ID.
  */
 export const findByReceivedInvitationId = async (agent: Agent, receivedInvitationId: string) => {
-  return agent.oob.findByReceivedInvitationId(receivedInvitationId)
+  return agent.modules.oob.findByReceivedInvitationId(receivedInvitationId)
 }
 
 /**
@@ -193,7 +194,7 @@ export const findByReceivedInvitationId = async (agent: Agent, receivedInvitatio
  * @returns A boolean indicating whether the connection was successfully deleted or not.
  */
 export const deleteConnectionRecordById = async (agent: Agent, connectionId: string) => {
-  await agent.connections.deleteById(connectionId)
+  await agent.modules.connections.deleteById(connectionId)
   return true
 }
 
@@ -204,6 +205,6 @@ export const deleteConnectionRecordById = async (agent: Agent, connectionId: str
  * @returns A boolean indicating whether the out-of-band record was successfully deleted or not.
  */
 export const deleteOobRecordById = async (agent: Agent, outOfBandId: string) => {
-  await agent.oob.deleteById(outOfBandId)
+  await agent.modules.oob.deleteById(outOfBandId)
   return true
 }

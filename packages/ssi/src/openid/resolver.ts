@@ -1,158 +1,190 @@
-import type { Agent, JwkDidCreateOptions, KeyDidCreateOptions, KeyType } from '@credo-ts/core'
-
+import { JwaSignatureAlgorithm } from '@credo-ts/core'
+import type {
+  OpenId4VciCredentialConfigurationSupportedWithFormats,
+  OpenId4VciRequestTokenResponse,
+  OpenId4VciResolvedAuthorizationRequest,
+  OpenId4VciResolvedCredentialOffer,
+} from '@credo-ts/openid4vc'
 import {
-  DidJwk,
-  DidKey,
-  JwaSignatureAlgorithm,
-  SdJwtVcRecord,
-  W3cCredentialRecord,
-  getJwkFromKey,
-} from '@credo-ts/core'
-import {
-  OpenId4VciCredentialFormatProfile,
-  type OpenId4VciCredentialSupportedWithId,
-  type OpenId4VciSupportedCredentialFormats,
+  getOfferedCredentials,
+  getScopesFromCredentialConfigurationsSupported,
+  preAuthorizedCodeGrantIdentifier,
 } from '@credo-ts/openid4vc'
 
+import type { AdeyaAgent } from '../agent'
+import { credentialRecordFromCredential, encodeCredential } from '../format/credentialEncoding'
+import { setBatchCredentialMetadata } from './batchMetadata'
+import { getCredentialBindingResolver } from './credentialBindingResolver'
 import { extractOpenId4VcCredentialMetadata, setOpenId4VcCredentialMetadata } from './metadata'
 
 export type OpenID4VCIParam = {
-  agent: Agent
-  // Either data itself (the offer) or uri can be passed
+  agent: AdeyaAgent
   data?: string
   uri?: string
 }
-export const receiveCredentialFromOpenId4VciOffer = async ({ agent, data, uri }: OpenID4VCIParam) => {
-  let offerUri = uri
 
-  if (!offerUri && data) {
-    // FIXME: Credo only support credential offer string, but we already parsed it before. So we construct an offer here
-    // but in the future we need to support the parsed offer in Credo directly
-    offerUri = `openid-credential-offer://credential_offer=${encodeURIComponent(JSON.stringify(data))}`
-  } else if (!offerUri) {
-    throw new Error('either data or uri must be provided')
-  }
-
-  agent.config.logger.info(`Receiving openid uri ${offerUri}`, {
-    offerUri,
-    data,
-    uri,
+export async function resolveOpenId4VciOffer({
+  agent,
+  offer,
+  authorization,
+  customHeaders,
+  fetchAuthorization = true,
+}: {
+  agent: AdeyaAgent
+  offer: { uri: string }
+  authorization?: { clientId: string; redirectUri: string }
+  customHeaders?: Record<string, unknown>
+  fetchAuthorization?: boolean
+}) {
+  agent.config.logger.info(`Receiving openid uri ${offer.uri}`, {
+    uri: offer.uri,
   })
-  const resolvedCredentialOffer = await agent.modules.openId4VcHolder.resolveCredentialOffer(offerUri)
 
-  // FIXME: return credential_supported entry for credential so it's easy to store metadata
-  const credentials = await agent.modules.openId4VcHolder.acceptCredentialOfferUsingPreAuthorizedCode(
-    resolvedCredentialOffer,
-    {
-      credentialBindingResolver: async ({
-        supportedDidMethods,
-        keyType,
-        supportsAllDidMethods,
-        supportsJwk,
-        credentialFormat,
-      }: {
-        supportedDidMethods: string[] | undefined
-        keyType: KeyType
-        supportsAllDidMethods: boolean
-        supportsJwk: boolean
-        credentialFormat: OpenId4VciSupportedCredentialFormats
-      }) => {
-        // First, we try to pick a did method
-        // Prefer did:jwk, otherwise use did:key, otherwise use undefined
-        let didMethod: 'key' | 'jwk' | undefined =
-          supportsAllDidMethods || supportedDidMethods?.includes('did:jwk')
-            ? 'jwk'
-            : supportedDidMethods?.includes('did:key')
-              ? 'key'
-              : undefined
+  const resolvedCredentialOffer = await agent.modules.openId4VcHolder.resolveCredentialOffer(offer.uri)
+  let resolvedAuthorizationRequest: OpenId4VciResolvedAuthorizationRequest | undefined = undefined
 
-        // If supportedDidMethods is undefined, and supportsJwk is false, we will default to did:key
-        // this is important as part of MATTR launchpad support which MUST use did:key but doesn't
-        // define which did methods they support
-        if (!supportedDidMethods && !supportsJwk) {
-          didMethod = 'key'
-        }
-
-        if (didMethod) {
-          const didResult = await agent.dids.create<JwkDidCreateOptions | KeyDidCreateOptions>({
-            method: didMethod,
-            options: {
-              keyType,
-            },
-          })
-
-          if (didResult.didState.state !== 'finished') {
-            throw new Error('DID creation failed.')
-          }
-
-          let verificationMethodId: string
-          if (didMethod === 'jwk') {
-            const didJwk = DidJwk.fromDid(didResult.didState.did)
-            verificationMethodId = didJwk.verificationMethodId
-          } else {
-            const didKey = DidKey.fromDid(didResult.didState.did)
-            verificationMethodId = `${didKey.did}#${didKey.key.fingerprint}`
-          }
-
-          return {
-            didUrl: verificationMethodId,
-            method: 'did',
-          }
-        }
-
-        // Otherwise we also support plain jwk for sd-jwt only
-        if (supportsJwk && credentialFormat === OpenId4VciCredentialFormatProfile.SdJwtVc) {
-          const key = await agent.wallet.createKey({
-            keyType,
-          })
-          return {
-            method: 'jwk',
-            jwk: getJwkFromKey(key),
-          }
-        }
-
-        throw new Error(
-          `No supported binding method could be found. Supported methods are did:key and did:jwk, or plain jwk for sd-jwt. Issuer supports ${
-            supportsJwk ? 'jwk, ' : ''
-          }${supportedDidMethods?.join(', ') ?? 'Unknown'}`
-        )
-      },
-
-      verifyCredentialStatus: false,
-      allowedProofOfPossessionSignatureAlgorithms: [
-        // NOTE: MATTR launchpad for JFF MUST use EdDSA. So it is important that the default (first allowed one)
-        // is EdDSA. The list is ordered by preference, so if no suites are defined by the issuer, the first one
-        // will be used
-        JwaSignatureAlgorithm.EdDSA,
-        JwaSignatureAlgorithm.ES256,
-      ],
+  // NOTE: we always assume scopes are used at the moment
+  if (fetchAuthorization && resolvedCredentialOffer.credentialOfferPayload.grants?.authorization_code) {
+    // If only authorization_code grant is valid and user didn't provide authorization details we can't continue
+    if (!resolvedCredentialOffer.credentialOfferPayload.grants[preAuthorizedCodeGrantIdentifier] && !authorization) {
+      throw new Error(
+        "Missing 'authorization' parameter with 'clientId' and 'redirectUri' and authorization code flow is only allowed grant type on offer."
+      )
     }
-  )
 
-  const [firstCredential] = credentials
-  if (!firstCredential) throw new Error('Error retrieving credential using pre authorized flow.')
-
-  let record: SdJwtVcRecord | W3cCredentialRecord
-
-  // TODO: add claimFormat to SdJwtVc
-
-  if ('compact' in firstCredential) {
-    record = new SdJwtVcRecord({
-      compactSdJwtVc: firstCredential.compact,
-    })
-  } else {
-    record = new W3cCredentialRecord({
-      credential: firstCredential,
-      // We don't support expanded types right now, but would become problem when we support JSON-LD
-      tags: {},
-    })
+    // TODO: authorization should only be initiated after we know which credentials we're going to request
+    if (authorization) {
+      resolvedAuthorizationRequest = await agent.modules.openId4VcHolder.resolveOpenId4VciAuthorizationRequest(
+        resolvedCredentialOffer,
+        {
+          redirectUri: authorization.redirectUri,
+          clientId: authorization.clientId,
+          scope: getScopesFromCredentialConfigurationsSupported(
+            resolvedCredentialOffer.offeredCredentialConfigurations
+          ),
+          // Added in patch but not in types
+          // @ts-ignore
+          customHeaders,
+        }
+      )
+    }
   }
 
-  const openId4VcMetadata = extractOpenId4VcCredentialMetadata(
-    resolvedCredentialOffer.offeredCredentials[0] as OpenId4VciCredentialSupportedWithId,
-    resolvedCredentialOffer.metadata
-  )
+  return {
+    resolvedCredentialOffer,
+    resolvedAuthorizationRequest,
+  }
+}
 
-  setOpenId4VcCredentialMetadata(record, openId4VcMetadata)
-  return record
+export async function acquirePreAuthorizedAccessToken({
+  agent,
+  resolvedCredentialOffer,
+  txCode,
+}: {
+  agent: AdeyaAgent
+  resolvedCredentialOffer: OpenId4VciResolvedCredentialOffer
+  txCode?: string
+}) {
+  return await agent.modules.openId4VcHolder.requestToken({
+    resolvedCredentialOffer,
+    txCode,
+  })
+}
+
+export async function acquireAuthorizationCodeAccessToken({
+  resolvedCredentialOffer,
+  agent,
+  codeVerifier,
+  authorizationCode,
+  clientId,
+  redirectUri,
+}: {
+  agent: AdeyaAgent
+  resolvedCredentialOffer: OpenId4VciResolvedCredentialOffer
+  codeVerifier?: string
+  authorizationCode: string
+  clientId: string
+  redirectUri?: string
+}) {
+  return await agent.modules.openId4VcHolder.requestToken({
+    resolvedCredentialOffer,
+    code: authorizationCode,
+    codeVerifier,
+    redirectUri,
+    clientId,
+  })
+}
+
+export const receiveCredentialFromOpenId4VciOffer = async ({
+  agent,
+  resolvedCredentialOffer,
+  credentialConfigurationIdsToRequest,
+  accessToken,
+  clientId,
+  pidSchemes,
+  requestBatch,
+}: {
+  agent: AdeyaAgent
+  resolvedCredentialOffer: OpenId4VciResolvedCredentialOffer
+  credentialConfigurationIdsToRequest?: string[]
+  clientId?: string
+  pidSchemes?: { sdJwtVcVcts: Array<string>; msoMdocDoctypes: Array<string> }
+  requestBatch?: boolean | number
+
+  // TODO: cNonce should maybe be provided separately (multiple calls can have different c_nonce values)
+  accessToken: OpenId4VciRequestTokenResponse
+}) => {
+  const offeredCredentialsToRequest = getOfferedCredentials(
+    credentialConfigurationIdsToRequest ?? [
+      resolvedCredentialOffer.credentialOfferPayload.credential_configuration_ids[0],
+    ],
+    resolvedCredentialOffer.offeredCredentialConfigurations
+  ) as OpenId4VciCredentialConfigurationSupportedWithFormats
+
+  if (Object.keys(offeredCredentialsToRequest).length === 0) {
+    throw new Error(
+      `Parameter 'credentialConfigurationIdsToRequest' with values ${credentialConfigurationIdsToRequest} is not a credential_configuration_id in the credential offer.`
+    )
+  }
+  const credentials = await agent.modules.openId4VcHolder.requestCredentials({
+    resolvedCredentialOffer,
+    ...accessToken,
+    clientId,
+    credentialConfigurationIds: Object.keys(offeredCredentialsToRequest),
+    verifyCredentialStatus: false,
+    allowedProofOfPossessionSignatureAlgorithms: [JwaSignatureAlgorithm.ES256, JwaSignatureAlgorithm.EdDSA],
+    credentialBindingResolver: getCredentialBindingResolver(),
+  })
+
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  return credentials.credentials.map(({ credentials, ...credentialResponse }: any) => {
+    const configuration = resolvedCredentialOffer.offeredCredentialConfigurations[
+      credentialResponse.credentialConfigurationId
+    ] as OpenId4VciCredentialConfigurationSupportedWithFormats
+
+    const firstCredential = credentials[0]
+    const record = credentialRecordFromCredential(firstCredential)
+
+    // OpenID4VC metadata
+    const openId4VcMetadata = extractOpenId4VcCredentialMetadata(configuration, {
+      id: resolvedCredentialOffer.metadata.credentialIssuer.credential_issuer,
+      display: resolvedCredentialOffer.metadata.credentialIssuer.display,
+    })
+    setOpenId4VcCredentialMetadata(record, openId4VcMetadata)
+
+    // Match metadata
+    if (credentials.length > 1) {
+      setBatchCredentialMetadata(record, {
+        additionalCredentials: credentials.slice(1).map(encodeCredential) as
+          | Array<string>
+          | Array<Record<string, unknown>>,
+      })
+    }
+
+    return {
+      ...credentialResponse,
+      configuration,
+      credential: record,
+    }
+  })
 }

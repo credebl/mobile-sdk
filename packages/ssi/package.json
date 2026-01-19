@@ -1,21 +1,19 @@
 {
   "name": "@credebl/ssi-mobile",
-  "main": "src/index",
-  "types": "src/index",
-  "version": "2.0.1",
-  "files": ["build"],
+  "main": "build/index",
+  "types": "build/index",
+  "version": "3.0.3",
   "license": "Apache-2.0",
-  "publishConfig": {
-    "main": "build/index",
-    "types": "build/index",
-    "access": "public"
-  },
   "homepage": "https://github.com/credebl/mobile-sdk/tree/main/packages/ssi",
   "repository": {
     "url": "https://github.com/credebl/mobile-sdk/tree/main/packages/ssi",
     "type": "git",
     "directory": "packages/ssi"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": ["build"],
   "scripts": {
     "check-types": "pnpm compile --noEmit",
     "build": "pnpm clean && pnpm compile",
@@ -23,21 +21,23 @@
     "compile": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@credo-ts/anoncreds": "0.5.13",
-    "@credo-ts/askar": "0.5.13",
-    "@credo-ts/core": "0.5.13",
-    "@credo-ts/indy-vdr": "0.5.13",
-    "@credo-ts/openid4vc": "0.5.13",
+    "@credo-ts/anoncreds": "0.6.0-alpha-20250325224513",
+    "@credo-ts/askar": "0.6.0-alpha-20250325224513",
+    "@credo-ts/core": "0.6.0-alpha-20250325224513",
+    "@credo-ts/didcomm": "0.6.0-alpha-20250325224513",
+    "@credo-ts/indy-vdr": "0.6.0-alpha-20250325224513",
+    "@credo-ts/openid4vc": "0.6.0-alpha-20250325224513",
     "@credo-ts/push-notifications": "0.7.1",
-    "@credo-ts/question-answer": "0.5.13",
+    "@credo-ts/question-answer": "0.6.0-alpha-20250325224513",
     "@credo-ts/react-hooks": "0.6.1",
-    "@credo-ts/react-native": "0.5.13",
+    "@credo-ts/react-native": "0.6.0-alpha-20250325224513",
     "@sd-jwt/decode": "^0.7.2",
-    "query-string": "^8.1.0"
+    "query-string": "^8.1.0",
+    "@astronautlabs/jsonpath": "^1.1.2"
   },
   "peerDependencies": {
-    "@hyperledger/anoncreds-react-native": "^0.2.2",
-    "@hyperledger/aries-askar-react-native": "^0.2.3",
+    "@hyperledger/anoncreds-react-native": "^0.3.0",
+    "@openwallet-foundation/askar-react-native": "^0.4.3",
     "@hyperledger/indy-vdr-react-native": "^0.2.2"
   },
   "devDependencies": {

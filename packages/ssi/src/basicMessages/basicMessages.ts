@@ -1,4 +1,4 @@
-import type { Agent } from '@credo-ts/core'
+import type { AdeyaAgent } from '../agent'
 
 /**
  * Sends a basic message to the connection with the given connection id.
@@ -7,6 +7,6 @@ import type { Agent } from '@credo-ts/core'
  * @param connectionId The connection id.
  * @param message The message to send.
  */
-export const sendBasicMessage = async (agent: Agent, connectionId: string, message: string) => {
-  return agent.basicMessages.sendMessage(connectionId, message)
+export const sendBasicMessage = async (agent: AdeyaAgent, connectionId: string, message: string) => {
+  return agent.modules.basicMessages.sendMessage(connectionId, message)
 }
