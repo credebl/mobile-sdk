@@ -1,2 +1,2 @@
-export * from './recordUtils'
 export * from './AgentProvider'
+export * from './recordUtils'

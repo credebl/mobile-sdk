@@ -1,4 +1,4 @@
-import { AskarModule, AskarModuleConfigStoreOptions } from "@credo-ts/askar";
+import { AskarModule, AskarModuleConfigStoreOptions } from '@credo-ts/askar'
 import {
   Agent,
   CacheModule,
@@ -12,19 +12,19 @@ import {
   KeyDidResolver,
   MdocRecord,
   MdocRepository,
+  type ModulesMap,
   SdJwtVcRecord,
   SdJwtVcRepository,
   SingleContextStorageLruCache,
   type TagValue,
   W3cCredentialRecord,
   W3cCredentialRepository,
-  type ModulesMap
-} from "@credo-ts/core";
-import { agentDependencies } from "@credo-ts/react-native";
-import { askar } from "@openwallet-foundation/askar-react-native";
-import type { PropsWithChildren } from "react";
-import { useMobileSDK } from "./contexts";
-import AgentProvider from "./providers/AgentProvider";
+} from '@credo-ts/core'
+import { agentDependencies } from '@credo-ts/react-native'
+import { askar } from '@openwallet-foundation/askar-react-native'
+import type { PropsWithChildren } from 'react'
+import { useMobileSDK } from './contexts'
+import AgentProvider from './providers/AgentProvider'
 
 export enum CredentialRecord {
   SdJwt = 'sd-jwt',
@@ -50,100 +50,91 @@ const getCoreModules = (askarConfig: AskarModuleConfigStoreOptions) => {
         limit: 50,
       }),
     }),
-  };
-};
-
-export interface MobileSDKModule {
-  initialize(agent: Agent): void;
-  getAgentModules(): ModulesMap;
+  }
 }
 
-export type MobileSDKOptions<
-  T extends Record<string, MobileSDKModule> = Record<string, MobileSDKModule>
-> = {
-  agentConfig: InitConfig;
+export interface MobileSDKModule {
+  initialize(agent: Agent): void
+  getAgentModules(): ModulesMap
+}
+
+export type MobileSDKOptions<T extends Record<string, MobileSDKModule> = Record<string, MobileSDKModule>> = {
+  agentConfig: InitConfig
   askarConfig: AskarModuleConfigStoreOptions
-  modules: T;
-  defaultModules?: ModulesMap;
-};
-export class MobileSDK<
-  T extends Record<string, MobileSDKModule> = Record<string, MobileSDKModule>
-> {
-  private localAgent: Agent | null = null;
-  public readonly configuration: MobileSDKOptions<T>;
-  public readonly modules: T;
+  modules: T
+  defaultModules?: ModulesMap
+}
+export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string, MobileSDKModule>> {
+  private localAgent: Agent | null = null
+  public readonly configuration: MobileSDKOptions<T>
+  public readonly modules: T
 
   public constructor(options: MobileSDKOptions<T>) {
-    this.configuration = options;
-    this.modules = options.modules;
+    this.configuration = options
+    this.modules = options.modules
   }
 
-  public static async initializeSDK(
-    options: MobileSDKOptions<any>
-  ): Promise<{ sdk: MobileSDK; agent: Agent }> {
-    const sdk = new MobileSDK(options);
-    const agent = await sdk.initialize();
-    return { sdk, agent };
+  public static async initializeSDK(options: MobileSDKOptions<any>): Promise<{ sdk: MobileSDK; agent: Agent }> {
+    const sdk = new MobileSDK(options)
+    const agent = await sdk.initialize()
+    return { sdk, agent }
   }
 
   async initialize() {
-    const defaultModules = this.configuration.defaultModules ?? {};
-    const coreModules = getCoreModules(this.configuration.askarConfig);
-    Object.assign(defaultModules, coreModules);
+    const defaultModules = this.configuration.defaultModules ?? {}
+    const coreModules = getCoreModules(this.configuration.askarConfig)
+    Object.assign(defaultModules, coreModules)
 
-    const modules = Object.entries(this.configuration.modules).reduce(
-      (acc, [, module]) => {
-        const moduleModules = module.getAgentModules();
-        Object.assign(acc, moduleModules);
-        return acc;
-      },
-      defaultModules
-    );
+    const modules = Object.entries(this.configuration.modules).reduce((acc, [, module]) => {
+      const moduleModules = module.getAgentModules()
+      Object.assign(acc, moduleModules)
+      return acc
+    }, defaultModules)
 
     const agent = new Agent({
       config: this.configuration.agentConfig,
       dependencies: agentDependencies,
       modules,
-    });
-    await agent.initialize();
+    })
+    await agent.initialize()
 
     // Initialize modules after agent is initialized to ensure all dependencies are available
     for await (const [, module] of Object.entries(this.configuration.modules)) {
-      module.initialize(agent);
+      module.initialize(agent)
     }
 
-    this.localAgent = agent;
-    return agent;
+    this.localAgent = agent
+    return agent
   }
 
   public get agent() {
-    return this.localAgent;
+    return this.localAgent
   }
 
   public assertAndGetAgent() {
     if (!this.agent) {
-      throw new Error("Agent not initialized");
+      throw new Error('Agent not initialized')
     }
 
-    return this.agent;
+    return this.agent
   }
 
   public static AppProvider({ children }: PropsWithChildren) {
-    const { sdk } = useMobileSDK();
+    const { sdk } = useMobileSDK()
 
     if (!sdk?.agent) {
-      throw new Error("Mobile SDK not initialized");
+      throw new Error('Mobile SDK not initialized')
     }
 
-    return <AgentProvider agent={sdk.agent}>{children}</AgentProvider>;
+    return <AgentProvider agent={sdk.agent}>{children}</AgentProvider>
   }
 
   public async createDid<T extends DidCreateOptions>(options: T) {
-    const agent = this.assertAndGetAgent();
+    const agent = this.assertAndGetAgent()
 
-    const did = await agent.dids.create<T>(options);
+    const did = await agent.dids.create<T>(options)
 
-    return did;
+    return did
   }
 
   public async getDids({
@@ -152,122 +143,96 @@ export class MobileSDK<
     tag,
     tagValue,
   }: {
-    method?: string;
-    did?: string;
-    tag?: string;
-    tagValue?: TagValue;
+    method?: string
+    did?: string
+    tag?: string
+    tagValue?: TagValue
   }) {
-    const agent = this.assertAndGetAgent();
+    const agent = this.assertAndGetAgent()
 
     if (tag) {
-      const didRepository = await agent.dependencyManager.resolve(
-        DidRepository
-      );
+      const didRepository = await agent.dependencyManager.resolve(DidRepository)
 
-      const didRecord = await didRepository.findSingleByQuery(
-        agent.context,
-        tagValue ? { [tag]: tagValue } : { tag }
-      );
-      return didRecord ? [didRecord] : [];
+      const didRecord = await didRepository.findSingleByQuery(agent.context, tagValue ? { [tag]: tagValue } : { tag })
+      return didRecord ? [didRecord] : []
     }
 
     const dids = await agent.dids.getCreatedDids({
       method,
       did,
-    });
-    return dids;
+    })
+    return dids
   }
 
-  public async addTagToDid({
-    did,
-    tag,
-    tagValue,
-  }: {
-    did: string;
-    tag: string;
-    tagValue: TagValue;
-  }) {
-    const agent = this.assertAndGetAgent();
-    const didRecords = await this.getDids({ did });
+  public async addTagToDid({ did, tag, tagValue }: { did: string; tag: string; tagValue: TagValue }) {
+    const agent = this.assertAndGetAgent()
+    const didRecords = await this.getDids({ did })
 
     if (didRecords.length === 0) {
-      throw new Error("Did not found");
+      throw new Error('Did not found')
     }
 
-    const didRecord = didRecords[0];
-    await didRecord.setTag(tag, tagValue);
+    const didRecord = didRecords[0]
+    await didRecord.setTag(tag, tagValue)
 
-    const didRepository = await agent.dependencyManager.resolve(DidRepository);
+    const didRepository = await agent.dependencyManager.resolve(DidRepository)
 
-    await didRepository.update(agent.context, didRecord);
+    await didRepository.update(agent.context, didRecord)
 
-    return didRecord;
+    return didRecord
   }
 
   public async resolveDid({ did }: { did: string }) {
-    const agent = this.assertAndGetAgent();
-    const didResolutionResult = await agent.dids.resolve(did);
-    return didResolutionResult;
+    const agent = this.assertAndGetAgent()
+    const didResolutionResult = await agent.dids.resolve(did)
+    return didResolutionResult
   }
 
-  public async deleteCredential({
-    id,
-    format,
-  }: {
-    id: string;
-    format: CredentialRecord;
-  }) {
-    const agent = this.assertAndGetAgent();
+  public async deleteCredential({ id, format }: { id: string; format: CredentialRecord }) {
+    const agent = this.assertAndGetAgent()
 
     if (format === CredentialRecord.SdJwt) {
-      await agent.sdJwtVc.deleteById(id);
+      await agent.sdJwtVc.deleteById(id)
     } else if (format === CredentialRecord.Mdoc) {
-      await agent.mdoc.deleteById(id);
+      await agent.mdoc.deleteById(id)
     } else if (format === CredentialRecord.W3c) {
-      await agent.w3cCredentials.deleteById(id);
-      return;
+      await agent.w3cCredentials.deleteById(id)
+      return
     } else {
-      throw new Error("Credential format not supported");
+      throw new Error('Credential format not supported')
     }
   }
 
-  public async storeOpenIdCredential(
-    cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord
-  ): Promise<void> {
-    const agent = this.assertAndGetAgent();
+  public async storeOpenIdCredential(cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord): Promise<void> {
+    const agent = this.assertAndGetAgent()
     if (cred instanceof W3cCredentialRecord) {
-      await agent.dependencyManager
-        .resolve(W3cCredentialRepository)
-        .save(agent.context, cred);
+      await agent.dependencyManager.resolve(W3cCredentialRepository).save(agent.context, cred)
     } else if (cred instanceof SdJwtVcRecord) {
-      await agent.dependencyManager
-        .resolve(SdJwtVcRepository)
-        .save(agent.context, cred);
+      await agent.dependencyManager.resolve(SdJwtVcRepository).save(agent.context, cred)
     } else if (cred instanceof MdocRecord) {
-      await agent.dependencyManager
-        .resolve(MdocRepository)
-        .save(agent.context, cred);
+      await agent.dependencyManager.resolve(MdocRepository).save(agent.context, cred)
     } else {
-      throw new Error("Credential type is not supported");
+      throw new Error('Credential type is not supported')
     }
   }
 
-  private async getRepositories(agent: Agent, format?: CredentialRecord): Promise<
-    (SdJwtVcRepository | MdocRepository | W3cCredentialRepository)[]
-  > {
+  private async getRepositories(
+    agent: Agent,
+    format?: CredentialRecord
+  ): Promise<(SdJwtVcRepository | MdocRepository | W3cCredentialRepository)[]> {
     if (format === CredentialRecord.SdJwt) {
-      return [await agent.dependencyManager.resolve(SdJwtVcRepository)];
+      return [await agent.dependencyManager.resolve(SdJwtVcRepository)]
     } else if (format === CredentialRecord.Mdoc) {
-      return [await agent.dependencyManager.resolve(MdocRepository)];
+      return [await agent.dependencyManager.resolve(MdocRepository)]
     } else if (format === CredentialRecord.W3c) {
-      return [await agent.dependencyManager.resolve(W3cCredentialRepository)];
+      return [await agent.dependencyManager.resolve(W3cCredentialRepository)]
     }
 
     return Promise.all([
       agent.dependencyManager.resolve(SdJwtVcRepository),
       agent.dependencyManager.resolve(MdocRepository),
       agent.dependencyManager.resolve(W3cCredentialRepository),
-    ]);
+    ])
   }
 
   public async setTagsToCredential({
@@ -275,73 +240,66 @@ export class MobileSDK<
     tags,
     format,
   }: {
-    credId: string;
-    tags: Record<string, TagValue>;
-    format?: CredentialRecord;
+    credId: string
+    tags: Record<string, TagValue>
+    format?: CredentialRecord
   }) {
     if (!credId?.trim()) {
-      throw new Error("credId is required and cannot be empty");
+      throw new Error('credId is required and cannot be empty')
     }
     if (!tags || Object.keys(tags).length === 0) {
-      throw new Error("At least one tag must be provided");
+      throw new Error('At least one tag must be provided')
     }
 
-    const agent = this.assertAndGetAgent();
-    const repositories = await this.getRepositories(agent, format);
+    const agent = this.assertAndGetAgent()
+    const repositories = await this.getRepositories(agent, format)
 
-    let lastError: Error | null = null;
+    let lastError: Error | null = null
 
     for (const repository of repositories) {
       try {
-        const credRecord = await repository.getById(agent.context, credId);
+        const credRecord = await repository.getById(agent.context, credId)
         for (const [tag, value] of Object.entries(tags)) {
-            if (value === null || value === undefined) {
-              credRecord.setTag(tag, undefined)
-            } else if (Array.isArray(value)) {
-              credRecord.setTag(tag, value)
-            } else {
-              credRecord.setTag(tag, [String(value)])
-            }
+          if (value === null || value === undefined) {
+            credRecord.setTag(tag, undefined)
+          } else if (Array.isArray(value)) {
+            credRecord.setTag(tag, value)
+          } else {
+            credRecord.setTag(tag, [String(value)])
+          }
         }
-        
+
         if (repository instanceof W3cCredentialRepository) {
-          await repository.update(agent.context, credRecord as W3cCredentialRecord);
+          await repository.update(agent.context, credRecord as W3cCredentialRecord)
         } else if (repository instanceof SdJwtVcRepository) {
-          await repository.update(agent.context, credRecord as SdJwtVcRecord);
+          await repository.update(agent.context, credRecord as SdJwtVcRecord)
         } else if (repository instanceof MdocRepository) {
-          await repository.update(agent.context, credRecord as MdocRecord);
+          await repository.update(agent.context, credRecord as MdocRecord)
         }
-        return credRecord;
+        return credRecord
       } catch (error) {
-        lastError = error instanceof Error ? error : new Error(String(error));
-        continue;
+        lastError = error instanceof Error ? error : new Error(String(error))
       }
     }
 
     throw new Error(
       `Credential with id '${credId}' not found in any supported repository${
-        lastError ? `. Last error: ${lastError.message}` : ""
+        lastError ? `. Last error: ${lastError.message}` : ''
       }`
-    );
+    )
   }
 
-  public async getCredentialsByTag({
-    format,
-    tags,
-  }: {
-    tags: Record<string, any>;
-    format?: CredentialRecord;
-  }) {
-    const agent = this.assertAndGetAgent();
-    const repositories = await this.getRepositories(agent, format);
+  public async getCredentialsByTag({ format, tags }: { tags: Record<string, any>; format?: CredentialRecord }) {
+    const agent = this.assertAndGetAgent()
+    const repositories = await this.getRepositories(agent, format)
 
-    const results: (SdJwtVcRecord | MdocRecord | W3cCredentialRecord)[] = [];
+    const results: (SdJwtVcRecord | MdocRecord | W3cCredentialRecord)[] = []
 
     for (const repository of repositories) {
-      const records = await repository.findByQuery(agent.context, tags);
-      results.push(...records);
+      const records = await repository.findByQuery(agent.context, tags)
+      results.push(...records)
     }
 
-    return results;
+    return results
   }
 }

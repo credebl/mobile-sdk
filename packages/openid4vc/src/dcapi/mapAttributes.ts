@@ -1,10 +1,10 @@
-import { RegisterCredentialsOptions } from "@animo-id/expo-digital-credentials-api"
-import { DateOnly, MdocNameSpaces } from "@animo-id/mdoc"
-import { sanitizeString } from "../utils"
+import { RegisterCredentialsOptions } from '@animo-id/expo-digital-credentials-api'
+import { DateOnly, MdocNameSpaces } from '@animo-id/mdoc'
+import { Logger } from '@credo-ts/core'
 import * as ExpoAsset from 'expo-asset'
-import { Logger } from "@credo-ts/core"
 import { Image } from 'expo-image'
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator'
+import { sanitizeString } from '../utils'
 
 export type CredentialItem = RegisterCredentialsOptions['credentials'][number]
 type CredentialDisplayClaim = NonNullable<CredentialItem['display']['claims']>[number]

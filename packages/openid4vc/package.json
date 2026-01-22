@@ -19,17 +19,14 @@
     "directory": "packages/openid4vc"
   },
   "scripts": {
-    "check-types": "pnpm compile --noEmit",
-    "build": "pnpm clean && pnpm compile",
-    "clean": "rimraf -rf ./build",
-    "compile": "tsdown -p tsconfig.build.json"
+    "build": "tsdown --config-loader unconfig"
   },
   "dependencies": {
     "@animo-id/expo-digital-credentials-api": "^0.4.0",
     "@animo-id/mdoc": "0.5.2",
     "@astronautlabs/jsonpath": "^1.1.2",
     "@credebl/ssi-mobile-core": "workspace:*",
-    "@credo-ts/core": "0.6.1",
+    "@credo-ts/core": "catalog:",
     "@credo-ts/openid4vc": "0.6.1",
     "expo-asset": "^12.0.10",
     "expo-image": "^3.0.10",
@@ -40,5 +37,8 @@
     "@types/react": "catalog:",
     "rimraf": "catalog:",
     "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "react-native": ">=0.76"
   }
 }

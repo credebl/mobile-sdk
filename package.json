@@ -8,23 +8,20 @@
     "url": "https://github.com/credebl/mobile-sdk"
   },
   "scripts": {
-    "test": "jest",
     "check-types": "pnpm -r check-types",
     "style:check": "biome check --unsafe",
     "style:fix": "biome check --write --unsafe",
-    "build": "pnpm -r build",
+    "build": "pnpm -r --parallel run build",
     "clean": "pnpm -r clean",
     "validate": "pnpm check-types && pnpm style:check",
     "release": "pnpm build && pnpm changeset publish --no-git-tag",
     "changeset-version": "pnpm changeset version && pnpm style:fix"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "catalog:",
     "@changesets/cli": "^2.29.6",
-    "@types/jest": "^29.5.14",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.4.1",
-    "tsdown": "^0.15.4",
+    "@types/node": "catalog:",
+    "tsdown": "^0.16.8",
     "typescript": "catalog:"
   },
   "engines": {

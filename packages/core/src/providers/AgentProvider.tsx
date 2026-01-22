@@ -6,7 +6,7 @@ import { W3cCredentialRecordProvider } from './W3cCredentialsProvider'
 
 const AgentContext = createContext<Agent | undefined>(undefined)
 
-export const useAgent = <AppAgent extends Agent = Agent>() => {
+export const useAgent = <_AppAgent extends Agent = Agent>() => {
   const agentContext = useContext(AgentContext)
   if (!agentContext) {
     throw new Error('useAgent must be used within a AgentContextProvider')

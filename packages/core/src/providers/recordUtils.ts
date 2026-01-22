@@ -2,10 +2,10 @@ import type {
   Agent,
   BaseEvent,
   BaseRecord,
+  Constructor,
   RecordDeletedEvent,
   RecordSavedEvent,
   RecordUpdatedEvent,
-  Constructor,
 } from '@credo-ts/core'
 
 import { RepositoryEventTypes } from '@credo-ts/core'

@@ -1,5 +1,16 @@
+import type {
+  DcqlCredentialsForRequest,
+  DcqlQueryResult,
+  DifPexCredentialsForRequest,
+  JsonObject,
+  Kms,
+  MdocNameSpaces,
+  MdocRecord,
+  SdJwtVcRecord,
+  W3cCredentialRecord,
+  W3cV2CredentialRecord,
+} from '@credo-ts/core'
 import { ClaimFormat, CredentialMultiInstanceUseMode, DateOnly, Hasher, TypedArrayEncoder } from '@credo-ts/core'
-import type { BaseRecord, DcqlCredentialsForRequest, DcqlQueryResult, DifPexCredentialsForRequest, JsonObject, Kms, MdocNameSpaces, MdocRecord, SdJwtVcRecord, W3cCredentialRecord, W3cV2CredentialRecord } from '@credo-ts/core'
 import type { OpenId4VpResolvedAuthorizationRequest } from '@credo-ts/openid4vc'
 import { formatDate, isDateString } from '../utils'
 import { detectImageMimeType } from '../utils/attributes'
@@ -151,7 +162,7 @@ export function safeCalculateJwkThumbprint(jwk: Kms.Jwk): string | undefined {
       )
     )
     return `urn:ietf:params:oauth:jwk-thumbprint:sha-256:${thumbprint}`
-  } catch (e) {
+  } catch (_e) {
     return undefined
   }
 }
