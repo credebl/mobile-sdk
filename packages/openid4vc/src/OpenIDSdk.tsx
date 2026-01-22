@@ -3,7 +3,7 @@ import type { MobileSDKModule } from '@credebl/ssi-mobile-core'
 import {
   type Agent,
   type DifPresentationExchangeDefinitionV2,
-  JwaSignatureAlgorithm,
+  Kms,
   MdocRecord,
   MdocRepository,
   type SdJwtVcPayload,
@@ -18,7 +18,10 @@ import {
 } from '@credo-ts/core'
 import {
   OpenId4VcHolderModule,
+  OpenId4VcModule,
   type OpenId4VciCredentialConfigurationSupportedWithFormats,
+  OpenId4VciCredentialResponse,
+  OpenId4VciMetadata,
   type OpenId4VciRequestTokenResponse,
   type OpenId4VciResolvedAuthorizationRequest,
   type OpenId4VciResolvedCredentialOffer,
@@ -51,6 +54,7 @@ import { applySelectedCredentialFilter, credentialRecordFromCredential, encodeCr
 import { DigitalCredentialsRequest, registerCredentials, sendResponse } from '@animo-id/expo-digital-credentials-api'
 import { CredentialItem, loadCachedImageAsBase64DataUrl, mapMdocAttributes, mapMdocAttributesToClaimDisplay, mapSdJwtAttributesToClaimDisplay } from './dcapi/mapAttributes'
 import { Platform } from 'react-native'
+import { BiometricAuthenticationError } from './utils/error'
 
 export type CredentialsForProofRequest = Awaited<ReturnType<OpenID4VCSDK['getCredentialsForProofRequest']>>
 
@@ -58,7 +62,7 @@ export type OpenId4VcConfiguration = {} & X509ModuleConfigOptions
 
 export const getOpenid4VcModules = (configuration: OpenId4VcConfiguration) =>
   ({
-    openId4VcHolder: new OpenId4VcHolderModule(),
+    openid4vc: new OpenId4VcModule({}),
     x509: new X509Module({
       trustedCertificates: configuration?.trustedCertificates,
       getTrustedCertificatesForVerification: configuration?.getTrustedCertificatesForVerification,
@@ -116,7 +120,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
       uri: offer.uri,
     })
 
-    const resolvedCredentialOffer = await agent.modules.openId4VcHolder.resolveCredentialOffer(offer.uri)
+    const resolvedCredentialOffer = await agent.modules.openid4vc.holder.resolveCredentialOffer(offer.uri)
     let resolvedAuthorizationRequest: OpenId4VciResolvedAuthorizationRequest | undefined = undefined
 
     // NOTE: we always assume scopes are used at the moment
@@ -130,7 +134,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
       // TODO: authorization should only be initiated after we know which credentials we're going to request
       if (authorization) {
-        resolvedAuthorizationRequest = await agent.modules.openId4VcHolder.resolveOpenId4VciAuthorizationRequest(
+        resolvedAuthorizationRequest = await agent.modules.openid4vc.holder.resolveOpenId4VciAuthorizationRequest(
           resolvedCredentialOffer,
           {
             redirectUri: authorization.redirectUri,
@@ -160,9 +164,25 @@ export class OpenID4VCSDK implements MobileSDKModule {
     txCode?: string
   }) {
     const agent = this.assertAndGetAgent()
-    return await agent.modules.openId4VcHolder.requestToken({
+    return await agent.modules.openid4vc.holder.requestToken({
       resolvedCredentialOffer,
       txCode,
+    })
+  }
+
+  async  parseCredentialResponses (credentials: OpenId4VciCredentialResponse[], issuerMetadata: OpenId4VciMetadata) {
+    credentials.map(({ record, ...credentialResponse }) => {
+      // OpenID4VC metadata
+      const openId4VcMetadata = extractOpenId4VcCredentialMetadata(credentialResponse.credentialConfiguration, {
+        id: issuerMetadata.credentialIssuer.credential_issuer,
+        display: issuerMetadata.credentialIssuer.display,
+      })
+      setOpenId4VcCredentialMetadata(record, openId4VcMetadata)
+
+      return {
+        ...credentialResponse,
+        credential: record,
+      }
     })
   }
 
@@ -203,47 +223,33 @@ export class OpenID4VCSDK implements MobileSDKModule {
       )
     }
 
-    const credentials = await agent.modules.openId4VcHolder.requestCredentials({
+    try {
+    const { credentials, deferredCredentials } = await agent.openid4vc.holder.requestCredentials({
       resolvedCredentialOffer,
       ...accessToken,
       clientId,
       credentialConfigurationIds: Object.keys(offeredCredentialsToRequest),
       verifyCredentialStatus: false,
-      allowedProofOfPossessionSignatureAlgorithms: [JwaSignatureAlgorithm.ES256, JwaSignatureAlgorithm.EdDSA],
-      credentialBindingResolver: getCredentialBindingResolver(pidSchemes, requestBatch),
+      allowedProofOfPossessionSignatureAlgorithms: [
+        Kms.KnownJwaSignatureAlgorithms.ES256,
+        Kms.KnownJwaSignatureAlgorithms.EdDSA,
+      ],
+      credentialBindingResolver: getCredentialBindingResolver({
+        pidSchemes,
+        requestBatch,
+      }),
     })
 
-    return credentials.credentials.map(({ credentials, ...credentialResponse }) => {
-      const configuration = resolvedCredentialOffer.offeredCredentialConfigurations[
-        credentialResponse.credentialConfigurationId
-      ] as OpenId4VciCredentialConfigurationSupportedWithFormats
-
-      const firstCredential = credentials[0]
-
-      const record = credentialRecordFromCredential(firstCredential)
-
-      // OpenID4VC metadata
-      const openId4VcMetadata = extractOpenId4VcCredentialMetadata(configuration, {
-        id: resolvedCredentialOffer.metadata.credentialIssuer.credential_issuer,
-        display: resolvedCredentialOffer.metadata.credentialIssuer.display,
-      })
-      setOpenId4VcCredentialMetadata(record, openId4VcMetadata)
-
-      // Batch metadata
-      if (credentials.length > 1) {
-        setBatchCredentialMetadata(record, {
-          additionalCredentials: credentials.slice(1).map(encodeCredential) as
-            | Array<string>
-            | Array<Record<string, unknown>>,
-        })
-      }
-
-      return {
-        ...credentialResponse,
-        configuration,
-        credential: record,
-      }
-    })
+    return {
+      deferredCredentials,
+      credentials: this.parseCredentialResponses(credentials, resolvedCredentialOffer.metadata),
+    }
+  } catch (error) {
+    // TODO: if one biometric operation fails it will fail the whole credential receiving. We should have more control so we
+    // can retry e.g. the second credential
+    // Handle biometric authentication errors
+    throw BiometricAuthenticationError.tryParseFromError(error) ?? error
+  }
   }
 
   public async storeOpenIdCredential(cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord): Promise<void> {
@@ -274,7 +280,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
     redirectUri?: string
   }) {
     const agent = this.assertAndGetAgent()
-    const response = await agent.modules.openId4VcHolder.requestToken({
+    const response = await agent.modules.openid4vc.holder.requestToken({
       resolvedCredentialOffer,
       code: authorizationCode,
       codeVerifier,
@@ -292,6 +298,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
     origin,
     trustedX509Entities,
     preferredLocale,
+    selectedCredentialsId
   }: GetCredentialsForProofRequestOptions) {
     const agent = this.assertAndGetAgent()
 
@@ -308,8 +315,9 @@ export class OpenID4VCSDK implements MobileSDKModule {
       request,
     })
 
-    const resolved = await agent.modules.openId4VcHolder.resolveOpenId4VpAuthorizationRequest(request, {
+    const resolved = await agent.modules.openid4vc.holder.resolveOpenId4VpAuthorizationRequest(request, {
       origin,
+      selectedCredentialsId,
     })
 
     const { authorizationRequestPayload } = resolved
@@ -400,7 +408,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
             Object.entries(
               Object.keys(selectedCredentials).length > 0
                 ? getSelectedCredentialsForRequest(resolvedRequest.queryResult, selectedCredentials)
-                : agent.modules.openId4VcHolder.selectCredentialsForDcqlRequest(resolvedRequest.queryResult)
+                : agent.modules.openid4vc.holder.selectCredentialsForDcqlRequest(resolvedRequest.queryResult)
             ).map(async ([queryCredentialId, credential]) => {
               return [queryCredentialId, { ...credential }]
             })
@@ -408,7 +416,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
         )
       : undefined
 
-    const result = await agent.modules.openId4VcHolder.acceptOpenId4VpAuthorizationRequest({
+    const result = await agent.modules.openid4vc.holder.acceptOpenId4VpAuthorizationRequest({
       authorizationRequestPayload: authorizationRequest,
       presentationExchange: presentationExchangeCredentials
         ? {
@@ -451,10 +459,10 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
     const mdocs = matchingDocTypeRecords.map((record) => ({
       credential: getCredentialForDisplay(record),
-      mdoc: record.credential,
+      mdoc: record.firstCredential,
       issuerSignedDocument: parseIssuerSigned(
-        TypedArrayEncoder.fromBase64(record.credential.base64Url),
-        record.credential.docType
+        TypedArrayEncoder.fromBase64(record.firstCredential.base64Url),
+        record.firstCredential.docType
       ),
     }))
 
@@ -640,7 +648,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
     const sdJwtVcRecords = await agent.sdJwtVc.getAll()
 
     const mdocCredentials = mdocRecords.map(async (record): Promise<CredentialItem> => {
-      const mdoc = record.credential
+      const mdoc = record.firstCredential
       const { display } = getCredentialForDisplay(record)
 
       const iconDataUrl = display.backgroundImage?.url

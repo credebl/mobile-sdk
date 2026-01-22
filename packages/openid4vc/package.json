@@ -2,7 +2,7 @@
   "name": "@credebl/ssi-mobile-openid4vc",
   "main": "src/index",
   "types": "src/index",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "files": [
     "build"
   ],
@@ -29,8 +29,8 @@
     "@animo-id/mdoc": "0.5.2",
     "@astronautlabs/jsonpath": "^1.1.2",
     "@credebl/ssi-mobile-core": "workspace:*",
-    "@credo-ts/core": "0.6.0-alpha-20250325224513",
-    "@credo-ts/openid4vc": "0.6.0-alpha-20250325224513",
+    "@credo-ts/core": "0.6.1",
+    "@credo-ts/openid4vc": "0.6.1",
     "expo-asset": "^12.0.10",
     "expo-image": "^3.0.10",
     "expo-image-manipulator": "^14.0.7",

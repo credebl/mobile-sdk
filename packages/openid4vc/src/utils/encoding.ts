@@ -5,7 +5,7 @@ export function encodeCredential(credential: VerifiableCredential): Record<strin
 }
 
 export function credentialRecordFromCredential(credential: VerifiableCredential) {
-  if (credential.claimFormat === ClaimFormat.SdJwtVc) {
+  if (credential.claimFormat === ClaimFormat.SdJwtDc) {
     return new SdJwtVcRecord({
       compactSdJwtVc: credential.compact,
       typeMetadata: credential.typeMetadata,
