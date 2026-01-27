@@ -2,6 +2,7 @@ import type {
   CreateOutOfBandInvitationConfig,
   DidCommConnectionInvitationMessage,
   DidCommOutOfBandInvitation,
+  DidCommRouting,
   ReceiveOutOfBandInvitationConfig,
 } from '@credo-ts/didcomm'
 import type { DidCommAgent } from '../DidCommSdk'
@@ -113,5 +114,51 @@ export class ConnectionsApi {
   public async deleteOobRecordById(outOfBandId: string) {
     await this.agent.didcomm.oob.deleteById(outOfBandId)
     return true
+  }
+
+  /**
+   * Initiate message pickup.
+   *
+   * @param connectionId connection Id.
+   * @param timeoutMs wait for time in ms
+   */
+  public async waitForConnectionToComplete(connectionId: string, timeoutMs?: number) {
+    return this.agent.didcomm.connections.returnWhenIsConnected(connectionId, timeoutMs ? {
+      timeoutMs: timeoutMs
+    } : undefined)
+  }
+
+  /**
+   * Hangup connection.
+   *
+   * @param connectionId connection Id.
+   * @param deleteAfterHangup The connection record itself and any
+   * keys used for mediation will only be deleted if `deleteAfterHangup` flag is set.
+   */
+  public async hangup(connectionId: string, deleteAfterHangup?: boolean) {
+    return this.agent.didcomm.connections.hangup({
+      connectionId,
+      deleteAfterHangup
+    })
+  }
+
+  /**
+   * Rotate the DID used for a given connection, notifying the other party immediately.
+   *
+   *  If `toDid` is not specified, a new peer did will be created. Optionally, routing
+   * configuration can be set.
+   *
+   * Note: any did created or imported in agent wallet can be used as `toDid`, as long as
+   * there are valid DIDComm services in its DID Document.
+   *
+   * @param options connectionId and optional target did and routing configuration
+   * @returns object containing the new did
+   */
+  public async rotate(options: {
+    connectionId: string;
+    toDid?: string;
+    routing?: DidCommRouting;
+  }) {
+    return this.agent.didcomm.connections.rotate(options)
   }
 }

@@ -6,6 +6,7 @@ export class BasicMessagesApi {
   public constructor(agent: DidCommAgent) {
     this.agent = agent
   }
+
   /**
    * Sends a basic message to the connection with the given connection id.
    *
