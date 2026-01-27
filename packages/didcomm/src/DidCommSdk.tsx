@@ -22,6 +22,11 @@ import {
 } from '@credo-ts/didcomm'
 import { DidCommMediationRecipientModuleConfigOptions } from '@credo-ts/didcomm/build/modules/routing/DidCommMediationRecipientModuleConfig.mjs'
 import { QuestionAnswerModule } from '@credo-ts/question-answer'
+import { BasicMessagesApi } from './basicMessages'
+import { ConnectionsApi } from './connections/ConnectionsApi'
+import { CredentialsApi } from './credentials'
+import { ProofsApi } from './proofs'
+import { QuestionAnswerApi } from './questionAnswer'
 
 export type DidCommDynamicModules = Record<string, Module>
 
@@ -72,35 +77,74 @@ export const getDidCommModules = (configuration: DidCommConfiguration) => ({
     transports: {
       outbound: [new DidCommHttpOutboundTransport(), new DidCommWsOutboundTransport()],
     },
-    questionAnswer: new QuestionAnswerModule(),
-
-    ...(configuration.modules ?? {}),
   }),
+  questionAnswer: new QuestionAnswerModule(),
+  ...(configuration.modules ?? {}),
 })
 
-export type DidCommAgent = Agent<ReturnType<typeof getDidCommModules>>
+export type DidCommAgentModules = ReturnType<typeof getDidCommModules>
+
+export type DidCommAgent = Agent<DidCommAgentModules>
 
 export class DidCommSDK implements MobileSDKModule {
   private agent?: DidCommAgent
   private configuration: DidCommConfiguration
 
+  private _connections?: ConnectionsApi
+  private _credentials?: CredentialsApi
+  private _proofs?: ProofsApi
+  private _basicMessages?: BasicMessagesApi
+  private _questionAnswer?: QuestionAnswerApi
+
   public constructor(configuration: DidCommConfiguration) {
     this.configuration = configuration
   }
 
-  private assertAndGetAgent(): DidCommAgent {
-    if (!this.agent) {
-      throw new Error('Agent not initialized')
-    }
-
-    return this.agent
-  }
-
   public initialize(agent: DidCommAgent): void {
     this.agent = agent
+    this._connections = new ConnectionsApi(agent)
+    this._credentials = new CredentialsApi(agent)
+    this._proofs = new ProofsApi(agent)
+    this._basicMessages = new BasicMessagesApi(agent)
+    this._questionAnswer = new QuestionAnswerApi(agent)
   }
 
   public getAgentModules() {
     return getDidCommModules(this.configuration)
+  }
+
+  public get connections(): ConnectionsApi {
+    if (!this._connections) {
+      throw new Error('Agent not initialized. Call initialize() first.')
+    }
+    return this._connections
+  }
+
+  public get credentials(): CredentialsApi {
+    if (!this._credentials) {
+      throw new Error('Agent not initialized. Call initialize() first.')
+    }
+    return this._credentials
+  }
+
+  public get proofs(): ProofsApi {
+    if (!this._proofs) {
+      throw new Error('Agent not initialized. Call initialize() first.')
+    }
+    return this._proofs
+  }
+
+  public get basicMessages(): BasicMessagesApi {
+    if (!this._basicMessages) {
+      throw new Error('Agent not initialized. Call initialize() first.')
+    }
+    return this._basicMessages
+  }
+
+  public get questionAnswer(): QuestionAnswerApi {
+    if (!this._questionAnswer) {
+      throw new Error('Agent not initialized. Call initialize() first.')
+    }
+    return this._questionAnswer
   }
 }

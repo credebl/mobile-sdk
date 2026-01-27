@@ -1,1 +1,1 @@
-export const add = () => {}
+export * from './DidCommSdk'
