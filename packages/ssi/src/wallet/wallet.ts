@@ -1,5 +1,5 @@
 // NOTE: We need to import these to be able to use the AskarWallet in this file.
-import '@hyperledger/aries-askar-react-native'
+import '@openwallet-foundation/askar-react-native'
 
 import type { InitConfig, WalletConfig, WalletExportImportConfig } from '@credo-ts/core'
 import type { AgentModulesInput } from '@credo-ts/core/build/agent/AgentModules'
@@ -15,6 +15,7 @@ import {
   utils,
 } from '@credo-ts/core'
 import { agentDependencies } from '@credo-ts/react-native'
+import { askar as ariesAskar } from '@openwallet-foundation/askar-shared'
 
 interface WalletImportConfigWithAgent {
   agentConfig: InitConfig
@@ -35,7 +36,10 @@ export const isWalletPinCorrect = async (walletConfig: WalletConfig) => {
     const askarWallet = new AskarWallet(
       new ConsoleLogger(LogLevel.off),
       new agentDependencies.FileSystem(),
-      new SigningProviderRegistry([])
+      new SigningProviderRegistry([]),
+      {
+        ariesAskar,
+      } as any
     )
     await askarWallet.open(walletConfig)
 
@@ -76,7 +80,14 @@ export const isWalletImportable = async (
       path: tempImportPath,
     }
     // NOTE: a custom wallet is used to check if the wallet passphrase is correct and can be imported successfully.
-    const askarWallet = new AskarWallet(new ConsoleLogger(LogLevel.debug), fileSystem, new SigningProviderRegistry([]))
+    const askarWallet = new AskarWallet(
+      new ConsoleLogger(LogLevel.debug),
+      fileSystem,
+      new SigningProviderRegistry([]),
+      {
+        ariesAskar,
+      } as any
+    )
     await askarWallet.import(walletConfig, importConfig)
 
     await fileSystem.delete(tempImportPath)
