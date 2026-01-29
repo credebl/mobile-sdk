@@ -171,7 +171,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
   }
 
   async  parseCredentialResponses (credentials: OpenId4VciCredentialResponse[], issuerMetadata: OpenId4VciMetadata) {
-    credentials.map(({ record, ...credentialResponse }) => {
+    return credentials.map(({ record, ...credentialResponse }) => {
       // OpenID4VC metadata
       const openId4VcMetadata = extractOpenId4VcCredentialMetadata(credentialResponse.credentialConfiguration, {
         id: issuerMetadata.credentialIssuer.credential_issuer,
@@ -202,13 +202,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
     // TODO: cNonce should maybe be provided separately (multiple calls can have different c_nonce values)
     accessToken: OpenId4VciRequestTokenResponse
-  }): Promise<
-    Array<{
-      credentialConfigurationId: string
-      configuration: OpenId4VciCredentialConfigurationSupportedWithFormats
-      credential: SdJwtVcRecord | MdocRecord | W3cCredentialRecord
-    }>
-  > {
+  }) {
     const agent = this.assertAndGetAgent()
     const offeredCredentialsToRequest = getOfferedCredentials(
       credentialConfigurationIdsToRequest ?? [
@@ -377,14 +371,10 @@ export class OpenID4VCSDK implements MobileSDKModule {
     const { authorizationRequest } = resolvedRequest
     if (
       !resolvedRequest.credentialsForRequest?.areRequirementsSatisfied &&
-      !resolvedRequest.queryResult?.canBeSatisfied
+      !resolvedRequest.queryResult?.can_be_satisfied
     ) {
       throw new Error('Requirements from proof request are not satisfied')
     }
-
-    // Map all requirements and entries to a credential record. If a credential record for an
-    // input descriptor has been provided in `selectedCredentials` we will use that. Otherwise
-    // it will pick the first available credential.
     const presentationExchangeCredentials = resolvedRequest.credentialsForRequest
       ? Object.fromEntries(
           await Promise.all(
@@ -395,7 +385,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
                   entry.verifiableCredentials.find((vc) => vc.credentialRecord.id === credentialId) ??
                   entry.verifiableCredentials[0]
 
-                return [entry.inputDescriptorId, [{ ...credential }]]
+                return [entry.inputDescriptorId, [credential]]
               })
             )
           )
@@ -409,8 +399,8 @@ export class OpenID4VCSDK implements MobileSDKModule {
               Object.keys(selectedCredentials).length > 0
                 ? getSelectedCredentialsForRequest(resolvedRequest.queryResult, selectedCredentials)
                 : agent.modules.openid4vc.holder.selectCredentialsForDcqlRequest(resolvedRequest.queryResult)
-            ).map(async ([queryCredentialId, credential]) => {
-              return [queryCredentialId, { ...credential }]
+            ).map(async ([queryCredentialId, credentials]) => {
+              return [queryCredentialId, credentials]
             })
           )
         )
@@ -558,7 +548,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
     if (format === 'sd-jwt') {
       const credential = await agent.sdJwtVc.sign(payload)
-      const record = await agent.sdJwtVc.store(credential.compact)
+      const record = await agent.sdJwtVc.store({ record: SdJwtVcRecord.fromSdJwtVc(credential) })
       return record
     }
 
@@ -674,7 +664,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
     })
 
     const sdJwtCredentials = sdJwtVcRecords.map(async (record): Promise<CredentialItem> => {
-      const sdJwtVc = record.credential
+      const sdJwtVc = record.firstCredential
       const { display } = getCredentialForDisplay(record)
 
       const iconDataUrl = display.backgroundImage?.url
