@@ -1,5 +1,4 @@
-import { MdocRecord, SdJwtVcRecord, W3cCredentialRecord } from '@credo-ts/core'
-import { GenericRecord } from '@credo-ts/core/build/modules/generic-records/repository/GenericRecord'
+import { MdocRecord, SdJwtVcRecord, W3cCredentialRecord, GenericRecord } from '@credo-ts/core'
 import {
   OpenId4VciAuthorizationFlow,
   OpenId4VciRequestTokenResponse,

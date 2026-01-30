@@ -1,4 +1,4 @@
-import type { Mdoc, MdocRecord, SdJwtVcRecord, W3cCredentialRecord } from '@credo-ts/core'
+import type { Mdoc, MdocRecord, SdJwtVcRecord, W3cCredentialRecord, W3cV2CredentialRecord } from '@credo-ts/core'
 import type {
   OpenId4VciCredentialConfigurationSupported,
   OpenId4VciCredentialConfigurationSupportedWithFormats,
@@ -14,10 +14,20 @@ export type CredentialDisplayClaims =
     format: 'dc+sd-jwt'
   })['claims']
 
+export type OpenId4VciCredentialDisplayClaims = NonNullable<
+  (OpenId4VciCredentialConfigurationSupportedWithFormats & {
+    format: 'dc+sd-jwt'
+  })['credential_metadata']
+>['claims']
+
+export type OpenId4VciCredentialDisplay = NonNullable<
+  OpenId4VciCredentialConfigurationSupported['credential_metadata']
+>['display']
+
 export interface OpenId4VcCredentialMetadata {
   credential: {
-    display?: OpenId4VciCredentialConfigurationSupported['display']
-    claims?: CredentialDisplayClaims
+    display?: OpenId4VciCredentialDisplay
+    claims?: OpenId4VciCredentialDisplayClaims
     order?: OpenId4VciCredentialConfigurationSupportedWithFormats['order']
   }
   issuer: {
@@ -32,11 +42,13 @@ export function extractOpenId4VcCredentialMetadata(
   credentialMetadata: OpenId4VciCredentialConfigurationSupportedWithFormats,
   serverMetadata: { display?: OpenId4VciCredentialIssuerMetadataDisplay[]; id: string }
 ): OpenId4VcCredentialMetadata {
+  const claims = credentialMetadata.credential_metadata?.claims ?? credentialMetadata.claims
+
   return {
     credential: {
-      display: credentialMetadata.display,
-      order: credentialMetadata.order,
-      claims: credentialMetadata.claims ? (credentialMetadata.claims as CredentialDisplayClaims) : undefined,
+      display:
+        credentialMetadata.credential_metadata?.display ?? (credentialMetadata.display as OpenId4VciCredentialDisplay),
+      claims: Array.isArray(claims) ? (claims as OpenId4VciCredentialDisplayClaims) : undefined,
     },
     issuer: {
       display: serverMetadata.display,
@@ -98,7 +110,7 @@ export function getMdocCredentialDisplay(mdoc: Mdoc, openId4VcMetadata?: OpenId4
  * Sets the OpenId4Vc credential metadata on the given credential record
  */
 export function setOpenId4VcCredentialMetadata(
-  credentialRecord: W3cCredentialRecord | SdJwtVcRecord | MdocRecord,
+  credentialRecord: W3cCredentialRecord | SdJwtVcRecord | MdocRecord | W3cV2CredentialRecord,
   metadata: OpenId4VcCredentialMetadata
 ) {
   credentialRecord.metadata.set(openId4VcCredentialMetadataKey, metadata)

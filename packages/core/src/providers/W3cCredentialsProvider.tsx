@@ -67,22 +67,22 @@ export const W3cCredentialRecordProvider: React.FC<PropsWithChildren<Props>> = (
 
   useEffect(() => {
     void agent.w3cCredentials
-      .getAllCredentialRecords()
+      .getAll()
       .then((w3cCredentialRecords) => setState({ w3cCredentialRecords, isLoading: false }))
   }, [agent])
 
   useEffect(() => {
     if (!state.isLoading && agent) {
       const credentialAdded$ = recordsAddedByType(agent, W3cCredentialRecord).subscribe((record) =>
-        setState(addRecord(record, state))
+        setState(addRecord(record as W3cCredentialRecord, state))
       )
 
       const credentialUpdate$ = recordsUpdatedByType(agent, W3cCredentialRecord).subscribe((record) =>
-        setState(updateRecord(record, state))
+        setState(updateRecord(record as W3cCredentialRecord, state))
       )
 
       const credentialRemove$ = recordsRemovedByType(agent, W3cCredentialRecord).subscribe((record) =>
-        setState(removeRecord(record, state))
+        setState(removeRecord(record as W3cCredentialRecord, state))
       )
 
       return () => {

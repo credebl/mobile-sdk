@@ -2,7 +2,7 @@
   "name": "@credebl/ssi-mobile-core",
   "main": "src/index",
   "types": "src/index",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "files": ["build"],
   "license": "Apache-2.0",
   "publishConfig": {
@@ -23,9 +23,9 @@
     "compile": "tsdown -p tsconfig.build.json"
   },
   "dependencies": {
-    "@credo-ts/askar": "0.6.0-alpha-20250325224513",
-    "@credo-ts/core": "0.6.0-alpha-20250325224513",
-    "@credo-ts/react-native": "0.6.0-alpha-20250325224513",
+    "@credo-ts/askar": "0.6.1",
+    "@credo-ts/core": "0.6.1",
+    "@credo-ts/react-native": "0.6.1",
     "rxjs": "^7.8.2"
   },
   "peerDependencies": {

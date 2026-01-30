@@ -5,8 +5,8 @@ import type {
   RecordDeletedEvent,
   RecordSavedEvent,
   RecordUpdatedEvent,
+  Constructor,
 } from '@credo-ts/core'
-import type { Constructor } from '@credo-ts/core/build/utils/mixins'
 
 import { RepositoryEventTypes } from '@credo-ts/core'
 import { useMemo } from 'react'
