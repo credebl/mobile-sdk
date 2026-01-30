@@ -13,9 +13,7 @@ catalog:
   "@credo-ts/react-native": 0.6.1
   "@credo-ts/didcomm": 0.6.1
   "@hyperledger/anoncreds-react-native": 0.3.4
-  "@hyperledger/anoncreds-shared": 0.3.4
   "@openwallet-foundation/askar-react-native": 0.4.3
-  "@openwallet-foundation/askar-shared": 0.4.3
   rxjs: ^7.8.2
 
   '@types/node': ^20.19.25

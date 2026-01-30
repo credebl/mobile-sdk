@@ -1,1 +1,1 @@
-export { ConnectionsApi } from './ConnectionsApi'
+export * from './ConnectionsApi'

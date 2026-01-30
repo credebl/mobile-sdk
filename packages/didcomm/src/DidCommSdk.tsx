@@ -22,11 +22,21 @@ import {
 } from '@credo-ts/didcomm'
 import { DidCommMediationRecipientModuleConfigOptions } from '@credo-ts/didcomm/build/modules/routing/DidCommMediationRecipientModuleConfig.mjs'
 import { QuestionAnswerModule } from '@credo-ts/question-answer'
+import { PropsWithChildren } from 'react'
 import { BasicMessagesApi } from './basicMessages'
-import { ConnectionsApi } from './connections/ConnectionsApi'
+import { ConnectionsApi } from './connections'
 import { CredentialsApi } from './credentials'
-import { MediationRecipientApi } from './mediationReciepient'
+import { MediationRecipientApi } from './mediationRecipient'
 import { ProofsApi } from './proofs'
+import {
+  BasicMessageProvider,
+  ConnectionProvider,
+  CredentialFormatDataProvider,
+  CredentialProvider,
+  ProofFormatDataProvider,
+  ProofProvider,
+  QuestionAnswerProvider,
+} from './providers'
 import { QuestionAnswerApi } from './questionAnswer'
 
 export type DidCommDynamicModules = Record<string, Module>
@@ -120,6 +130,24 @@ export class DidCommSDK implements MobileSDKModule {
 
   public getAgentModules() {
     return getDidCommModules(this.configuration)
+  }
+
+  public static DidCommProvider({ agent, children }: PropsWithChildren<{ agent: Agent }>) {
+    return (
+      <ConnectionProvider agent={agent}>
+        <CredentialProvider agent={agent}>
+          <ProofProvider agent={agent}>
+            <CredentialFormatDataProvider agent={agent}>
+              <ProofFormatDataProvider agent={agent}>
+                <BasicMessageProvider agent={agent}>
+                  <QuestionAnswerProvider agent={agent}>{children}</QuestionAnswerProvider>
+                </BasicMessageProvider>
+              </ProofFormatDataProvider>
+            </CredentialFormatDataProvider>
+          </ProofProvider>
+        </CredentialProvider>
+      </ConnectionProvider>
+    )
   }
 
   public get connections(): ConnectionsApi {

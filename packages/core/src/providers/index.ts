@@ -1,2 +1,6 @@
 export * from './AgentProvider'
+export * from './CredentialsProvider'
+export * from './MdocProvider'
 export * from './recordUtils'
+export * from './SdJwtVcsProvider'
+export * from './W3cCredentialsProvider'

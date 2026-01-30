@@ -2,7 +2,6 @@ import type { Agent } from '@credo-ts/core'
 import type { PropsWithChildren } from 'react'
 
 import { createContext, useContext } from 'react'
-import { W3cCredentialRecordProvider } from './W3cCredentialsProvider'
 
 const AgentContext = createContext<Agent | undefined>(undefined)
 
@@ -21,11 +20,7 @@ interface Props {
 }
 
 const AgentProvider: React.FC<PropsWithChildren<Props>> = ({ agent, children }) => {
-  return (
-    <AgentContext.Provider value={agent}>
-      <W3cCredentialRecordProvider agent={agent}>{children}</W3cCredentialRecordProvider>
-    </AgentContext.Provider>
-  )
+  return <AgentContext.Provider value={agent}>{children}</AgentContext.Provider>
 }
 
 export default AgentProvider
