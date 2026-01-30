@@ -1,6 +1,5 @@
 import { RegisterCredentialsOptions } from '@animo-id/expo-digital-credentials-api'
-import { DateOnly, MdocNameSpaces } from '@animo-id/mdoc'
-import { Logger } from '@credo-ts/core'
+import { DateOnly, Logger, MdocNameSpaces } from '@credo-ts/core'
 import * as ExpoAsset from 'expo-asset'
 import { Image } from 'expo-image'
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator'

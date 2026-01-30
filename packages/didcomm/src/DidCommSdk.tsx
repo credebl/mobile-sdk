@@ -2,11 +2,13 @@ import type { MobileSDKModule } from '@credebl/ssi-mobile-core'
 import {
   AnonCredsDidCommCredentialFormatService,
   AnonCredsDidCommProofFormatService,
+  AnonCredsModule,
+  type AnonCredsRegistry,
   DataIntegrityDidCommCredentialFormatService,
   LegacyIndyDidCommCredentialFormatService,
   LegacyIndyDidCommProofFormatService,
 } from '@credo-ts/anoncreds'
-import { Agent, Module } from '@credo-ts/core'
+import { Agent } from '@credo-ts/core'
 import {
   DidCommAutoAcceptCredential,
   DidCommAutoAcceptProof,
@@ -21,7 +23,10 @@ import {
   DidCommWsOutboundTransport,
 } from '@credo-ts/didcomm'
 import { DidCommMediationRecipientModuleConfigOptions } from '@credo-ts/didcomm/build/modules/routing/DidCommMediationRecipientModuleConfig.mjs'
+import { IndyVdrAnonCredsRegistry, IndyVdrModule, type IndyVdrPoolConfig } from '@credo-ts/indy-vdr'
 import { QuestionAnswerModule } from '@credo-ts/question-answer'
+import { anoncreds } from '@hyperledger/anoncreds-react-native'
+import { indyVdr } from '@hyperledger/indy-vdr-react-native'
 import { PropsWithChildren } from 'react'
 import { BasicMessagesApi } from './basicMessages'
 import { ConnectionsApi } from './connections'
@@ -39,13 +44,16 @@ import {
 } from './providers'
 import { QuestionAnswerApi } from './questionAnswer'
 
-export type DidCommDynamicModules = Record<string, Module>
-
 export interface DidCommConfiguration
   extends Pick<DidCommMediationRecipientModuleConfigOptions, 'mediatorPickupStrategy'>,
     Pick<DidCommConnectionsModuleConfigOptions, 'peerNumAlgoForDidExchangeRequests' | 'peerNumAlgoForDidRotation'>,
     Pick<DidCommModuleConfigOptions, 'processDidCommMessagesConcurrently'> {
-  modules?: DidCommDynamicModules
+  anoncreds?: {
+    registries: AnonCredsRegistry[]
+  }
+  indyVdr?: {
+    networks: [IndyVdrPoolConfig, ...IndyVdrPoolConfig[]]
+  }
 }
 
 export const getDidCommModules = (configuration: DidCommConfiguration) => ({
@@ -89,7 +97,18 @@ export const getDidCommModules = (configuration: DidCommConfiguration) => ({
     },
   }),
   questionAnswer: new QuestionAnswerModule(),
-  ...(configuration.modules ?? {}),
+
+  anoncreds: new AnonCredsModule({
+    registries: [new IndyVdrAnonCredsRegistry(), ...(configuration.anoncreds?.registries ?? [])],
+    anoncreds,
+  }),
+
+  ...(configuration.indyVdr && {
+    indyVdr: new IndyVdrModule({
+      indyVdr,
+      networks: configuration.indyVdr.networks,
+    }),
+  }),
 })
 
 export type DidCommAgentModules = ReturnType<typeof getDidCommModules>

@@ -1,16 +1,21 @@
 {
   "name": "@credebl/ssi-mobile-didcomm",
-  "main": "src/index",
-  "types": "src/index",
+  "exports": {
+    "import": "./src/index.ts"
+  },
   "version": "2.0.2",
   "files": [
     "build"
   ],
   "license": "Apache-2.0",
   "publishConfig": {
-    "main": "build/index",
-    "types": "build/index",
-    "access": "public"
+    "access": "public",
+    "types": "./build/index.d.mts",
+    "module": "./build/index.mjs",
+    "exports": {
+      ".": "./build/index.mjs",
+      "./package.json": "./package.json"
+    }
   },
   "homepage": "https://github.com/credebl/mobile-sdk/tree/main/packages/didcomm",
   "repository": {
@@ -19,23 +24,26 @@
     "directory": "packages/didcomm"
   },
   "scripts": {
-    "build": "tsdown --config-loader unconfig"
+    "build": "tsdown --config-loader unconfig",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@astronautlabs/jsonpath": "catalog:",
     "@credebl/ssi-mobile-core": "workspace:*",
     "@credo-ts/core": "catalog:",
     "@credo-ts/anoncreds": "catalog:",
     "@credo-ts/askar": "catalog:",
-    "@credo-ts/openid4vc": "catalog:",
+    "@credo-ts/didcomm": "catalog:",
+    "@credo-ts/indy-vdr": "catalog:",
     "@credo-ts/question-answer": "catalog:",
     "@credo-ts/react-native": "catalog:",
-    "@credo-ts/didcomm": "catalog:",
     "rxjs": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:",
-    "rimraf": "catalog:",
     "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "@hyperledger/anoncreds-react-native": "catalog:",
+    "@hyperledger/indy-vdr-react-native": "catalog:"
   }
 }

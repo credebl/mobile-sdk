@@ -1,14 +1,26 @@
 {
-  "extends": "./tsconfig.build.json",
-  "ts-node": {
-    "files": true
-  },
   "compilerOptions": {
+    "target": "ES2020",
+    "module": "es2022",
+    "moduleResolution": "node",
+    "lib": ["ES2020"],
+    "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
       "@credebl/*": ["packages/*/src"]
     },
-    "types": ["node"]
+    "declaration": true,
+    "sourceMap": true,
+    "strict": true,
+    "noEmitOnError": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "useUnknownInCatchVariables": false
   },
-  "exclude": ["node_modules", "**/build/**"]
+  "ts-node": {
+    "files": true
+  },
+  "exclude": ["node_modules", "**/build"]
 }

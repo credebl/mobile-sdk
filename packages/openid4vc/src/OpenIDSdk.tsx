@@ -317,7 +317,6 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
     const resolved = await agent.modules.openid4vc.holder.resolveOpenId4VpAuthorizationRequest(request, {
       origin,
-      selectedCredentialsId,
     })
 
     const { authorizationRequestPayload } = resolved
