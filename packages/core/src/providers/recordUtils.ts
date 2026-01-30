@@ -9,7 +9,6 @@ import type {
 } from '@credo-ts/core'
 
 import { RepositoryEventTypes } from '@credo-ts/core'
-import { useMemo } from 'react'
 import { filter, map, pipe } from 'rxjs'
 
 // BaseRecordAny makes sure we allow any type to be used for the generic
@@ -107,20 +106,4 @@ export const recordsRemovedByType = <R extends BaseRecordAny>(
   return agent?.events
     .observable<RecordDeletedEvent<R>>(RepositoryEventTypes.RecordDeleted)
     .pipe(filterByType(recordClass))
-}
-
-export const isModuleRegistered = (agent: Agent, ModuleClass: Constructor) => {
-  if (!agent) {
-    throw new Error('Agent is required to check if a module is enabled')
-  }
-
-  const foundModule = Object.values(agent.dependencyManager.registeredModules).find(
-    (module: unknown) => module instanceof ModuleClass
-  )
-
-  return foundModule !== undefined
-}
-
-export const useIsModuleRegistered = (agent: Agent, ModuleClass: Constructor) => {
-  return useMemo(() => isModuleRegistered(agent, ModuleClass), [agent, ModuleClass])
 }
