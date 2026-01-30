@@ -1,4 +1,4 @@
-import { DidCommAgent } from "../DidCommSdk"
+import { DidCommAgent } from '../DidCommSdk'
 
 export class BasicMessagesApi {
   private agent: DidCommAgent
@@ -16,5 +16,4 @@ export class BasicMessagesApi {
   public async sendBasicMessage(connectionId: string, message: string) {
     return this.agent.didcomm.basicMessages.sendMessage(connectionId, message)
   }
-
 }

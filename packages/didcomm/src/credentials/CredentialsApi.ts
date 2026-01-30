@@ -8,7 +8,8 @@ import {
 } from '@credo-ts/didcomm'
 import { DidCommAgent, DidCommAgentModules } from '../DidCommSdk'
 
-export type DidCommCredentialProtocols = DidCommAgentModules['didcomm']['modules']['credentials']['config']['credentialProtocols']
+export type DidCommCredentialProtocols =
+  DidCommAgentModules['didcomm']['modules']['credentials']['config']['credentialProtocols']
 
 export class CredentialsApi {
   private agent: DidCommAgent

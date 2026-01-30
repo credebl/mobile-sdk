@@ -135,5 +135,4 @@ export class ProofsApi {
   public async sendProofProblemReport(options: SendProofProblemReportOptions) {
     return this.agent.didcomm.proofs.sendProblemReport(options)
   }
-
 }

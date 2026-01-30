@@ -123,9 +123,14 @@ export class ConnectionsApi {
    * @param timeoutMs wait for time in ms
    */
   public async waitForConnectionToComplete(connectionId: string, timeoutMs?: number) {
-    return this.agent.didcomm.connections.returnWhenIsConnected(connectionId, timeoutMs ? {
-      timeoutMs: timeoutMs
-    } : undefined)
+    return this.agent.didcomm.connections.returnWhenIsConnected(
+      connectionId,
+      timeoutMs
+        ? {
+            timeoutMs: timeoutMs,
+          }
+        : undefined
+    )
   }
 
   /**
@@ -138,7 +143,7 @@ export class ConnectionsApi {
   public async hangup(connectionId: string, deleteAfterHangup?: boolean) {
     return this.agent.didcomm.connections.hangup({
       connectionId,
-      deleteAfterHangup
+      deleteAfterHangup,
     })
   }
 
@@ -154,11 +159,7 @@ export class ConnectionsApi {
    * @param options connectionId and optional target did and routing configuration
    * @returns object containing the new did
    */
-  public async rotate(options: {
-    connectionId: string;
-    toDid?: string;
-    routing?: DidCommRouting;
-  }) {
+  public async rotate(options: { connectionId: string; toDid?: string; routing?: DidCommRouting }) {
     return this.agent.didcomm.connections.rotate(options)
   }
 }

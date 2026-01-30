@@ -52,5 +52,4 @@ export class QuestionAnswerApi {
   public async getQuestionAnswerRecordById(questionRecordId: string) {
     return this.agent.modules.questionAnswer.findById(questionRecordId)
   }
-
 }
