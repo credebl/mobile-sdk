@@ -1,4 +1,4 @@
-import { AskarModule } from "@credo-ts/askar";
+import { AskarModule, AskarModuleConfigStoreOptions } from "@credo-ts/askar";
 import {
   Agent,
   CacheModule,
@@ -18,8 +18,8 @@ import {
   type TagValue,
   W3cCredentialRecord,
   W3cCredentialRepository,
+  type ModulesMap
 } from "@credo-ts/core";
-import type { AgentModulesInput } from "@credo-ts/core/build/agent/AgentModules";
 import { agentDependencies } from "@credo-ts/react-native";
 import { askar } from "@openwallet-foundation/askar-react-native";
 import type { PropsWithChildren } from "react";
@@ -31,10 +31,15 @@ export enum CredentialRecord {
   Mdoc = 'mdoc',
   W3c = 'w3c',
 }
-const getCoreModules = () => {
+const getCoreModules = (askarConfig: AskarModuleConfigStoreOptions) => {
   return {
     askar: new AskarModule({
       askar,
+      store: {
+        id: askarConfig.id,
+        key: askarConfig.key,
+        keyDerivationMethod: askarConfig.keyDerivationMethod === 'raw' ? 'raw' : 'kdf:argon2i:mod',
+      },
     }),
     dids: new DidsModule({
       registrars: [new JwkDidRegistrar(), new KeyDidRegistrar()],
@@ -50,15 +55,16 @@ const getCoreModules = () => {
 
 export interface MobileSDKModule {
   initialize(agent: Agent): void;
-  getAgentModules(): AgentModulesInput;
+  getAgentModules(): ModulesMap;
 }
 
 export type MobileSDKOptions<
   T extends Record<string, MobileSDKModule> = Record<string, MobileSDKModule>
 > = {
   agentConfig: InitConfig;
+  askarConfig: AskarModuleConfigStoreOptions
   modules: T;
-  defaultModules?: AgentModulesInput;
+  defaultModules?: ModulesMap;
 };
 export class MobileSDK<
   T extends Record<string, MobileSDKModule> = Record<string, MobileSDKModule>
@@ -82,7 +88,7 @@ export class MobileSDK<
 
   async initialize() {
     const defaultModules = this.configuration.defaultModules ?? {};
-    const coreModules = getCoreModules();
+    const coreModules = getCoreModules(this.configuration.askarConfig);
     Object.assign(defaultModules, coreModules);
 
     const modules = Object.entries(this.configuration.modules).reduce(
@@ -218,7 +224,7 @@ export class MobileSDK<
     } else if (format === CredentialRecord.Mdoc) {
       await agent.mdoc.deleteById(id);
     } else if (format === CredentialRecord.W3c) {
-      await agent.w3cCredentials.removeCredentialRecord(id);
+      await agent.w3cCredentials.deleteById(id);
       return;
     } else {
       throw new Error("Credential format not supported");
@@ -289,7 +295,13 @@ export class MobileSDK<
       try {
         const credRecord = await repository.getById(agent.context, credId);
         for (const [tag, value] of Object.entries(tags)) {
-          await credRecord.setTag(tag, value);
+            if (value === null || value === undefined) {
+              credRecord.setTag(tag, undefined)
+            } else if (Array.isArray(value)) {
+              credRecord.setTag(tag, value)
+            } else {
+              credRecord.setTag(tag, [String(value)])
+            }
         }
         
         if (repository instanceof W3cCredentialRepository) {
@@ -315,9 +327,9 @@ export class MobileSDK<
 
   public async getCredentialsByTag({
     format,
-    tag,
+    tags,
   }: {
-    tag: Record<string, any>;
+    tags: Record<string, any>;
     format?: CredentialRecord;
   }) {
     const agent = this.assertAndGetAgent();
@@ -326,7 +338,7 @@ export class MobileSDK<
     const results: (SdJwtVcRecord | MdocRecord | W3cCredentialRecord)[] = [];
 
     for (const repository of repositories) {
-      const records = await repository.findByQuery(agent.context, tag);
+      const records = await repository.findByQuery(agent.context, tags);
       results.push(...records);
     }
 

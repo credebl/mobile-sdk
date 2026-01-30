@@ -1,31 +1,25 @@
-import {
-  DidJwk,
-  DidKey,
-  DidsApi,
-  type JwkDidCreateOptions,
-  KeyBackend,
-  type KeyDidCreateOptions,
-  getJwkFromKey,
-} from '@credo-ts/core'
-import {
-  type OpenId4VcCredentialHolderBinding,
-  type OpenId4VcCredentialHolderDidBinding,
-  type OpenId4VciCredentialBindingResolver,
-  OpenId4VciCredentialFormatProfile,
-} from '@credo-ts/openid4vc'
+import { DidJwk, DidKey, DidsApi, type JwkDidCreateOptions, type KeyDidCreateOptions, Kms } from '@credo-ts/core'
+import { type OpenId4VciCredentialBindingResolver, OpenId4VciCredentialFormatProfile } from '@credo-ts/openid4vc'
 
 export function getCredentialBindingResolver(
-  pidSchemes: { sdJwtVcVcts: Array<string>; msoMdocDoctypes: Array<string> } | undefined,
-  requestBatch: boolean | number = 1
-): OpenId4VciCredentialBindingResolver {
+  {
+    pidSchemes,
+    requestBatch,
+  }: {
+    pidSchemes?: { sdJwtVcVcts: Array<string>; msoMdocDoctypes: Array<string> }
+    requestBatch?: boolean | number
+  }): OpenId4VciCredentialBindingResolver {
   return async ({
     supportedDidMethods,
-    keyTypes,
+    credentialConfiguration,
+    issuerMaxBatchSize,
+    proofTypes,
     supportsAllDidMethods,
     supportsJwk,
     credentialFormat,
     agentContext,
-  }): Promise<OpenId4VcCredentialHolderBinding> => {
+  }) => {
+    const kms = agentContext.resolve(Kms.KeyManagementApi)
     let didMethod: 'key' | 'jwk' | undefined =
       supportsAllDidMethods || supportedDidMethods?.includes('did:jwk')
         ? 'jwk'
@@ -38,25 +32,44 @@ export function getCredentialBindingResolver(
     }
 
     const shouldKeyBeHardwareBackedForMsoMdoc =
-      credentialFormat === OpenId4VciCredentialFormatProfile.MsoMdoc && pidSchemes
+      credentialConfiguration?.format === OpenId4VciCredentialFormatProfile.MsoMdoc &&
+      pidSchemes?.msoMdocDoctypes.includes(credentialConfiguration.doctype)
+
     const shouldKeyBeHardwareBackedForSdJwtVc =
-      credentialFormat === OpenId4VciCredentialFormatProfile.SdJwtVc && pidSchemes
+      (credentialConfiguration?.format === 'vc+sd-jwt' || credentialConfiguration.format === 'dc+sd-jwt') &&
+      credentialConfiguration.vct &&
+      pidSchemes?.sdJwtVcVcts.includes(credentialConfiguration.vct)
 
     const shouldKeyBeHardwareBacked = shouldKeyBeHardwareBackedForSdJwtVc || shouldKeyBeHardwareBackedForMsoMdoc
 
-    const keyType = keyTypes[0]
+    // We don't want to request more than 10 credentials
+    const batchSize =
+      requestBatch === true
+        ? Math.min(issuerMaxBatchSize, 10)
+        : typeof requestBatch === 'number'
+          ? Math.min(issuerMaxBatchSize, requestBatch)
+          : 1
 
-    const batchSize = typeof requestBatch === 'boolean' ? (requestBatch ? 1 : 0) : requestBatch
+    // TODO: support key attestations
+    if (!proofTypes.jwt || proofTypes.jwt.keyAttestationsRequired) {
+      throw new Error('Unable to request credentials. Only jwt proof type without key attestations supported')
+    }
 
+    const algs = proofTypes.jwt.supportedSignatureAlgorithms
+    if (!algs?.length) {
+      throw new Error('No supported JWT signature algorithms provided by issuer')
+    }
+    const signatureAlgorithm = algs[0]
     const keys = await Promise.all(
-      Array(batchSize)
-        .fill(0)
-        .map(() =>
-          agentContext.wallet.createKey({
-            keyType,
-            keyBackend: shouldKeyBeHardwareBacked ? KeyBackend.SecureElement : KeyBackend.Software,
+      new Array(batchSize).fill(0).map(() =>
+        kms
+          .createKeyForSignatureAlgorithm({
+            algorithm: signatureAlgorithm,
+            // FIXME: what should happen with already existing keys created in the secure environment?
+            backend: shouldKeyBeHardwareBacked ? 'secureEnvironment' : 'askar',
           })
-        )
+          .then((key) => Kms.PublicJwk.fromUnknown(key.publicJwk))
+      )
     )
 
     if (didMethod) {
@@ -67,7 +80,7 @@ export function getCredentialBindingResolver(
           const didResult = await didsApi.create<JwkDidCreateOptions | KeyDidCreateOptions>({
             method: dm,
             options: {
-              key,
+              keyId: key.keyId,
             },
           })
 
@@ -81,32 +94,34 @@ export function getCredentialBindingResolver(
             verificationMethodId = didJwk.verificationMethodId
           } else {
             const didKey = DidKey.fromDid(didResult.didState.did)
-            verificationMethodId = `${didKey.did}#${didKey.key.fingerprint}`
+            verificationMethodId = `${didKey.did}#${didKey.publicJwk.fingerprint}`
           }
 
-          return {
-            didUrl: verificationMethodId,
-            method: 'did',
-          } as unknown as OpenId4VcCredentialHolderDidBinding
+          return verificationMethodId
         })
       )
-      return didResults[0]
+
+      return {
+        method: 'did',
+        didUrls: didResults,
+      }
     }
 
     if (
       supportsJwk &&
       (credentialFormat === OpenId4VciCredentialFormatProfile.SdJwtVc ||
+        credentialFormat === OpenId4VciCredentialFormatProfile.SdJwtDc ||
         credentialFormat === OpenId4VciCredentialFormatProfile.MsoMdoc)
     ) {
       return {
         method: 'jwk',
-        // @ts-ignore
-        keys: keys.map((key) => getJwkFromKey(key)),
+        keys,
       }
     }
 
     throw new Error(
-      `No supported binding method could be found. Supported methods are did:key and did:jwk, or plain jwk for sd-jwt/mdoc. Issuer supports ${supportsJwk ? 'jwk, ' : ''
+      `No supported binding method could be found. Supported methods are did:key and did:jwk, or plain jwk for sd-jwt/mdoc. Issuer supports ${
+        supportsJwk ? 'jwk, ' : ''
       }${supportedDidMethods?.join(', ') ?? 'Unknown'}`
     )
   }

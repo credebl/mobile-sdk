@@ -1,6 +1,7 @@
 import { JSONPath } from '@astronautlabs/jsonpath'
 import {
   ClaimFormat,
+  MdocNameSpaces,
   type DcqlQueryResult,
   type DifPexCredentialsForRequest,
   type DifPresentationExchangeDefinitionV2,
@@ -26,6 +27,7 @@ export type GetCredentialsForProofRequestOptions = {
   origin?: string
   trustedX509Entities?: TrustedX509Entity[]
   preferredLocale?: string
+  selectedCredentialsId?: string[]
 }
 
 export function formatDifPexCredentialsForRequest(
@@ -54,7 +56,7 @@ export function formatDifPexCredentialsForRequest(
 
               // By default the whole credential is disclosed
               let disclosed: FormattedSubmissionEntrySatisfiedCredential['disclosed']
-              if (verifiableCredential.claimFormat === ClaimFormat.SdJwtVc) {
+              if (verifiableCredential.claimFormat === ClaimFormat.SdJwtDc) {
                 const { attributes, metadata } = getAttributesAndMetadataForSdJwtPayload(
                   verifiableCredential.disclosedPayload
                 )
@@ -121,7 +123,7 @@ export function formatDcqlCredentialsForRequest(dcqlQueryResult: DcqlQueryResult
     {
       required: true,
       options: [dcqlQueryResult.credentials.map((c) => c.id)],
-      matching_options: dcqlQueryResult.canBeSatisfied ? [dcqlQueryResult.credentials.map((c) => c.id)] : undefined,
+      matching_options: dcqlQueryResult.can_be_satisfied ? [dcqlQueryResult.credentials.map((c) => c.id)] : undefined,
     },
   ]
 
@@ -146,54 +148,48 @@ export function formatDcqlCredentialsForRequest(dcqlQueryResult: DcqlQueryResult
         continue
       }
 
-      const credentialForDisplay = getCredentialForDisplay(match.record)
+      const credentials: FormattedSubmissionEntrySatisfiedCredential[] = []
 
-      let disclosed: FormattedSubmissionEntrySatisfiedCredential['disclosed']
-      if (match.output.credential_format === 'vc+sd-jwt' || match.output.credential_format === 'dc+sd-jwt') {
-        if (match.record.type !== 'SdJwtVcRecord') throw new Error('Expected SdJwtRecord')
+      for (const validMatch of match.valid_credentials) {
+        const credentialForDisplay = getCredentialForDisplay(validMatch.record)
+        let disclosed: FormattedSubmissionEntrySatisfiedCredential['disclosed']
 
-        if (queryCredential.format !== 'vc+sd-jwt' && queryCredential.format !== 'dc+sd-jwt') {
-          throw new Error(`Expected query credential format ${queryCredential.format} to be vc+sd-jwt or dc+sd-jwt`)
+        if (validMatch.record.type === 'SdJwtVcRecord') {
+          // Credo already applied selective disclosure on payload
+          const { attributes, metadata } = getAttributesAndMetadataForSdJwtPayload(
+            validMatch.claims.valid_claim_sets[0].output
+          )
+          disclosed = {
+            attributes,
+            metadata,
+            paths: getDisclosedAttributePathArrays(attributes, 2),
+          }
+        } else if (validMatch.record.type === 'MdocRecord') {
+          const namespaces = validMatch.claims.valid_claim_sets[0].output as MdocNameSpaces
+          disclosed = {
+            ...getAttributesAndMetadataForMdocPayload(namespaces, validMatch.record.firstCredential),
+            paths: getDisclosedAttributePathArrays(namespaces, 2),
+          }
+        } else {
+          // All paths disclosed for W3C
+          disclosed = {
+            attributes: credentialForDisplay.attributes,
+            metadata: credentialForDisplay.metadata,
+            paths: getDisclosedAttributePathArrays(credentialForDisplay.attributes, 2),
+          }
         }
 
-        // Credo Already applied selective disclosure on payload
-        const { attributes, metadata } = getAttributesAndMetadataForSdJwtPayload(match.output.claims)
-        disclosed = {
-          attributes,
-          metadata,
-          paths: getDisclosedAttributePathArrays(attributes, 2),
-        }
-      } else if (match.output.credential_format === 'mso_mdoc') {
-        if (match.record.type !== 'MdocRecord') throw new Error('Expected MdocRecord')
-
-        // TODO: check if fixed now
-        // FIXME: the disclosed payload here doesn't have the correct encoding anymore
-        // once we serialize input??
-        disclosed = {
-          ...getAttributesAndMetadataForMdocPayload(match.output.namespaces, match.record.credential),
-          paths: getDisclosedAttributePathArrays(match.output.namespaces, 2),
-        }
-      } else {
-        if (match.record.type !== 'W3cCredentialRecord') throw new Error('Expected W3cCredentialRecord')
-
-        // All paths disclosed for W3C
-        disclosed = {
-          attributes: credentialForDisplay.attributes,
-          metadata: credentialForDisplay.metadata,
-          paths: getDisclosedAttributePathArrays(credentialForDisplay.attributes, 2),
-        }
+        credentials.push({
+          credential: credentialForDisplay,
+          disclosed,
+        })
       }
 
       entries.push({
         inputDescriptorId: credentialId,
-        credentials: [
-          {
-            credential: credentialForDisplay,
-            disclosed,
-          },
-        ],
+        credentials: credentials as NonEmptyArray<FormattedSubmissionEntrySatisfiedCredential>,
         isSatisfied: true,
-        name: credentialForDisplay.display.name,
+        name: credentials[0].credential.display.name,
       })
     }
   }
@@ -209,14 +205,29 @@ function extractCredentialPlaceholderFromQueryCredential(credential: DcqlQueryRe
   if (credential.format === 'mso_mdoc') {
     return {
       claimFormat: ClaimFormat.MsoMdoc,
-      credentialName: credential.meta?.doctype_value ?? 'Unknown value',
+      credentialName: credential.meta?.doctype_value ?? 'Unknown MDoc',
       requestedAttributePaths: credential.claims?.map((c) => ('path' in c ? [c.path[1]] : [c.claim_name])),
     }
   }
 
-  if (credential.format === 'vc+sd-jwt' || credential.format === 'dc+sd-jwt') {
+  if (credential.format === 'vc+sd-jwt') {
+    if (credential.meta && 'type_values' in credential.meta) {
+      return {
+        claimFormat: ClaimFormat.SdJwtW3cVc,
+        requestedAttributePaths: credential.claims?.map((c) => c.path),
+      }
+    }
+
     return {
-      claimFormat: ClaimFormat.SdJwtVc,
+      claimFormat: ClaimFormat.SdJwtDc,
+      credentialName: credential.meta?.vct_values?.[0].replace('https://', ''),
+      requestedAttributePaths: credential.claims?.map((c) => c.path),
+    }
+  }
+
+  if (credential.format === 'dc+sd-jwt') {
+    return {
+      claimFormat: ClaimFormat.SdJwtDc,
       credentialName: credential.meta?.vct_values?.[0].replace('https://', ''),
       requestedAttributePaths: credential.claims?.map((c) => c.path),
     }

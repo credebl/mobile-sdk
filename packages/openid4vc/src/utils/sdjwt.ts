@@ -1,4 +1,4 @@
-import type { JwkJson } from '@credo-ts/core'
+import { Kms } from '@credo-ts/core'
 import type { CredentialMetadata } from '../display'
 import { recursivelyMapMdocAttributes } from './attributes'
 import { safeCalculateJwkThumbprint } from './jwk'
@@ -16,7 +16,7 @@ export function getAttributesAndMetadataForSdJwtPayload(sdJwtVcPayload: Record<s
   const { _sd_alg, _sd_hash, iss, vct, cnf, iat, exp, nbf, status, ...visibleProperties } =
     sdJwtVcPayload as SdJwtVcPayload
 
-  const holder = cnf ? ((cnf.kid ?? cnf.jwk) ? safeCalculateJwkThumbprint(cnf.jwk as JwkJson) : undefined) : undefined
+  const holder = cnf ? ((cnf.kid ?? cnf.jwk) ? safeCalculateJwkThumbprint(cnf.jwk as Kms.Jwk) : undefined) : undefined
   const credentialMetadata: CredentialMetadata = {
     type: vct,
     issuer: iss,

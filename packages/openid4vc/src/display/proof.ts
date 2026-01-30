@@ -1,5 +1,5 @@
-import { ClaimFormat, DateOnly, Hasher, type JwkJson, TypedArrayEncoder } from '@credo-ts/core'
-import type { BaseRecord, DcqlCredentialsForRequest, DcqlQueryResult, DifPexCredentialsForRequest, MdocRecord, SdJwtVcRecord, W3cCredentialRecord } from '@credo-ts/core'
+import { ClaimFormat, CredentialMultiInstanceUseMode, DateOnly, Hasher, TypedArrayEncoder } from '@credo-ts/core'
+import type { BaseRecord, DcqlCredentialsForRequest, DcqlQueryResult, DifPexCredentialsForRequest, JsonObject, Kms, MdocNameSpaces, MdocRecord, SdJwtVcRecord, W3cCredentialRecord, W3cV2CredentialRecord } from '@credo-ts/core'
 import type { OpenId4VpResolvedAuthorizationRequest } from '@credo-ts/openid4vc'
 import { formatDate, isDateString } from '../utils'
 import { detectImageMimeType } from '../utils/attributes'
@@ -112,7 +112,7 @@ export function getAttributesAndMetadataForSdJwtPayload(sdJwtVcPayload: Record<s
   }
   const { _sd_alg, _sd_hash, iss, vct, cnf, iat, exp, nbf, ...visibleProperties } = sdJwtVcPayload as SdJwtVcPayload
 
-  const holder = (cnf.kid ?? cnf.jwk) ? safeCalculateJwkThumbprint(cnf.jwk as JwkJson) : undefined
+  const holder = (cnf.kid ?? cnf.jwk) ? safeCalculateJwkThumbprint(cnf.jwk as Kms.Jwk) : undefined
   const credentialMetadata: CredentialMetadata = {
     type: vct,
     issuer: iss,
@@ -142,7 +142,7 @@ export function getAttributesAndMetadataForSdJwtPayload(sdJwtVcPayload: Record<s
   }
 }
 
-export function safeCalculateJwkThumbprint(jwk: JwkJson): string | undefined {
+export function safeCalculateJwkThumbprint(jwk: Kms.Jwk): string | undefined {
   try {
     const thumbprint = TypedArrayEncoder.toBase64URL(
       Hasher.hash(
@@ -183,48 +183,56 @@ export function getSelectedCredentialsForRequest(
   dcqlQueryResult: DcqlQueryResult,
   selectedCredentials: { [credentialQueryId: string]: string }
 ): DcqlCredentialsForRequest {
-  if (!dcqlQueryResult.canBeSatisfied) {
+  if (!dcqlQueryResult.can_be_satisfied) {
     throw new Error('Cannot select the credentials for the dcql query presentation if the request cannot be satisfied')
   }
 
   const credentials: DcqlCredentialsForRequest = {}
 
+  type WithRecord<T> = T & {
+    record: MdocRecord | SdJwtVcRecord | W3cCredentialRecord | W3cV2CredentialRecord
+  }
+
   for (const [credentialQueryId, credentialRecordId] of Object.entries(selectedCredentials)) {
     const matchesForCredentialQuery = dcqlQueryResult.credential_matches[credentialQueryId]
     if (matchesForCredentialQuery.success) {
-      const match = matchesForCredentialQuery.all
-        .map((credential) =>
-          credential.find((claimSet) =>
-            claimSet?.success && 'record' in claimSet && (claimSet.record as BaseRecord).id === credentialRecordId
-              ? claimSet
-              : undefined
-          )
-        )
-        .find((i) => i !== undefined)
-      // TODO: fix the typing, make selection in Credo easier
-      const matchWithRecord = match as typeof match & { record: MdocRecord | SdJwtVcRecord | W3cCredentialRecord }
+      const validCredentialMatch = matchesForCredentialQuery.valid_credentials.find(
+        (credential) => (credential as WithRecord<typeof credential>).record.id === credentialRecordId
+      )
 
-      if (
-        matchWithRecord?.success &&
-        matchWithRecord.record.type === 'MdocRecord' &&
-        matchWithRecord.output.credential_format === 'mso_mdoc'
-      ) {
-        credentials[credentialQueryId] = {
-          claimFormat: ClaimFormat.MsoMdoc,
-          credentialRecord: matchWithRecord.record,
-          disclosedPayload: matchWithRecord.output.namespaces,
-        }
-      } else if (
-        matchWithRecord?.success &&
-        matchWithRecord.record.type === 'SdJwtVcRecord' &&
-        (matchWithRecord.output.credential_format === 'dc+sd-jwt' ||
-          matchWithRecord.output.credential_format === 'vc+sd-jwt')
-      ) {
-        credentials[credentialQueryId] = {
-          claimFormat: ClaimFormat.SdJwtVc,
-          credentialRecord: matchWithRecord.record,
-          disclosedPayload: matchWithRecord.output.claims,
-        }
+      if (!validCredentialMatch) {
+        throw new Error(
+          `Could not find credential record ${credentialRecordId} in valid credential matches for credentialQueryId ${credentialQueryId}`
+        )
+      }
+
+      // TODO: fix the typing, make selection in Credo easier
+      const matchWithRecord = validCredentialMatch as typeof validCredentialMatch & {
+        record: MdocRecord | SdJwtVcRecord | W3cCredentialRecord | W3cV2CredentialRecord
+      }
+
+      if (matchWithRecord.record.type === 'MdocRecord') {
+        credentials[credentialQueryId] = [
+          {
+            claimFormat: ClaimFormat.MsoMdoc,
+            credentialRecord: matchWithRecord.record,
+            disclosedPayload: matchWithRecord.claims.valid_claim_sets[0].output as MdocNameSpaces,
+            // FIXME: we currently allow re-sharing if we don't have new instances anymore
+            // we should make this configurable maybe? Or dependant on credential type?
+            useMode: CredentialMultiInstanceUseMode.NewOrFirst,
+          },
+        ]
+      } else if (matchWithRecord.record.type === 'SdJwtVcRecord') {
+        credentials[credentialQueryId] = [
+          {
+            claimFormat: ClaimFormat.SdJwtDc,
+            credentialRecord: matchWithRecord.record,
+            disclosedPayload: matchWithRecord.claims.valid_claim_sets[0].output as JsonObject,
+            // FIXME: we currently allow re-sharing if we don't have new instances anymore
+            // we should make this configurable maybe? Or dependant on credential type?
+            useMode: CredentialMultiInstanceUseMode.NewOrFirst,
+          },
+        ]
       }
     }
   }
