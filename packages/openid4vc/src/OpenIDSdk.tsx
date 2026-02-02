@@ -678,7 +678,8 @@ export class OpenID4VCSDK implements MobileSDKModule {
         credential: {
           vct: record.getTags().vct,
           format: 'dc+sd-jwt',
-          claims: sdJwtVc.prettyClaims,
+          // biome-ignore lint/suspicious/noExplicitAny: no explanation
+          claims: sdJwtVc.prettyClaims as any,
         },
         display: {
           title: display.name,

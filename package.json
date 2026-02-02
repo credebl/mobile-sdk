@@ -8,12 +8,11 @@
     "url": "https://github.com/credebl/mobile-sdk"
   },
   "scripts": {
-    "check-types": "pnpm -r check-types",
+    "types:check": "tsc -p tsconfig.json --noEmit",
     "style:check": "biome check --unsafe",
     "style:fix": "biome check --write --unsafe",
     "build": "pnpm -r --parallel run build",
-    "clean": "pnpm -r clean",
-    "validate": "pnpm check-types && pnpm style:check",
+    "validate": "pnpm types:check && pnpm style:check",
     "release": "pnpm build && pnpm changeset publish --no-git-tag",
     "changeset-version": "pnpm changeset version && pnpm style:fix"
   },

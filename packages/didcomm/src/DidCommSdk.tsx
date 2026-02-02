@@ -9,6 +9,7 @@ import {
   LegacyIndyDidCommProofFormatService,
 } from '@credo-ts/anoncreds'
 import { Agent } from '@credo-ts/core'
+import type { DidCommMediatorPickupStrategy } from '@credo-ts/didcomm'
 import {
   DidCommAutoAcceptCredential,
   DidCommAutoAcceptProof,
@@ -22,7 +23,6 @@ import {
   DidCommProofV2Protocol,
   DidCommWsOutboundTransport,
 } from '@credo-ts/didcomm'
-import { DidCommMediationRecipientModuleConfigOptions } from '@credo-ts/didcomm/build/modules/routing/DidCommMediationRecipientModuleConfig.mjs'
 import { IndyVdrAnonCredsRegistry, IndyVdrModule, type IndyVdrPoolConfig } from '@credo-ts/indy-vdr'
 import { QuestionAnswerModule } from '@credo-ts/question-answer'
 import { anoncreds } from '@hyperledger/anoncreds-react-native'
@@ -45,9 +45,25 @@ import {
 import { QuestionAnswerApi } from './questionAnswer'
 
 export interface DidCommConfiguration
-  extends Pick<DidCommMediationRecipientModuleConfigOptions, 'mediatorPickupStrategy'>,
-    Pick<DidCommConnectionsModuleConfigOptions, 'peerNumAlgoForDidExchangeRequests' | 'peerNumAlgoForDidRotation'>,
+  extends Pick<
+      DidCommConnectionsModuleConfigOptions,
+      'peerNumAlgoForDidExchangeRequests' | 'peerNumAlgoForDidRotation'
+    >,
     Pick<DidCommModuleConfigOptions, 'processDidCommMessagesConcurrently'> {
+  /**
+   * Strategy to use for picking up messages from the mediator. If no strategy is provided, the agent will use the discover
+   * features protocol to determine the best strategy.
+   *
+   *
+   * - `DidCommMediatorPickupStrategy.PickUpV1`         - explicitly pick up messages from the mediator in periodic loops according to [RFC 0212 Pickup Protocol](https://github.com/hyperledger/aries-rfcs/blob/main/features/0212-pickup/README.md)
+   * - `DidCommMediatorPickupStrategy.PickUpV2`         - pick up messages from the mediator in periodic loops according to [RFC 0685 Pickup V2 Protocol](https://github.com/hyperledger/aries-rfcs/tree/main/features/0685-pickup-v2/README.md).
+   * - `DidCommMediatorPickupStrategy.PickUpV2LiveMode` - pick up messages from the mediator using Live Mode as specified in [RFC 0685 Pickup V2 Protocol](https://github.com/hyperledger/aries-rfcs/tree/main/features/0685-pickup-v2/README.md).
+   * - `DidCommMediatorPickupStrategy.Implicit`         - Open a WebSocket with the mediator to implicitly receive messages. (currently used by Aries Cloud Agent Python)
+   * - `DidCommMediatorPickupStrategy.None`             - Do not retrieve messages from the mediator automatically. You can launch manual pickup flows afterwards.
+   *
+   * @default undefined
+   */
+  mediatorPickupStrategy?: DidCommMediatorPickupStrategy
   anoncreds?: {
     registries: AnonCredsRegistry[]
   }
