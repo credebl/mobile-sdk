@@ -170,7 +170,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
     })
   }
 
-  async  parseCredentialResponses (credentials: OpenId4VciCredentialResponse[], issuerMetadata: OpenId4VciMetadata) {
+  async parseCredentialResponses(credentials: OpenId4VciCredentialResponse[], issuerMetadata: OpenId4VciMetadata) {
     return credentials.map(({ record, ...credentialResponse }) => {
       // OpenID4VC metadata
       const openId4VcMetadata = extractOpenId4VcCredentialMetadata(credentialResponse.credentialConfiguration, {
@@ -236,7 +236,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
     return {
       deferredCredentials,
-      credentials: this.parseCredentialResponses(credentials, resolvedCredentialOffer.metadata),
+      credentials: await this.parseCredentialResponses(credentials, resolvedCredentialOffer.metadata),
     }
   } catch (error) {
     // TODO: if one biometric operation fails it will fail the whole credential receiving. We should have more control so we
