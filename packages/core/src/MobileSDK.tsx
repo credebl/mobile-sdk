@@ -216,23 +216,23 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     }
   }
 
-  private async getRepositories(
+  private getRepositories(
     agent: Agent,
     format?: CredentialRecord
-  ): Promise<(SdJwtVcRepository | MdocRepository | W3cCredentialRepository)[]> {
+  ): (SdJwtVcRepository | MdocRepository | W3cCredentialRepository)[] {
     if (format === CredentialRecord.SdJwt) {
-      return [await agent.dependencyManager.resolve(SdJwtVcRepository)]
+      return [agent.dependencyManager.resolve(SdJwtVcRepository)]
     } else if (format === CredentialRecord.Mdoc) {
-      return [await agent.dependencyManager.resolve(MdocRepository)]
+      return [agent.dependencyManager.resolve(MdocRepository)]
     } else if (format === CredentialRecord.W3c) {
-      return [await agent.dependencyManager.resolve(W3cCredentialRepository)]
+      return [agent.dependencyManager.resolve(W3cCredentialRepository)]
     }
 
-    return Promise.all([
+    return [
       agent.dependencyManager.resolve(SdJwtVcRepository),
       agent.dependencyManager.resolve(MdocRepository),
       agent.dependencyManager.resolve(W3cCredentialRepository),
-    ])
+    ]
   }
 
   public async setTagsToCredential({
@@ -252,22 +252,15 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     }
 
     const agent = this.assertAndGetAgent()
-    const repositories = await this.getRepositories(agent, format)
+    const repositories = this.getRepositories(agent, format)
 
     let lastError: Error | null = null
 
     for (const repository of repositories) {
       try {
         const credRecord = await repository.getById(agent.context, credId)
-        for (const [tag, value] of Object.entries(tags)) {
-          if (value === null || value === undefined) {
-            credRecord.setTag(tag, undefined)
-          } else if (Array.isArray(value)) {
-            credRecord.setTag(tag, value)
-          } else {
-            credRecord.setTag(tag, [String(value)])
-          }
-        }
+
+        credRecord.setTags(tags)
 
         if (repository instanceof W3cCredentialRepository) {
           await repository.update(agent.context, credRecord as W3cCredentialRecord)
@@ -289,11 +282,11 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     )
   }
 
-  public async getCredentialsByTag({ format, tags }: { tags: Record<string, any>; format?: CredentialRecord }) {
+  public async getCredentialsByTag({ tags, format }: { tags: Record<string, any>; format?: CredentialRecord }) {
     const agent = this.assertAndGetAgent()
-    const repositories = await this.getRepositories(agent, format)
+    const repositories = this.getRepositories(agent, format)
 
-    const results: (SdJwtVcRecord | MdocRecord | W3cCredentialRecord)[] = []
+    const results = []
 
     for (const repository of repositories) {
       const records = await repository.findByQuery(agent.context, tags)
