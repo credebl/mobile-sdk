@@ -44,7 +44,7 @@ import { indyVdr } from '@hyperledger/indy-vdr-react-native'
 // Register the React Native Askar bindings
 import '@openwallet-foundation/askar-react-native'
 // Import the shared Askar interface for Credo
-import { askar as ariesAskar } from '@openwallet-foundation/askar-shared'
+import { askar as ariesAskar } from '@openwallet-foundation/askar-react-native'
 
 export type AdeyaAgentModuleOptions = {
   mediatorInvitationUrl: string

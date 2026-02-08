@@ -16,6 +16,7 @@ import {
 } from '@credo-ts/core'
 import { agentDependencies } from '@credo-ts/react-native'
 import { askar as ariesAskar } from '@openwallet-foundation/askar-shared'
+import { AskarModuleConfig } from '@credo-ts/askar/build/AskarModuleConfig'
 
 interface WalletImportConfigWithAgent {
   agentConfig: InitConfig
@@ -37,9 +38,7 @@ export const isWalletPinCorrect = async (walletConfig: WalletConfig) => {
       new ConsoleLogger(LogLevel.off),
       new agentDependencies.FileSystem(),
       new SigningProviderRegistry([]),
-      {
-        ariesAskar,
-      } as any
+      new AskarModuleConfig({ ariesAskar })
     )
     await askarWallet.open(walletConfig)
 
@@ -84,9 +83,7 @@ export const isWalletImportable = async (
       new ConsoleLogger(LogLevel.debug),
       fileSystem,
       new SigningProviderRegistry([]),
-      {
-        ariesAskar,
-      } as any
+      new AskarModuleConfig({ ariesAskar })
     )
     await askarWallet.import(walletConfig, importConfig)
 
