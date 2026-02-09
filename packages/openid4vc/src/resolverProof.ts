@@ -201,7 +201,7 @@ export function formatDcqlCredentialsForRequest(dcqlQueryResult: DcqlQueryResult
   }
 }
 
-function extractCredentialPlaceholderFromQueryCredential(credential: DcqlQueryResult['credentials'][number]) {
+export function extractCredentialPlaceholderFromQueryCredential(credential: DcqlQueryResult['credentials'][number]) {
   if (credential.format === 'mso_mdoc') {
     return {
       claimFormat: ClaimFormat.MsoMdoc,
