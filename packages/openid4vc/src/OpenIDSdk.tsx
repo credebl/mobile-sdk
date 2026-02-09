@@ -56,6 +56,8 @@ import { CredentialItem, loadCachedImageAsBase64DataUrl, mapMdocAttributes, mapM
 import { Platform } from 'react-native'
 import { BiometricAuthenticationError } from './utils/error'
 
+export { extractCredentialPlaceholderFromQueryCredential } from '../src/resolverProof'
+
 export type CredentialsForProofRequest = Awaited<ReturnType<OpenID4VCSDK['getCredentialsForProofRequest']>>
 
 export type OpenId4VcConfiguration = {} & X509ModuleConfigOptions
