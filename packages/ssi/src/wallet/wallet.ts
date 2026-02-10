@@ -5,6 +5,7 @@ import type { InitConfig, WalletConfig, WalletExportImportConfig } from '@credo-
 import type { AgentModulesInput } from '@credo-ts/core/build/agent/AgentModules'
 
 import { AskarWallet } from '@credo-ts/askar'
+import { AskarModuleConfig } from '@credo-ts/askar/build/AskarModuleConfig'
 import {
   Agent,
   ConsoleLogger,
@@ -16,7 +17,6 @@ import {
 } from '@credo-ts/core'
 import { agentDependencies } from '@credo-ts/react-native'
 import { askar as ariesAskar } from '@openwallet-foundation/askar-shared'
-import { AskarModuleConfig } from '@credo-ts/askar/build/AskarModuleConfig'
 
 interface WalletImportConfigWithAgent {
   agentConfig: InitConfig
