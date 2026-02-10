@@ -96,15 +96,9 @@ importers:
       '@hyperledger/anoncreds-react-native':
         specifier: ^0.2.2
         version: 0.2.2(react-native@0.71.13(@babel/core@7.23.0)(@babel/preset-env@7.22.20(@babel/core@7.23.0))(react@18.2.0))(react@18.2.0)
-      '@hyperledger/aries-askar-shared':
-        specifier: ^0.2.3
-        version: 0.2.3
       '@hyperledger/indy-vdr-react-native':
         specifier: ^0.2.2
         version: 0.2.2(react-native@0.71.13(@babel/core@7.23.0)(@babel/preset-env@7.22.20(@babel/core@7.23.0))(react@18.2.0))(react@18.2.0)
-      '@openwallet-foundation/askar-nodejs':
-        specifier: ^0.4.2
-        version: 0.4.3
       '@openwallet-foundation/askar-react-native':
         specifier: ^0.4.3
         version: 0.4.3(react-native@0.71.13(@babel/core@7.23.0)(@babel/preset-env@7.22.20(@babel/core@7.23.0))(react@18.2.0))(react@18.2.0)
@@ -3195,11 +3189,11 @@ packages:
 
   glob@6.0.4:
     resolution: {integrity: sha512-MKZeRNyYZAVVVG1oZeLaWie1uweH40m9AZwIwxyPbTSX4hHrVYSzLg0Ro5Z5R7XKkIX+Cc6oD1rqeDJnwsB8/A==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@7.1.6:
     resolution: {integrity: sha512-LwaxwyZ72Lk7vZINtNNrywX0ZuLyStrdDtabefZKAY5ZGJhVtgdznluResxNmPitE0SAO+O26sWTHeKSI2wMBA==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
@@ -3208,7 +3202,7 @@ packages:
   glob@8.1.0:
     resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
     engines: {node: '>=12'}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@9.3.5:
     resolution: {integrity: sha512-e1LleDykUz2Iu+MTYdkSsuWX8lvAjAcs0Xef0lNIu0S2wOAzuTxCJtcd9S3cijlwYF18EsU3rzb8jPVobxDh9Q==}
@@ -5844,6 +5838,7 @@ snapshots:
       ref-struct-di: 1.1.1
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@2060.io/ref-napi@3.0.6':
     dependencies:
@@ -5853,6 +5848,7 @@ snapshots:
       node-gyp-build: 4.8.4
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@ampproject/remapping@2.2.1':
     dependencies:
@@ -8025,6 +8021,7 @@ snapshots:
       ref-struct-di: 1.1.1
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@openwallet-foundation/askar-react-native@0.4.3(react-native@0.71.13(@babel/core@7.23.0)(@babel/preset-env@7.22.20(@babel/core@7.23.0))(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -9257,6 +9254,7 @@ snapshots:
       es6-symbol: 3.1.4
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   array-union@2.1.0: {}
 
@@ -9921,6 +9919,7 @@ snapshots:
     dependencies:
       es5-ext: 0.10.64
       type: 2.7.3
+    optional: true
 
   dag-map@1.0.2:
     optional: true
@@ -9938,6 +9937,7 @@ snapshots:
   debug@3.2.7:
     dependencies:
       ms: 2.1.3
+    optional: true
 
   debug@4.3.7:
     dependencies:
@@ -10157,17 +10157,20 @@ snapshots:
       es6-symbol: 3.1.4
       esniff: 2.0.1
       next-tick: 1.1.0
+    optional: true
 
   es6-iterator@2.0.3:
     dependencies:
       d: 1.0.2
       es5-ext: 0.10.64
       es6-symbol: 3.1.4
+    optional: true
 
   es6-symbol@3.1.4:
     dependencies:
       d: 1.0.2
       ext: 1.7.0
+    optional: true
 
   escalade@3.1.1: {}
 
@@ -10192,6 +10195,7 @@ snapshots:
       es5-ext: 0.10.64
       event-emitter: 0.3.5
       type: 2.7.3
+    optional: true
 
   esprima@4.0.1: {}
 
@@ -10205,6 +10209,7 @@ snapshots:
     dependencies:
       d: 1.0.2
       es5-ext: 0.10.64
+    optional: true
 
   event-target-shim@5.0.1: {}
 
@@ -10357,6 +10362,7 @@ snapshots:
   ext@1.7.0:
     dependencies:
       type: 2.7.3
+    optional: true
 
   extendable-error@0.1.7: {}
 
@@ -10611,11 +10617,13 @@ snapshots:
 
   get-stream@6.0.1: {}
 
-  get-symbol-from-current-process-h@1.0.2: {}
+  get-symbol-from-current-process-h@1.0.2:
+    optional: true
 
   get-uv-event-loop-napi-h@1.0.6:
     dependencies:
       get-symbol-from-current-process-h: 1.0.2
+    optional: true
 
   getenv@1.0.0:
     optional: true
@@ -12175,13 +12183,15 @@ snapshots:
   nested-error-stacks@2.0.1:
     optional: true
 
-  next-tick@1.1.0: {}
+  next-tick@1.1.0:
+    optional: true
 
   nice-try@1.0.5: {}
 
   nocache@3.0.4: {}
 
-  node-addon-api@3.2.1: {}
+  node-addon-api@3.2.1:
+    optional: true
 
   node-dir@0.1.17:
     dependencies:
@@ -12209,7 +12219,8 @@ snapshots:
   node-forge@1.3.1:
     optional: true
 
-  node-gyp-build@4.8.4: {}
+  node-gyp-build@4.8.4:
+    optional: true
 
   node-int64@0.4.0: {}
 
@@ -12728,12 +12739,14 @@ snapshots:
       debug: 3.2.7
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   ref-struct-di@1.1.1:
     dependencies:
       debug: 3.2.7
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   reflect-metadata@0.1.13: {}
 
@@ -13381,7 +13394,8 @@ snapshots:
       mime-types: 2.1.35
     optional: true
 
-  type@2.7.3: {}
+  type@2.7.3:
+    optional: true
 
   typeorm@0.3.21(reflect-metadata@0.2.2)(ts-node@10.9.1(@types/node@18.19.24)(typescript@5.5.3)):
     dependencies:

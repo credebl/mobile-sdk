@@ -32,14 +32,12 @@
     "@credo-ts/question-answer": "0.5.18",
     "@credo-ts/react-hooks": "0.6.1",
     "@credo-ts/react-native": "0.5.18",
-    "@hyperledger/aries-askar-shared": "^0.2.3",
     "@openwallet-foundation/askar-shared": "^0.4.3",
     "@sd-jwt/decode": "^0.7.2",
     "query-string": "^8.1.0"
   },
   "peerDependencies": {
     "@hyperledger/anoncreds-react-native": "^0.2.2",
-    "@openwallet-foundation/askar-nodejs": "^0.4.2",
     "@openwallet-foundation/askar-react-native": "^0.4.3",
     "@hyperledger/indy-vdr-react-native": "^0.2.2"
   },
