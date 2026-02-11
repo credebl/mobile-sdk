@@ -40,8 +40,11 @@ import { PushNotificationsFcmModule } from '@credo-ts/push-notifications'
 import { QuestionAnswerModule } from '@credo-ts/question-answer'
 import { agentDependencies } from '@credo-ts/react-native'
 import { anoncreds } from '@hyperledger/anoncreds-react-native'
-import { ariesAskar } from '@hyperledger/aries-askar-react-native'
 import { indyVdr } from '@hyperledger/indy-vdr-react-native'
+// Register the React Native Askar bindings
+import '@openwallet-foundation/askar-react-native'
+// Import the shared Askar interface for Credo
+import { askar as ariesAskar } from '@openwallet-foundation/askar-react-native'
 
 export type AdeyaAgentModuleOptions = {
   mediatorInvitationUrl: string
