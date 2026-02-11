@@ -1,10 +1,10 @@
 import { JSONPath } from '@astronautlabs/jsonpath'
 import {
   ClaimFormat,
-  MdocNameSpaces,
   type DcqlQueryResult,
   type DifPexCredentialsForRequest,
   type DifPresentationExchangeDefinitionV2,
+  MdocNameSpaces,
 } from '@credo-ts/core'
 import {
   type FormattedSubmission,
@@ -244,7 +244,7 @@ function simplifyJsonPath(path: string, format?: ClaimFormat, filterKeys: string
     const parsedPath: Array<{
       scope: string
       operation: string
-      expression: { type: string; value: string;[key: string]: unknown }
+      expression: { type: string; value: string; [key: string]: unknown }
     }> = JSONPath.parse(path)
 
     if (!Array.isArray(parsedPath)) {
@@ -290,7 +290,7 @@ function simplifyJsonPath(path: string, format?: ClaimFormat, filterKeys: string
     }
 
     return simplified
-  } catch (error) {
+  } catch (_error) {
     return null
   }
 }

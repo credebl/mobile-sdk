@@ -1,14 +1,21 @@
 {
   "name": "@credebl/ssi-mobile-core",
-  "main": "src/index",
-  "types": "src/index",
+  "exports": {
+    "import": "./src/index.ts"
+  },
   "version": "2.0.2",
-  "files": ["build"],
+  "files": [
+    "build"
+  ],
   "license": "Apache-2.0",
   "publishConfig": {
-    "main": "build/index",
-    "types": "build/index",
-    "access": "public"
+    "access": "public",
+    "types": "./build/index.d.mts",
+    "module": "./build/index.mjs",
+    "exports": {
+      ".": "./build/index.mjs",
+      "./package.json": "./package.json"
+    }
   },
   "homepage": "https://github.com/credebl/mobile-sdk/tree/main/packages/core",
   "repository": {
@@ -17,23 +24,20 @@
     "directory": "packages/core"
   },
   "scripts": {
-    "check-types": "pnpm compile --noEmit",
-    "build": "pnpm clean && pnpm compile",
-    "clean": "rimraf -rf ./build",
-    "compile": "tsdown -p tsconfig.build.json"
+    "build": "tsdown --config-loader unconfig",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@credo-ts/askar": "0.6.1",
-    "@credo-ts/core": "0.6.1",
-    "@credo-ts/react-native": "0.6.1",
-    "rxjs": "^7.8.2"
+    "@credo-ts/askar": "catalog:",
+    "@credo-ts/core": "catalog:",
+    "@credo-ts/react-native": "catalog:",
+    "rxjs": "catalog:"
   },
   "peerDependencies": {
     "@openwallet-foundation/askar-react-native": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:",
-    "rimraf": "catalog:",
     "typescript": "catalog:"
   }
 }

@@ -92,7 +92,7 @@ export const parseAadhaarData = async (xmlString: string): Promise<AadhaarData |
       photo,
     }
     return aadhaarData
-  } catch (error) {
+  } catch (_error) {
     return { error: 'Error parsing Aadhaar XML. Please check the input data.' }
   }
 }
@@ -112,7 +112,7 @@ export const parsePANData = async (xmlString: string): Promise<PANData | { error
     }
 
     return panData
-  } catch (error) {
+  } catch (_error) {
     return { error: 'Error parsing PAN XML. Please check the input data.' }
   }
 }
@@ -161,7 +161,7 @@ export const parseDrivingLicenseData = async (xmlString: string): Promise<Drivin
       photo: issuedTo?.Photo?.[0]._ || '',
     }
     return drivingLicenseData
-  } catch (error) {
+  } catch (_error) {
     return { error: 'Error parsing Driving License XML. Please check the input data.' }
   }
 }

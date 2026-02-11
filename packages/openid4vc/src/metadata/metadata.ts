@@ -8,11 +8,11 @@ import { type CredentialDisplay, getOpenId4VcCredentialDisplay } from '../displa
 
 export type CredentialDisplayClaims =
   | (OpenId4VciCredentialConfigurationSupportedWithFormats & {
-    format: 'vc+sd-jwt'
-  })['claims']
+      format: 'vc+sd-jwt'
+    })['claims']
   | (OpenId4VciCredentialConfigurationSupportedWithFormats & {
-    format: 'dc+sd-jwt'
-  })['claims']
+      format: 'dc+sd-jwt'
+    })['claims']
 
 export type OpenId4VciCredentialDisplayClaims = NonNullable<
   (OpenId4VciCredentialConfigurationSupportedWithFormats & {

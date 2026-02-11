@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import { MobileSDK, type MobileSDKOptions } from '../MobileSDK'
 import { useMobileSDK } from '../contexts'
+import { MobileSDK, type MobileSDKOptions } from '../MobileSDK'
 
 export const useMobileSDKInitializer = () => {
   const { initialize, isInitialized, sdk } = useMobileSDK()

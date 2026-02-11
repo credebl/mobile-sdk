@@ -21,6 +21,7 @@ export type AdeyaDigiLockerModuleOptions = {
   codeVerifier?: string | undefined
 }
 
+// biome-ignore lint/style/noRestrictedGlobals: <explanation>
 export const base64UrlEncodeWithoutPadding = (input: Buffer): string => {
   return input.toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
 }

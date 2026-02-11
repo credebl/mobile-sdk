@@ -9,7 +9,7 @@ export function safeCalculateJwkThumbprint(jwk: Kms.Jwk): string | undefined {
       )
     )
     return `urn:ietf:params:oauth:jwk-thumbprint:sha-256:${thumbprint}`
-  } catch (e) {
+  } catch (_e) {
     return undefined
   }
 }
