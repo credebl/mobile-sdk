@@ -34,10 +34,11 @@
     "rxjs": "catalog:"
   },
   "peerDependencies": {
-    "@openwallet-foundation/askar-react-native": "catalog:"
+    "@openwallet-foundation/askar-react-native": "catalog:",
+    "react-native": ">=0.76"
   },
   "devDependencies": {
-    "@types/react": "catalog:",
+    "react-native": "^0.83.1",
     "typescript": "catalog:"
   }
 }
