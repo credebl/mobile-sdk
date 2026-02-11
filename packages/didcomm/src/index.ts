@@ -27,7 +27,6 @@ import {
 } from '@credo-ts/anoncreds'
 // Core
 import { AskarModule } from '@credo-ts/askar'
-import { InitConfig, SaveGenericRecordOption } from '@credo-ts/core'
 import {
   Agent,
   Buffer,
@@ -41,6 +40,7 @@ import {
   DidsModule,
   DifPexCredentialsForRequest,
   GenericRecord,
+  InitConfig,
   JsonTransformer,
   JwkDidCreateOptions,
   JwkDidRegistrar,
@@ -49,6 +49,7 @@ import {
   LogLevel,
   PeerDidCreateOptions,
   Query,
+  SaveGenericRecordOption,
   SdJwtVcRecord,
   SingleContextStorageLruCache,
   TypedArrayEncoder,

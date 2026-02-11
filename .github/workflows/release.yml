@@ -18,18 +18,19 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+
       - uses: pnpm/action-setup@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup NodeJS
+        uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: pnpm
+          cache: "pnpm"
 
-      # Ensure npm 11.5.1 or later required by trusted publishing
       - name: Update npm
-        run: npm install -g npm@11.5.1
+        run: npm install -g npm@^11
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -64,18 +65,20 @@ jobs:
     needs: [release]
     if: "always() && github.event_name == 'push' && github.ref == 'refs/heads/alpha-release' && !startsWith(github.event.head_commit.message, 'chore(release): new version')"
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+
       - uses: pnpm/action-setup@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup NodeJS
+        uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: pnpm
+          cache: "pnpm"
 
       # Ensure npm 11.5.1 or later required by trusted publishing
       - name: Update npm
-        run: npm install -g npm@11.5.1
+        run: npm install -g npm@^11
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
