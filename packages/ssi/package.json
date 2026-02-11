@@ -2,8 +2,10 @@
   "name": "@credebl/ssi-mobile",
   "main": "src/index",
   "types": "src/index",
-  "version": "2.0.1",
-  "files": ["build"],
+  "version": "3.0.0",
+  "files": [
+    "build"
+  ],
   "license": "Apache-2.0",
   "publishConfig": {
     "main": "build/index",

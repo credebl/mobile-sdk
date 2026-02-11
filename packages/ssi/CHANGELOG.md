@@ -1,5 +1,11 @@
 # @credebl/ssi-mobile
 
+## 3.0.0
+
+### Major Changes
+
+- 2d87f0f: migrate from @hyperledger/aries-askar-react-native to @openwallet-foundation/askar-react-native
+
 ## 2.0.1
 
 ### Patch Changes
