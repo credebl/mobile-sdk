@@ -39,11 +39,12 @@
     "rxjs": "catalog:"
   },
   "devDependencies": {
-    "@types/react": "catalog:",
+    "react-native": "^0.83.1",
     "typescript": "catalog:"
   },
   "peerDependencies": {
     "@hyperledger/anoncreds-react-native": "catalog:",
-    "@hyperledger/indy-vdr-react-native": "catalog:"
+    "@hyperledger/indy-vdr-react-native": "catalog:",
+    "react-native": ">=0.76"
   }
 }
