@@ -1,16 +1,21 @@
 {
   "name": "@credebl/ssi-mobile-openid4vc",
-  "main": "src/index",
-  "types": "src/index",
+  "exports": {
+    "import": "./src/index.ts"
+  },
   "version": "2.0.2",
   "files": [
     "build"
   ],
   "license": "Apache-2.0",
   "publishConfig": {
-    "main": "build/index",
-    "types": "build/index",
-    "access": "public"
+    "access": "public",
+    "types": "./build/index.d.mts",
+    "module": "./build/index.mjs",
+    "exports": {
+      ".": "./build/index.mjs",
+      "./package.json": "./package.json"
+    }
   },
   "homepage": "https://github.com/credebl/mobile-sdk/tree/main/packages/openid4vc",
   "repository": {
@@ -19,26 +24,26 @@
     "directory": "packages/openid4vc"
   },
   "scripts": {
-    "check-types": "pnpm compile --noEmit",
-    "build": "pnpm clean && pnpm compile",
-    "clean": "rimraf -rf ./build",
-    "compile": "tsdown -p tsconfig.build.json"
+    "build": "tsdown --config-loader unconfig",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
     "@animo-id/expo-digital-credentials-api": "^0.4.0",
     "@animo-id/mdoc": "0.5.2",
-    "@astronautlabs/jsonpath": "^1.1.2",
+    "@astronautlabs/jsonpath": "catalog:",
     "@credebl/ssi-mobile-core": "workspace:*",
-    "@credo-ts/core": "0.6.1",
-    "@credo-ts/openid4vc": "0.6.1",
+    "@credo-ts/core": "catalog:",
+    "@credo-ts/openid4vc": "catalog:",
     "expo-asset": "^12.0.10",
     "expo-image": "^3.0.10",
     "expo-image-manipulator": "^14.0.7",
-    "rxjs": "^7.8.2"
+    "rxjs": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:",
-    "rimraf": "catalog:",
     "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "react-native": ">=0.76"
   }
 }

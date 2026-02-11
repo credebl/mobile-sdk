@@ -1,10 +1,4 @@
-import { defineConfig } from "tsdown";
+import { defineConfig } from 'tsdown'
+import config from '../../tsdown.config.base'
 
-export default defineConfig([
-  {
-    entry: "src/index.ts",
-    format: ["esm", "cjs"], // Output both ESM and CJS
-    sourcemap: true,
-    outDir: "build",
-  },
-]);
+export default defineConfig(config)

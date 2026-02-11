@@ -1,5 +1,5 @@
 import type React from 'react'
-import { type ReactNode, createContext, useContext, useState } from 'react'
+import { createContext, type ReactNode, useContext, useState } from 'react'
 import type { MobileSDK, MobileSDKModule } from '../MobileSDK'
 
 interface MobileSDKContextType {

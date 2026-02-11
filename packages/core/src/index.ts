@@ -3,9 +3,9 @@ import { ConsoleLogger, KeyDidCreateOptions, Kms, LogLevel } from '@credo-ts/cor
 // DIDs
 export { KeyDidCreateOptions }
 
-export * from './MobileSDK'
-export * from './providers'
 export * from './contexts'
 export * from './hooks'
+export * from './MobileSDK'
+export * from './providers'
 
 export { ConsoleLogger, LogLevel, Kms }

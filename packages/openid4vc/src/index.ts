@@ -1,4 +1,4 @@
-import { MdocRecord, SdJwtVcRecord, W3cCredentialRecord, GenericRecord } from '@credo-ts/core'
+import { GenericRecord, MdocRecord, SdJwtVcRecord, W3cCredentialRecord } from '@credo-ts/core'
 import {
   OpenId4VciAuthorizationFlow,
   OpenId4VciRequestTokenResponse,
@@ -17,7 +17,7 @@ export {
 
 export { MdocRecord, SdJwtVcRecord, W3cCredentialRecord, GenericRecord }
 
-export * from './OpenIDSdk'
-export * from './display'
-export * from './providers'
 export * from './dcapi'
+export * from './display'
+export * from './OpenIDSdk'
+export * from './providers'
