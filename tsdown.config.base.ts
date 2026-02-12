@@ -17,6 +17,8 @@ const baseConfig: UserConfigEntry[] = [
     },
     platform: 'neutral',
     logLevel: 'error',
+    inlineOnly: false,
+    external: 'all',
   },
 ]
 
