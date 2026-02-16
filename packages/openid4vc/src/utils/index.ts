@@ -1,5 +1,6 @@
 export * from './date'
 export * from './dcapi'
 export * from './encoding'
+export * from './helpers'
 export * from './strings'
 export * from './url'
