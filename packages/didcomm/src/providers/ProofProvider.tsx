@@ -73,7 +73,7 @@ export const ProofProvider: React.FC<PropsWithChildren<Props>> = ({ agent, child
   })
 
   const setInitialState = async () => {
-    const records = await agent.modules.proofs.getAll()
+    const records = await agent.didcomm.proofs.getAll()
     setState({ records, loading: false })
   }
 

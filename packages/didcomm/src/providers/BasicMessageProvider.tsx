@@ -45,7 +45,7 @@ export const BasicMessageProvider: React.FC<PropsWithChildren<Props>> = ({ agent
   })
 
   const setInitialState = async () => {
-    const records = await agent.modules.basicMessages.findAllByQuery({})
+    const records = await agent.didcomm.basicMessages.findAllByQuery({})
     setState({ records, loading: false })
   }
 
