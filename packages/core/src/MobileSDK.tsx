@@ -5,6 +5,8 @@ import {
   type DidCreateOptions,
   DidRepository,
   DidsModule,
+  GenericRecord,
+  GenericRecordTags,
   type InitConfig,
   JwkDidRegistrar,
   JwkDidResolver,
@@ -13,6 +15,8 @@ import {
   MdocRecord,
   MdocRepository,
   type ModulesMap,
+  type Query,
+  type QueryOptions,
   SdJwtVcRecord,
   SdJwtVcRepository,
   SingleContextStorageLruCache,
@@ -327,5 +331,41 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     }
 
     this.localAgent = agent as Agent<ReturnType<typeof getCoreModules>>
+  }
+
+  public async addGenericRecord({
+    content,
+    tags,
+    id,
+  }: {
+    content: Record<string, unknown>
+    tags?: GenericRecordTags
+    id?: string
+  }): Promise<GenericRecord> {
+    const agent = this.assertAndGetAgent()
+    return agent.genericRecords.save({ content, tags, id })
+  }
+
+  public async updateGenericRecord(record: GenericRecord): Promise<void> {
+    const agent = this.assertAndGetAgent()
+    return agent.genericRecords.update(record)
+  }
+
+  public async getGenericRecord(id: string): Promise<GenericRecord | null> {
+    const agent = this.assertAndGetAgent()
+    return agent.genericRecords.findById(id)
+  }
+
+  public async findGenericRecordsByQuery(
+    query: Query<GenericRecord>,
+    queryOptions?: QueryOptions
+  ): Promise<GenericRecord[]> {
+    const agent = this.assertAndGetAgent()
+    return agent.genericRecords.findAllByQuery(query, queryOptions)
+  }
+
+  public async deleteGenericRecord(id: string): Promise<void> {
+    const agent = this.assertAndGetAgent()
+    return agent.genericRecords.deleteById(id)
   }
 }
