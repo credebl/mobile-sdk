@@ -1,4 +1,4 @@
-import { AskarModule, AskarModuleConfigStoreOptions } from '@credo-ts/askar'
+import { AskarModule, type AskarModuleConfigStoreOptions } from '@credo-ts/askar'
 import {
   Agent,
   CacheModule,
@@ -65,7 +65,7 @@ export type MobileSDKOptions<T extends Record<string, MobileSDKModule> = Record<
   defaultModules?: ModulesMap
 }
 export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string, MobileSDKModule>> {
-  private localAgent: Agent | null = null
+  private localAgent: Agent<ReturnType<typeof getCoreModules>> | null = null
   public readonly configuration: MobileSDKOptions<T>
   public readonly modules: T
 
@@ -103,15 +103,15 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
       module.initialize(agent)
     }
 
-    this.localAgent = agent
-    return agent
+    this.localAgent = agent as Agent<ReturnType<typeof getCoreModules>>
+    return this.localAgent
   }
 
   public get agent() {
     return this.localAgent
   }
 
-  public assertAndGetAgent() {
+  public assertAndGetAgent(): Agent<ReturnType<typeof getCoreModules>> {
     if (!this.agent) {
       throw new Error('Agent not initialized')
     }
@@ -294,5 +294,38 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     }
 
     return results
+  }
+
+  public async exportWallet(exportToStore: AskarModuleConfigStoreOptions) {
+    const agent = this.assertAndGetAgent()
+    await agent.modules.askar.exportStore({ exportToStore })
+  }
+
+  public async importWallet(importFromStore: AskarModuleConfigStoreOptions) {
+    const { agentConfig, askarConfig, modules: sdkModules, defaultModules } = this.configuration
+
+    if (!askarConfig?.id || !askarConfig?.key) {
+      throw new Error('Wallet config missing from agent configuration')
+    }
+
+    const resolvedModules = { ...(defaultModules ?? {}), ...getCoreModules(askarConfig) }
+    for (const [, module] of Object.entries(sdkModules)) {
+      Object.assign(resolvedModules, module.getAgentModules())
+    }
+
+    const agent = new Agent({
+      config: { autoUpdateStorageOnStartup: true, ...agentConfig },
+      dependencies: agentDependencies,
+      modules: resolvedModules,
+    })
+
+    await agent.modules.askar.importStore({ importFromStore })
+    await agent.initialize()
+
+    for (const [, module] of Object.entries(sdkModules)) {
+      module.initialize(agent)
+    }
+
+    this.localAgent = agent as Agent<ReturnType<typeof getCoreModules>>
   }
 }
