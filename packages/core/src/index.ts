@@ -7,5 +7,6 @@ export * from './contexts'
 export * from './hooks'
 export * from './MobileSDK'
 export * from './providers'
+export * from './wallet'
 
 export { ConsoleLogger, LogLevel, Kms }
