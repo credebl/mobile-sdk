@@ -305,34 +305,6 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     await agent.modules.askar.exportStore({ exportToStore })
   }
 
-  public async importWallet(importFromStore: AskarModuleConfigStoreOptions) {
-    const { agentConfig, askarConfig, modules: sdkModules, defaultModules } = this.configuration
-
-    if (!askarConfig?.id || !askarConfig?.key) {
-      throw new Error('Wallet config missing from agent configuration')
-    }
-
-    const resolvedModules = { ...(defaultModules ?? {}), ...getCoreModules(askarConfig) }
-    for (const [, module] of Object.entries(sdkModules)) {
-      Object.assign(resolvedModules, module.getAgentModules())
-    }
-
-    const agent = new Agent({
-      config: { autoUpdateStorageOnStartup: true, ...agentConfig },
-      dependencies: agentDependencies,
-      modules: resolvedModules,
-    })
-
-    await agent.modules.askar.importStore({ importFromStore })
-    await agent.initialize()
-
-    for (const [, module] of Object.entries(sdkModules)) {
-      module.initialize(agent)
-    }
-
-    this.localAgent = agent as Agent<ReturnType<typeof getCoreModules>>
-  }
-
   public async addGenericRecord({
     content,
     tags,

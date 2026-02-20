@@ -50,3 +50,29 @@ export const isWalletImportable = async (
     return false
   }
 }
+
+export const importWalletToStore = async (
+  storeConfig: AskarModuleConfigStoreOptions,
+  importFromStore: AskarModuleConfigStoreOptions
+) => {
+  const walletStoreConfig: AskarModuleConfigStoreOptions = {
+    id: storeConfig.id,
+    key: storeConfig.key,
+    database: storeConfig.database,
+  }
+  const checkAgent = new Agent({
+    config: {
+      autoUpdateStorageOnStartup: true,
+    },
+    dependencies: agentDependencies,
+    modules: {
+      askar: new AskarModule({ askar, store: walletStoreConfig }),
+    },
+  })
+  try {
+    await checkAgent.modules.askar.importStore({ importFromStore })
+    return true
+  } catch {
+    return false
+  }
+}
