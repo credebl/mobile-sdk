@@ -1,7 +1,7 @@
-import { ConsoleLogger, KeyDidCreateOptions, Kms, LogLevel } from '@credo-ts/core'
+import { ConsoleLogger, Hasher, KeyDidCreateOptions, Kms, LogLevel, TypedArrayEncoder } from '@credo-ts/core'
 
 // DIDs
-export { KeyDidCreateOptions }
+export { KeyDidCreateOptions, TypedArrayEncoder, Hasher }
 
 export * from './contexts'
 export * from './hooks'
