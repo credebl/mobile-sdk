@@ -24,11 +24,20 @@ import {
   W3cCredentialRecord,
   W3cCredentialRepository,
 } from '@credo-ts/core'
+import { KmsCreateKeyOptions, KmsCreateKeyType, KmsSignOptions, KmsVerifyOptions } from '@credo-ts/core/kms'
 import { agentDependencies } from '@credo-ts/react-native'
 import { askar } from '@openwallet-foundation/askar-react-native'
 import type { PropsWithChildren } from 'react'
 import { useMobileSDK } from './contexts'
 import AgentProvider from './providers/AgentProvider'
+
+export type WithBackend<T> = T & {
+  /**
+   * The backend to use for creating the key. If not provided the
+   * default backend for key operations will be used.
+   */
+  backend?: string
+}
 
 export enum CredentialRecord {
   SdJwt = 'sd-jwt',
@@ -339,5 +348,20 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
   public async deleteGenericRecord(id: string): Promise<void> {
     const agent = this.assertAndGetAgent()
     return agent.genericRecords.deleteById(id)
+  }
+
+  public async createKey<Type extends KmsCreateKeyType>(options: WithBackend<KmsCreateKeyOptions<Type>>) {
+    const agent = this.assertAndGetAgent()
+    return agent.kms.createKey(options)
+  }
+
+  public async signData(options: WithBackend<KmsSignOptions>) {
+    const agent = this.assertAndGetAgent()
+    return agent.kms.sign(options)
+  }
+
+  public async verifyData(options: WithBackend<KmsVerifyOptions>) {
+    const agent = this.assertAndGetAgent()
+    return agent.kms.verify(options)
   }
 }
