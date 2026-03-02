@@ -241,7 +241,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
           Kms.KnownJwaSignatureAlgorithms.ES256,
           Kms.KnownJwaSignatureAlgorithms.EdDSA,
         ],
-        credentialBindingResolver: getCredentialBindingResolver({
+        credentialBindingResolver: await getCredentialBindingResolver({
           pidSchemes,
           requestBatch,
         }),
@@ -249,7 +249,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
       return {
         deferredCredentials,
-        credentials: this.parseCredentialResponses(credentials, resolvedCredentialOffer.metadata),
+        credentials: await this.parseCredentialResponses(credentials, resolvedCredentialOffer.metadata),
       }
     } catch (error) {
       // TODO: if one biometric operation fails it will fail the whole credential receiving. We should have more control so we
