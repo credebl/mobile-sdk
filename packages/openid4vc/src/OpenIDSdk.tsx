@@ -1,4 +1,9 @@
-import { DigitalCredentialsRequest, registerCredentials, sendResponse } from '@animo-id/expo-digital-credentials-api'
+import {
+  DigitalCredentialsApiMatcher,
+  DigitalCredentialsRequest,
+  registerCredentials,
+  sendResponse,
+} from '@animo-id/expo-digital-credentials-api'
 import { DeviceRequest, limitDisclosureToDeviceRequestNameSpaces, parseIssuerSigned } from '@animo-id/mdoc'
 import type { MobileSDKModule } from '@credebl/ssi-mobile-core'
 import {
@@ -254,7 +259,10 @@ export class OpenID4VCSDK implements MobileSDKModule {
     }
   }
 
-  public async storeOpenIdCredential(cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord): Promise<void> {
+  public async storeOpenIdCredential(
+    cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord,
+    matcher: DigitalCredentialsApiMatcher = 'ubique'
+  ): Promise<void> {
     const agent = this.assertAndGetAgent()
     if (cred instanceof W3cCredentialRecord) {
       await agent.dependencyManager.resolve(W3cCredentialRepository).save(agent.context, cred)
@@ -265,7 +273,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
     } else {
       throw new Error('Credential type is not supported')
     }
-    this.registerCredentialsForDcApi()
+    this.registerCredentialsForDcApi(matcher)
   }
 
   public async acquireAuthorizationCodeAccessToken({
@@ -631,7 +639,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
     })
   }
 
-  public async registerCredentialsForDcApi() {
+  public async registerCredentialsForDcApi(matcher: DigitalCredentialsApiMatcher = 'ubique') {
     const agent = this.assertAndGetAgent()
 
     if (Platform.OS === 'ios') return
@@ -697,7 +705,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
     await registerCredentials({
       credentials,
-      matcher: 'cmwallet',
+      matcher,
     })
   }
 }
