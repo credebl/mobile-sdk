@@ -115,21 +115,17 @@ export async function loadCachedImageAsBase64DataUrl(logger: Logger, url: string
   let asset: ExpoAsset.Asset
 
   try {
-    // in case of external image
-    if (url.startsWith('data://') || url.startsWith('https://')) {
-      const cachePath = await Image.getCachePathAsync(url)
-      if (!cachePath) return undefined
-
-      asset = await ExpoAsset.Asset.fromURI(`file://${cachePath}`).downloadAsync()
+    if (url.startsWith("data:")) {
+      return url;
     }
-    // In case of local image
-    else {
-      asset = ExpoAsset.Asset.fromModule(url)
+    if (url.startsWith("http")) {
+      asset = await ExpoAsset.Asset.fromURI(url).downloadAsync();
+    } else {
+      asset = ExpoAsset.Asset.fromModule(url);
     }
 
-    return await resizeImageWithAspectRatio(logger, asset)
+    return await resizeImageWithAspectRatio(logger, asset);
   } catch (error) {
-    // just ignore it, we don't want to cause issues with registering crednetials
     logger.error('Error resizing and retrieving cached image for DC API', {
       error,
     })
