@@ -80,14 +80,15 @@ export async function resizeImageWithAspectRatio(logger: Logger, asset: ExpoAsse
     // Calculate new dimensions maintaining aspect ratio
     let width: number
     let height: number
+    const MAX_SIZE = 128
     if (image.width >= image.height) {
       // If width is the larger dimension
-      width = 20
-      height = Math.round((image.height / image.width) * 20)
+      width = MAX_SIZE
+      height = Math.round((image.height / image.width) * MAX_SIZE)
     } else {
       // If height is the larger dimension
-      height = 20
-      width = Math.round((image.width / image.height) * 20)
+      height = MAX_SIZE
+      width = Math.round((image.width / image.height) * MAX_SIZE)
     }
 
     // Use the new API to resize the image
