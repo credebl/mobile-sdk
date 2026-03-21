@@ -17,9 +17,11 @@ export function mapMdocAttributes(namespaces: MdocNameSpaces) {
           if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'string') {
             return [key, value]
           }
-
           if (value instanceof Date || value instanceof DateOnly) {
             return [key, value.toISOString()]
+          }
+          if (value instanceof Uint8Array) {
+                return [key, `${value.byteLength} bytes`];
           }
 
           // For all other complex types we don't allow matching based on the value
