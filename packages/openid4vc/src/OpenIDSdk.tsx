@@ -608,10 +608,12 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
   public async sendResponseForDcApi(args: {
     resolvedRequest: CredentialsForProofRequest
-    dcRequest: DigitalCredentialsRequest
+    dcRequest: DigitalCredentialsRequest,
+    protocol: string
+    credentialId: string
   }) {
     const agent = this.assertAndGetAgent()
-    const { resolvedRequest, dcRequest } = args
+    const { resolvedRequest, dcRequest, protocol, credentialId } = args
 
     const entry = resolvedRequest.formattedSubmission.entries[0]
 
@@ -623,10 +625,18 @@ export class OpenID4VCSDK implements MobileSDKModule {
       throw new Error('Expected the Digital Credentials API request to be satisfied')
     }
 
+    if(!credentialId) {
+      agent.config.logger.debug('No credential id found for DC API', {
+        resolvedRequest,
+        dcRequest,
+      })
+      throw new Error('No credential id found for DC API')
+    }
+
     const result = await this.shareProof({
       resolvedRequest,
       selectedCredentials: {
-        [entry.inputDescriptorId]: dcRequest.selectedEntry.credentialId,
+        [entry.inputDescriptorId]: credentialId,
       },
     })
 
@@ -635,8 +645,11 @@ export class OpenID4VCSDK implements MobileSDKModule {
     })
 
     sendResponse({
-      response: JSON.stringify(result.authorizationResponse),
-    })
+			response: JSON.stringify({
+				protocol,
+				data: result.authorizationResponse
+			}),
+		})
   }
 
   public async registerCredentialsForDcApi(matcher: DigitalCredentialsApiMatcher = 'ubique') {
