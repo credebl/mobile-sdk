@@ -21,7 +21,7 @@ export function mapMdocAttributes(namespaces: MdocNameSpaces) {
             return [key, value.toISOString()]
           }
           if (value instanceof Uint8Array) {
-                return [key, `${value.byteLength} bytes`];
+            return [key, `${value.byteLength} bytes`]
           }
 
           // For all other complex types we don't allow matching based on the value
@@ -118,16 +118,16 @@ export async function loadCachedImageAsBase64DataUrl(logger: Logger, url: string
   let asset: ExpoAsset.Asset
 
   try {
-    if (url.startsWith("data:")) {
-      return url;
+    if (url.startsWith('data:')) {
+      return url
     }
-    if (url.startsWith("http")) {
-      asset = await ExpoAsset.Asset.fromURI(url).downloadAsync();
+    if (url.startsWith('http')) {
+      asset = await ExpoAsset.Asset.fromURI(url).downloadAsync()
     } else {
-      asset = ExpoAsset.Asset.fromModule(url);
+      asset = ExpoAsset.Asset.fromModule(url)
     }
 
-    return await resizeImageWithAspectRatio(logger, asset);
+    return await resizeImageWithAspectRatio(logger, asset)
   } catch (error) {
     logger.error('Error resizing and retrieving cached image for DC API', {
       error,

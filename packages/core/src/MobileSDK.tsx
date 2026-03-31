@@ -10,6 +10,9 @@ import {
   type InitConfig,
   JwkDidRegistrar,
   JwkDidResolver,
+  JwsProtectedHeaderOptions,
+  JwsService,
+  JwtPayload,
   KeyDidRegistrar,
   KeyDidResolver,
   MdocRecord,
@@ -363,5 +366,24 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
   public async verifyData(options: WithBackend<KmsVerifyOptions>) {
     const agent = this.assertAndGetAgent()
     return agent.kms.verify(options)
+  }
+
+  public async createJwsCompact({
+    header,
+    payload,
+    keyId,
+  }: {
+    header: JwsProtectedHeaderOptions
+    payload: JwtPayload
+    keyId: string
+  }) {
+    const agent = this.assertAndGetAgent()
+    const jwsService = await agent.dependencyManager.resolve(JwsService)
+    const jws = await jwsService.createJwsCompact(agent.context, {
+      payload,
+      keyId: keyId,
+      protectedHeaderOptions: header,
+    })
+    return jws
   }
 }

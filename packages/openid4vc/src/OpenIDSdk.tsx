@@ -608,7 +608,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
   public async sendResponseForDcApi(args: {
     resolvedRequest: CredentialsForProofRequest
-    dcRequest: DigitalCredentialsRequest,
+    dcRequest: DigitalCredentialsRequest
     protocol: string
     credentialId: string
   }) {
@@ -625,7 +625,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
       throw new Error('Expected the Digital Credentials API request to be satisfied')
     }
 
-    if(!credentialId) {
+    if (!credentialId) {
       agent.config.logger.debug('No credential id found for DC API', {
         resolvedRequest,
         dcRequest,
@@ -645,11 +645,11 @@ export class OpenID4VCSDK implements MobileSDKModule {
     })
 
     sendResponse({
-			response: JSON.stringify({
-				protocol,
-				data: result.authorizationResponse
-			}),
-		})
+      response: JSON.stringify({
+        protocol,
+        data: result.authorizationResponse,
+      }),
+    })
   }
 
   public async registerCredentialsForDcApi(matcher: DigitalCredentialsApiMatcher = 'ubique') {
