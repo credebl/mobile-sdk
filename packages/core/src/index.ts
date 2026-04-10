@@ -7,7 +7,7 @@ import {
   Kms,
   LogLevel,
   TypedArrayEncoder,
-  WebDidResolver
+  WebDidResolver,
 } from '@credo-ts/core'
 
 // DIDs
