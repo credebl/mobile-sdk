@@ -114,12 +114,15 @@ export async function resizeImageWithAspectRatio(logger: Logger, asset: ExpoAsse
   }
 }
 
-export async function loadCachedImageAsBase64DataUrl(logger: Logger, url: string) {
+export async function loadCachedImageAsBase64DataUrl(
+  logger: Logger,
+  url: string
+): Promise<`data:image/${'jpg' | 'png'};base64,${string}` | undefined> {
   let asset: ExpoAsset.Asset
 
   try {
     if (url.startsWith('data:')) {
-      return url
+      return url as `data:image/${'jpg' | 'png'};base64,${string}`
     }
     if (url.startsWith('http')) {
       asset = await ExpoAsset.Asset.fromURI(url).downloadAsync()
