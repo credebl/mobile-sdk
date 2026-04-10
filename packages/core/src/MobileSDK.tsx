@@ -3,7 +3,9 @@ import {
   Agent,
   CacheModule,
   type DidCreateOptions,
+  type DidRegistrar,
   DidRepository,
+  type DidResolver,
   DidsModule,
   GenericRecord,
   GenericRecordTags,
@@ -47,7 +49,10 @@ export enum CredentialRecord {
   Mdoc = 'mdoc',
   W3c = 'w3c',
 }
-const getCoreModules = (askarConfig: AskarModuleConfigStoreOptions) => {
+const getCoreModules = (
+  askarConfig: AskarModuleConfigStoreOptions,
+  dids?: { registrars?: DidRegistrar[]; resolvers?: DidResolver[] }
+) => {
   return {
     askar: new AskarModule({
       askar,
@@ -58,8 +63,8 @@ const getCoreModules = (askarConfig: AskarModuleConfigStoreOptions) => {
       },
     }),
     dids: new DidsModule({
-      registrars: [new JwkDidRegistrar(), new KeyDidRegistrar()],
-      resolvers: [new JwkDidResolver(), new KeyDidResolver()],
+      registrars: [new JwkDidRegistrar(), new KeyDidRegistrar(), ...(dids?.registrars ?? [])],
+      resolvers: [new JwkDidResolver(), new KeyDidResolver(), ...(dids?.resolvers ?? [])],
     }),
     cache: new CacheModule({
       cache: new SingleContextStorageLruCache({
@@ -79,6 +84,10 @@ export type MobileSDKOptions<T extends Record<string, MobileSDKModule> = Record<
   askarConfig: AskarModuleConfigStoreOptions
   modules: T
   defaultModules?: ModulesMap
+  dids?: {
+    registrars?: DidRegistrar[]
+    resolvers?: DidResolver[]
+  }
 }
 export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string, MobileSDKModule>> {
   private localAgent: Agent<ReturnType<typeof getCoreModules>> | null = null
@@ -98,7 +107,7 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
 
   async initialize() {
     const defaultModules = this.configuration.defaultModules ?? {}
-    const coreModules = getCoreModules(this.configuration.askarConfig)
+    const coreModules = getCoreModules(this.configuration.askarConfig, this.configuration.dids)
     Object.assign(defaultModules, coreModules)
 
     const modules = Object.entries(this.configuration.modules).reduce((acc, [, module]) => {
