@@ -26,7 +26,7 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: '22.22.1'
           cache: "pnpm"
 
       - name: Update npm
@@ -73,7 +73,7 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: '22.22.1'
           cache: "pnpm"
 
       # Ensure npm 11.5.1 or later required by trusted publishing
