@@ -7,6 +7,7 @@ import {
   Kms,
   LogLevel,
   TypedArrayEncoder,
+  WebDidResolver
 } from '@credo-ts/core'
 
 // DIDs
@@ -18,4 +19,4 @@ export * from './MobileSDK'
 export * from './providers'
 export * from './wallet'
 
-export { ConsoleLogger, LogLevel, Kms }
+export { ConsoleLogger, LogLevel, Kms, WebDidResolver }
