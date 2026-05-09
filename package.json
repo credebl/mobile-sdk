@@ -19,16 +19,32 @@
     "changeset-version": "pnpm changeset version && pnpm style:fix"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@changesets/cli": "^2.28.1",
-    "@types/jest": "^29.5.5",
-    "@types/node": "^20.7.0",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.1",
-    "typescript": "~5.5.2"
+    "@babel/core": "^7.29.0",
+    "@babel/traverse": "^7.29.0",
+    "@biomejs/biome": "^2.4.14",
+    "@changesets/cli": "^2.31.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.6.2",
+    "elliptic": "6.6.1",
+    "fast-xml-parser": "4.5.5",
+    "form-data": "4.0.4",
+    "jest": "^30.4.2",
+    "sha.js": "2.4.12",
+    "ts-jest": "^29.4.9",
+    "typescript": "~6.0.3"
   },
   "engines": {
     "node": ">= 18"
   },
-  "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a"
+  "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a",
+  "pnpm": {
+    "overrides": {
+      "sha.js": "2.4.12",
+      "elliptic": "6.6.1",
+      "fast-xml-parser": "4.5.5",
+      "form-data": "4.0.4",
+      "@xmldom/xmldom": "0.8.13",
+      "axios": "1.8.2"
+    }
+  }
 }
