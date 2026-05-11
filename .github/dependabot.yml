@@ -17,6 +17,14 @@ updates:
     open-pull-requests-limit: 10
 
     groups:
+      # Group all patch updates into one PR
+      patch-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
+
+      # Group all minor updates into one PR
       minor-updates:
         patterns:
           - "*"
@@ -28,7 +36,7 @@ updates:
 
     labels:
       - "dependencies"
-      - "pnpm"                   # you can keep this label for clarity
+      - "pnpm"
 
     commit-message:
       prefix: "chore"
@@ -53,9 +61,11 @@ updates:
     commit-message:
       prefix: "ci"
 
+    # If you want Actions in one PR for minor+patch too:
     groups:
-      minor-updates:
+      actions-minor-patch:
         patterns:
           - "*"
         update-types:
           - "minor"
+          - "patch"
