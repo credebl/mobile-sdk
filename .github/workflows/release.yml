@@ -11,7 +11,8 @@ env:
 on:
   push:
     branches:
-      - alpha-release
+      - main
+
 jobs:
   release:
     name: Release
