@@ -23,17 +23,17 @@
     "compile": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@credo-ts/anoncreds": "0.5.18",
-    "@credo-ts/askar": "0.5.18",
-    "@credo-ts/core": "0.5.18",
-    "@credo-ts/indy-vdr": "0.5.18",
-    "@credo-ts/openid4vc": "0.5.18",
+    "@credo-ts/anoncreds": "0.7.0",
+    "@credo-ts/askar": "0.7.0",
+    "@credo-ts/core": "0.7.0",
+    "@credo-ts/indy-vdr": "0.7.0",
+    "@credo-ts/openid4vc": "0.7.0",
     "@credo-ts/push-notifications": "0.7.1",
-    "@credo-ts/question-answer": "0.5.18",
+    "@credo-ts/question-answer": "0.7.0",
     "@credo-ts/react-hooks": "0.6.1",
-    "@credo-ts/react-native": "0.5.18",
-    "@openwallet-foundation/askar-shared": "^0.4.3",
-    "@sd-jwt/decode": "^0.7.2",
+    "@credo-ts/react-native": "0.7.0",
+    "@openwallet-foundation/askar-shared": "^0.6.0",
+    "@sd-jwt/decode": "^0.19.0",
     "query-string": "^8.1.0"
   },
   "peerDependencies": {
