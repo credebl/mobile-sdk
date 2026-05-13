@@ -7,7 +7,7 @@ import {
   MdocRecord,
   SdJwtVcRecord,
   type SdJwtVcTypeMetadata,
-  SingleOrArray,
+  type SingleOrArray,
   W3cCredentialRecord,
   W3cV2CredentialRecord,
   W3cV2JsonCredential,
@@ -592,7 +592,7 @@ export function getCredentialForDisplay(
     const firstProof = Array.isArray(proof) ? proof[0] : proof
     const isAnonCreds = firstProof?.cryptosuite === 'anoncreds-2023'
 
-    const type = credentialRecord.firstCredential.type[credentialRecord.firstCredential.type.length - 1]
+    let type = credentialRecord.firstCredential.type[credentialRecord.firstCredential.type.length - 1]
     if (isAnonCreds) {
       type = firstProof.verificationMethod ?? type
     }
