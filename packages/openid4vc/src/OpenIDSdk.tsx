@@ -1,4 +1,9 @@
-import { DigitalCredentialsRequest, registerCredentials, sendResponse } from '@animo-id/expo-digital-credentials-api'
+import {
+  DigitalCredentialsApiMatcher,
+  DigitalCredentialsRequest,
+  registerCredentials,
+  sendResponse,
+} from '@animo-id/expo-digital-credentials-api'
 import { DeviceRequest, limitDisclosureToDeviceRequestNameSpaces, parseIssuerSigned } from '@animo-id/mdoc'
 import type { MobileSDKModule } from '@credebl/ssi-mobile-core'
 import {
@@ -236,7 +241,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
           Kms.KnownJwaSignatureAlgorithms.ES256,
           Kms.KnownJwaSignatureAlgorithms.EdDSA,
         ],
-        credentialBindingResolver: getCredentialBindingResolver({
+        credentialBindingResolver: await getCredentialBindingResolver({
           pidSchemes,
           requestBatch,
         }),
@@ -244,7 +249,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
       return {
         deferredCredentials,
-        credentials: this.parseCredentialResponses(credentials, resolvedCredentialOffer.metadata),
+        credentials: await this.parseCredentialResponses(credentials, resolvedCredentialOffer.metadata),
       }
     } catch (error) {
       // TODO: if one biometric operation fails it will fail the whole credential receiving. We should have more control so we
@@ -254,7 +259,10 @@ export class OpenID4VCSDK implements MobileSDKModule {
     }
   }
 
-  public async storeOpenIdCredential(cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord): Promise<void> {
+  public async storeOpenIdCredential(
+    cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord,
+    matcher: DigitalCredentialsApiMatcher = 'ubique'
+  ): Promise<void> {
     const agent = this.assertAndGetAgent()
     if (cred instanceof W3cCredentialRecord) {
       await agent.dependencyManager.resolve(W3cCredentialRepository).save(agent.context, cred)
@@ -265,7 +273,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
     } else {
       throw new Error('Credential type is not supported')
     }
-    this.registerCredentialsForDcApi()
+    this.registerCredentialsForDcApi(matcher)
   }
 
   public async acquireAuthorizationCodeAccessToken({
@@ -392,8 +400,9 @@ export class OpenID4VCSDK implements MobileSDKModule {
                 entry.verifiableCredentials.find((vc) => vc.credentialRecord.id === credentialId) ??
                 entry.verifiableCredentials[0]
 
-              return [entry.inputDescriptorId, [credential]]
-            })
+                return [entry.inputDescriptorId, [credential]]
+              })
+            )
           )
         )
       )
@@ -401,14 +410,15 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
     const dcqlCredentials = resolvedRequest.queryResult
       ? Object.fromEntries(
-        await Promise.all(
-          Object.entries(
-            Object.keys(selectedCredentials).length > 0
-              ? getSelectedCredentialsForRequest(resolvedRequest.queryResult, selectedCredentials)
-              : agent.modules.openid4vc.holder.selectCredentialsForDcqlRequest(resolvedRequest.queryResult)
-          ).map(async ([queryCredentialId, credentials]) => {
-            return [queryCredentialId, credentials]
-          })
+          await Promise.all(
+            Object.entries(
+              Object.keys(selectedCredentials).length > 0
+                ? getSelectedCredentialsForRequest(resolvedRequest.queryResult, selectedCredentials)
+                : agent.modules.openid4vc.holder.selectCredentialsForDcqlRequest(resolvedRequest.queryResult)
+            ).map(async ([queryCredentialId, credentials]) => {
+              return [queryCredentialId, credentials]
+            })
+          )
         )
       )
       : undefined
@@ -601,9 +611,11 @@ export class OpenID4VCSDK implements MobileSDKModule {
   public async sendResponseForDcApi(args: {
     resolvedRequest: CredentialsForProofRequest
     dcRequest: DigitalCredentialsRequest
+    protocol: string
+    credentialId: string
   }) {
     const agent = this.assertAndGetAgent()
-    const { resolvedRequest, dcRequest } = args
+    const { resolvedRequest, dcRequest, protocol, credentialId } = args
 
     const entry = resolvedRequest.formattedSubmission.entries[0]
 
@@ -615,10 +627,18 @@ export class OpenID4VCSDK implements MobileSDKModule {
       throw new Error('Expected the Digital Credentials API request to be satisfied')
     }
 
+    if (!credentialId) {
+      agent.config.logger.debug('No credential id found for DC API', {
+        resolvedRequest,
+        dcRequest,
+      })
+      throw new Error('No credential id found for DC API')
+    }
+
     const result = await this.shareProof({
       resolvedRequest,
       selectedCredentials: {
-        [entry.inputDescriptorId]: dcRequest.selectedEntry.credentialId,
+        [entry.inputDescriptorId]: credentialId,
       },
     })
 
@@ -627,11 +647,14 @@ export class OpenID4VCSDK implements MobileSDKModule {
     })
 
     sendResponse({
-      response: JSON.stringify(result.authorizationResponse),
+      response: JSON.stringify({
+        protocol,
+        data: result.authorizationResponse,
+      }),
     })
   }
 
-  public async registerCredentialsForDcApi() {
+  public async registerCredentialsForDcApi(matcher: DigitalCredentialsApiMatcher = 'ubique') {
     const agent = this.assertAndGetAgent()
 
     if (Platform.OS === 'ios') return
@@ -697,7 +720,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
     await registerCredentials({
       credentials,
-      matcher: 'cmwallet',
+      matcher,
     })
   }
 }

@@ -17,9 +17,11 @@ export function mapMdocAttributes(namespaces: MdocNameSpaces) {
           if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'string') {
             return [key, value]
           }
-
           if (value instanceof Date || value instanceof DateOnly) {
             return [key, value.toISOString()]
+          }
+          if (value instanceof Uint8Array) {
+            return [key, `${value.byteLength} bytes`]
           }
 
           // For all other complex types we don't allow matching based on the value
@@ -80,14 +82,15 @@ export async function resizeImageWithAspectRatio(logger: Logger, asset: ExpoAsse
     // Calculate new dimensions maintaining aspect ratio
     let width: number
     let height: number
+    const MAX_SIZE = 128
     if (image.width >= image.height) {
       // If width is the larger dimension
-      width = 20
-      height = Math.round((image.height / image.width) * 20)
+      width = MAX_SIZE
+      height = Math.round((image.height / image.width) * MAX_SIZE)
     } else {
       // If height is the larger dimension
-      height = 20
-      width = Math.round((image.width / image.height) * 20)
+      height = MAX_SIZE
+      width = Math.round((image.width / image.height) * MAX_SIZE)
     }
 
     // Use the new API to resize the image
@@ -111,25 +114,24 @@ export async function resizeImageWithAspectRatio(logger: Logger, asset: ExpoAsse
   }
 }
 
-export async function loadCachedImageAsBase64DataUrl(logger: Logger, url: string) {
+export async function loadCachedImageAsBase64DataUrl(
+  logger: Logger,
+  url: string
+): Promise<`data:image/${'jpg' | 'png'};base64,${string}` | undefined> {
   let asset: ExpoAsset.Asset
 
   try {
-    // in case of external image
-    if (url.startsWith('data://') || url.startsWith('https://')) {
-      const cachePath = await Image.getCachePathAsync(url)
-      if (!cachePath) return undefined
-
-      asset = await ExpoAsset.Asset.fromURI(`file://${cachePath}`).downloadAsync()
+    if (url.startsWith('data:')) {
+      return url as `data:image/${'jpg' | 'png'};base64,${string}`
     }
-    // In case of local image
-    else {
+    if (url.startsWith('http')) {
+      asset = await ExpoAsset.Asset.fromURI(url).downloadAsync()
+    } else {
       asset = ExpoAsset.Asset.fromModule(url)
     }
 
     return await resizeImageWithAspectRatio(logger, asset)
   } catch (error) {
-    // just ignore it, we don't want to cause issues with registering crednetials
     logger.error('Error resizing and retrieving cached image for DC API', {
       error,
     })

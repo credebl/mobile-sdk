@@ -1,18 +1,27 @@
-import { AskarModule, AskarModuleConfigStoreOptions } from '@credo-ts/askar'
+import { AskarModule, type AskarModuleConfigStoreOptions } from '@credo-ts/askar'
 import {
   Agent,
   CacheModule,
   type DidCreateOptions,
+  type DidRegistrar,
   DidRepository,
+  type DidResolver,
   DidsModule,
+  GenericRecord,
+  GenericRecordTags,
   type InitConfig,
   JwkDidRegistrar,
   JwkDidResolver,
+  JwsProtectedHeaderOptions,
+  JwsService,
+  JwtPayload,
   KeyDidRegistrar,
   KeyDidResolver,
   MdocRecord,
   MdocRepository,
   type ModulesMap,
+  type Query,
+  type QueryOptions,
   SdJwtVcRecord,
   SdJwtVcRepository,
   SingleContextStorageLruCache,
@@ -20,18 +29,30 @@ import {
   W3cCredentialRecord,
   W3cCredentialRepository,
 } from '@credo-ts/core'
+import { KmsCreateKeyOptions, KmsCreateKeyType, KmsSignOptions, KmsVerifyOptions } from '@credo-ts/core/kms'
 import { agentDependencies } from '@credo-ts/react-native'
 import { askar } from '@openwallet-foundation/askar-react-native'
 import type { PropsWithChildren } from 'react'
 import { useMobileSDK } from './contexts'
 import AgentProvider from './providers/AgentProvider'
 
+export type WithBackend<T> = T & {
+  /**
+   * The backend to use for creating the key. If not provided the
+   * default backend for key operations will be used.
+   */
+  backend?: string
+}
+
 export enum CredentialRecord {
   SdJwt = 'sd-jwt',
   Mdoc = 'mdoc',
   W3c = 'w3c',
 }
-const getCoreModules = (askarConfig: AskarModuleConfigStoreOptions) => {
+const getCoreModules = (
+  askarConfig: AskarModuleConfigStoreOptions,
+  dids?: { registrars?: DidRegistrar[]; resolvers?: DidResolver[] }
+) => {
   return {
     askar: new AskarModule({
       askar,
@@ -42,8 +63,8 @@ const getCoreModules = (askarConfig: AskarModuleConfigStoreOptions) => {
       },
     }),
     dids: new DidsModule({
-      registrars: [new JwkDidRegistrar(), new KeyDidRegistrar()],
-      resolvers: [new JwkDidResolver(), new KeyDidResolver()],
+      registrars: [new JwkDidRegistrar(), new KeyDidRegistrar(), ...(dids?.registrars ?? [])],
+      resolvers: [new JwkDidResolver(), new KeyDidResolver(), ...(dids?.resolvers ?? [])],
     }),
     cache: new CacheModule({
       cache: new SingleContextStorageLruCache({
@@ -63,9 +84,13 @@ export type MobileSDKOptions<T extends Record<string, MobileSDKModule> = Record<
   askarConfig: AskarModuleConfigStoreOptions
   modules: T
   defaultModules?: ModulesMap
+  dids?: {
+    registrars?: DidRegistrar[]
+    resolvers?: DidResolver[]
+  }
 }
 export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string, MobileSDKModule>> {
-  private localAgent: Agent | null = null
+  private localAgent: Agent<ReturnType<typeof getCoreModules>> | null = null
   public readonly configuration: MobileSDKOptions<T>
   public readonly modules: T
 
@@ -82,7 +107,7 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
 
   async initialize() {
     const defaultModules = this.configuration.defaultModules ?? {}
-    const coreModules = getCoreModules(this.configuration.askarConfig)
+    const coreModules = getCoreModules(this.configuration.askarConfig, this.configuration.dids)
     Object.assign(defaultModules, coreModules)
 
     const modules = Object.entries(this.configuration.modules).reduce((acc, [, module]) => {
@@ -103,15 +128,15 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
       module.initialize(agent)
     }
 
-    this.localAgent = agent
-    return agent
+    this.localAgent = agent as Agent<ReturnType<typeof getCoreModules>>
+    return this.localAgent
   }
 
   public get agent() {
     return this.localAgent
   }
 
-  public assertAndGetAgent() {
+  public assertAndGetAgent(): Agent<ReturnType<typeof getCoreModules>> {
     if (!this.agent) {
       throw new Error('Agent not initialized')
     }
@@ -294,5 +319,80 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     }
 
     return results
+  }
+
+  public async exportWallet(exportToStore: AskarModuleConfigStoreOptions) {
+    const agent = this.assertAndGetAgent()
+    await agent.modules.askar.exportStore({ exportToStore })
+  }
+
+  public async addGenericRecord({
+    content,
+    tags,
+    id,
+  }: {
+    content: Record<string, unknown>
+    tags?: GenericRecordTags
+    id?: string
+  }): Promise<GenericRecord> {
+    const agent = this.assertAndGetAgent()
+    return agent.genericRecords.save({ content, tags, id })
+  }
+
+  public async updateGenericRecord(record: GenericRecord): Promise<void> {
+    const agent = this.assertAndGetAgent()
+    return agent.genericRecords.update(record)
+  }
+
+  public async getGenericRecord(id: string): Promise<GenericRecord | null> {
+    const agent = this.assertAndGetAgent()
+    return agent.genericRecords.findById(id)
+  }
+
+  public async findGenericRecordsByQuery(
+    query: Query<GenericRecord>,
+    queryOptions?: QueryOptions
+  ): Promise<GenericRecord[]> {
+    const agent = this.assertAndGetAgent()
+    return agent.genericRecords.findAllByQuery(query, queryOptions)
+  }
+
+  public async deleteGenericRecord(id: string): Promise<void> {
+    const agent = this.assertAndGetAgent()
+    return agent.genericRecords.deleteById(id)
+  }
+
+  public async createKey<Type extends KmsCreateKeyType>(options: WithBackend<KmsCreateKeyOptions<Type>>) {
+    const agent = this.assertAndGetAgent()
+    return agent.kms.createKey(options)
+  }
+
+  public async signData(options: WithBackend<KmsSignOptions>) {
+    const agent = this.assertAndGetAgent()
+    return agent.kms.sign(options)
+  }
+
+  public async verifyData(options: WithBackend<KmsVerifyOptions>) {
+    const agent = this.assertAndGetAgent()
+    return agent.kms.verify(options)
+  }
+
+  public async createJwsCompact({
+    header,
+    payload,
+    keyId,
+  }: {
+    header: JwsProtectedHeaderOptions
+    payload: JwtPayload
+    keyId: string
+  }) {
+    const agent = this.assertAndGetAgent()
+    const jwsService = await agent.dependencyManager.resolve(JwsService)
+    const jws = await jwsService.createJwsCompact(agent.context, {
+      payload,
+      keyId: keyId,
+      protectedHeaderOptions: header,
+    })
+    return jws
   }
 }

@@ -74,7 +74,7 @@ export const CredentialProvider: React.FC<PropsWithChildren<Props>> = ({ agent, 
   })
 
   const setInitialState = async () => {
-    const records = await agent.modules.credentials.getAll()
+    const records = await agent.didcomm.credentials.getAll()
     setState({ records, loading: false })
   }
 
