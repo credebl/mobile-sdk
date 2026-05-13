@@ -354,8 +354,8 @@ export class OpenID4VCSDK implements MobileSDKModule {
         entityId: verifier.entity_id,
         logo: verifier.logo_uri
           ? {
-              url: verifier.logo_uri,
-            }
+            url: verifier.logo_uri,
+          }
           : undefined,
         name: verifier.organization_name,
       },
@@ -384,63 +384,93 @@ export class OpenID4VCSDK implements MobileSDKModule {
     }
     const presentationExchangeCredentials = resolvedRequest.credentialsForRequest
       ? Object.fromEntries(
-          await Promise.all(
-            resolvedRequest.credentialsForRequest.requirements.flatMap((requirement) =>
-              requirement.submissionEntry.slice(0, requirement.needsCount).map(async (entry) => {
-                const credentialId = selectedCredentials[entry.inputDescriptorId]
-                const credential =
-                  entry.verifiableCredentials.find((vc) => vc.credentialRecord.id === credentialId) ??
-                  entry.verifiableCredentials[0]
+        await Promise.all(
+          resolvedRequest.credentialsForRequest.requirements.flatMap((requirement) =>
+            requirement.submissionEntry.slice(0, requirement.needsCount).map(async (entry) => {
+              const credentialId = selectedCredentials[entry.inputDescriptorId]
+              const credential =
+                entry.verifiableCredentials.find((vc) => vc.credentialRecord.id === credentialId) ??
+                entry.verifiableCredentials[0]
 
-                return [entry.inputDescriptorId, [credential]]
-              })
-            )
+              return [entry.inputDescriptorId, [credential]]
+            })
           )
         )
+      )
       : undefined
 
     const dcqlCredentials = resolvedRequest.queryResult
       ? Object.fromEntries(
-          await Promise.all(
-            Object.entries(
-              Object.keys(selectedCredentials).length > 0
-                ? getSelectedCredentialsForRequest(resolvedRequest.queryResult, selectedCredentials)
-                : agent.modules.openid4vc.holder.selectCredentialsForDcqlRequest(resolvedRequest.queryResult)
-            ).map(async ([queryCredentialId, credentials]) => {
-              return [queryCredentialId, credentials]
-            })
-          )
+        await Promise.all(
+          Object.entries(
+            Object.keys(selectedCredentials).length > 0
+              ? getSelectedCredentialsForRequest(resolvedRequest.queryResult, selectedCredentials)
+              : agent.modules.openid4vc.holder.selectCredentialsForDcqlRequest(resolvedRequest.queryResult)
+          ).map(async ([queryCredentialId, credentials]) => {
+            return [queryCredentialId, credentials]
+          })
         )
+      )
       : undefined
 
     const result = await agent.modules.openid4vc.holder.acceptOpenId4VpAuthorizationRequest({
       authorizationRequestPayload: authorizationRequest,
       presentationExchange: presentationExchangeCredentials
         ? {
-            credentials: presentationExchangeCredentials,
-          }
+          credentials: presentationExchangeCredentials,
+        }
         : undefined,
       dcql: dcqlCredentials
         ? {
-            credentials: dcqlCredentials,
-          }
+          credentials: dcqlCredentials,
+        }
         : undefined,
       transactionData: undefined,
       origin: resolvedRequest.origin,
     })
 
-    if (result.serverResponse && (result.serverResponse.status < 200 || result.serverResponse.status > 299)) {
-      agent.config.logger.error('Error while accepting authorization request', {
-        authorizationRequest,
-        response: result.authorizationResponse,
-        responsePayload: result.authorizationResponsePayload,
-      })
-      throw new Error(
-        `Error while accepting authorization request. ${JSON.stringify(result.serverResponse.body, null, 2)}`
-      )
-    }
+    try {
+      if (result.serverResponse && (result.serverResponse.status < 200 || result.serverResponse.status > 299)) {
+        agent.config.logger.error('Error while accepting authorization request', {
+          authorizationRequest,
+          response: result.authorizationResponse,
+          responsePayload: result.authorizationResponsePayload,
+        })
+        throw new Error(
+          `Error while accepting authorization request. ${JSON.stringify(result.serverResponse.body, null, 2)}`
+        )
+      }
 
-    return result
+      return result
+
+    } catch (err) {
+      if (err.message?.includes('no suitable signing algorithm') ||
+        err.message?.includes('Found no suitable signing algorithm')) {
+
+        if (resolvedRequest.credentialsForRequest?.requirements) {
+          for (const req of resolvedRequest.credentialsForRequest.requirements) {
+            for (const entry of req.submissionEntry ?? []) {
+              const credId = selectedCredentials[entry.inputDescriptorId];
+              const cred = entry.verifiableCredentials?.find(
+                vc => vc.credentialRecord.id === credId
+              ) ?? entry.verifiableCredentials?.[0];
+
+              const record = cred?.credentialRecord;
+              if (record?.firstCredential?.credential) {
+                const storedCred = record.firstCredential.credential;
+                JSON.stringify(storedCred.credentialSubject);
+              }
+            }
+          }
+        }
+        throw new Error(
+          `Algorithm mismatch: The key used to bind this credential does not support ` +
+          `the algorithms required by the verifier. ` +
+          `Original error: ${err.message}`
+        );
+      }
+      throw err;
+    }
   }
 
   public async getSubmissionForMdocDocumentRequest(encodedDeviceRequest: Uint8Array) {
