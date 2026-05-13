@@ -7,6 +7,7 @@ import {
   MdocRecord,
   SdJwtVcRecord,
   type SdJwtVcTypeMetadata,
+  SingleOrArray,
   W3cCredentialRecord,
   W3cV2CredentialRecord,
   W3cV2JsonCredential,
@@ -582,19 +583,19 @@ export function getCredentialForDisplay(
         : credentialRecord.firstCredential.toJson()
     ) as W3cCredentialJson
 
-    // // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    // const proof = (credential as any).proof as SingleOrArray<{
-    //   type: string
-    //   cryptosuite?: string
-    //   verificationMethod?: string
-    // }>
-    // const firstProof = Array.isArray(proof) ? proof[0] : proof
-    // const isAnonCreds = firstProof.cryptosuite === 'anoncreds-2023'
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const proof = (credential as any).proof as SingleOrArray<{
+      type: string
+      cryptosuite?: string
+      verificationMethod?: string
+    }>
+    const firstProof = Array.isArray(proof) ? proof[0] : proof
+    const isAnonCreds = firstProof?.cryptosuite === 'anoncreds-2023'
 
     const type = credentialRecord.firstCredential.type[credentialRecord.firstCredential.type.length - 1]
-    // if (isAnonCreds) {
-    //   type = firstProof.verificationMethod ?? type
-    // }
+    if (isAnonCreds) {
+      type = firstProof.verificationMethod ?? type
+    }
 
     const openId4VcMetadata = getOpenId4VcCredentialMetadata(credentialRecord)
     const issuerDisplay = getW3cIssuerDisplay(credential, openId4VcMetadata)
