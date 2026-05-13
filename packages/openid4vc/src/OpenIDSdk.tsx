@@ -428,8 +428,6 @@ export class OpenID4VCSDK implements MobileSDKModule {
       transactionData: undefined,
       origin: resolvedRequest.origin,
     })
-
-    try {
       if (result.serverResponse && (result.serverResponse.status < 200 || result.serverResponse.status > 299)) {
         agent.config.logger.error('Error while accepting authorization request', {
           authorizationRequest,
@@ -443,34 +441,6 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
       return result
 
-    } catch (err) {
-      if (err.message?.includes('no suitable signing algorithm') ||
-        err.message?.includes('Found no suitable signing algorithm')) {
-
-        if (resolvedRequest.credentialsForRequest?.requirements) {
-          for (const req of resolvedRequest.credentialsForRequest.requirements) {
-            for (const entry of req.submissionEntry ?? []) {
-              const credId = selectedCredentials[entry.inputDescriptorId];
-              const cred = entry.verifiableCredentials?.find(
-                vc => vc.credentialRecord.id === credId
-              ) ?? entry.verifiableCredentials?.[0];
-
-              const record = cred?.credentialRecord;
-              if (record?.firstCredential?.credential) {
-                const storedCred = record.firstCredential.credential;
-                JSON.stringify(storedCred.credentialSubject);
-              }
-            }
-          }
-        }
-        throw new Error(
-          `Algorithm mismatch: The key used to bind this credential does not support ` +
-          `the algorithms required by the verifier. ` +
-          `Original error: ${err.message}`
-        );
-      }
-      throw err;
-    }
   }
 
   public async getSubmissionForMdocDocumentRequest(encodedDeviceRequest: Uint8Array) {
