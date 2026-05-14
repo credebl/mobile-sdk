@@ -1,6 +1,6 @@
-# @credebl/digilocker-mobile
+# @credebl/ssi-mobile-openid4vc
 
-## 1.1.0
+## 2.1.0
 
 ### Minor Changes
 
@@ -37,20 +37,7 @@
 
   - Replaced `@hyperledger/aries-askar-react-native` with `@openwallet-foundation/askar-react-native`
 
-## 1.0.1
-
 ### Patch Changes
 
-- ea0eddf: fix: package builds
-
-## 1.0.0
-
-### Major Changes
-
-- 23a327e: fix: nvmrc and changelog entry
-
-## 0.0.2
-
-### Patch Changes
-
-- 73355e1: chore: add changeset to release packages
+- Updated dependencies [254f7c6]
+  - @credebl/ssi-mobile-core@2.1.0
