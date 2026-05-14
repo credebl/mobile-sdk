@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@types/react": "catalog:",
-    "react-native": "^0.83.1",
+    "react-native": "^0.85.3",
     "typescript": "catalog:"
   }
 }
