@@ -1,2 +1,26 @@
 packages:
-  - 'packages/*'
+  - packages/*
+
+catalog:
+  '@types/react': ^19.2.14
+  '@astronautlabs/jsonpath': ^1.1.2
+  '@biomejs/biome': 2.3.11
+  '@credo-ts/anoncreds': 0.6.2
+  '@credo-ts/askar': 0.6.2
+  '@credo-ts/core': 0.6.2
+  '@credo-ts/didcomm': 0.6.2
+  '@credo-ts/indy-vdr': 0.6.2
+  '@credo-ts/openid4vc': 0.6.2
+  '@credo-ts/question-answer': 0.6.2
+  '@credo-ts/react-native': 0.6.2
+  '@hyperledger/anoncreds-react-native': 0.3.4
+  '@hyperledger/indy-vdr-react-native': 0.2.3
+  '@openwallet-foundation/askar-react-native': 0.4.3
+  '@types/node': ^20.19.25
+  rxjs: ^7.8.2
+  typescript: ~5.9.3
+
+onlyBuiltDependencies:
+  - '@hyperledger/anoncreds-react-native'
+  - '@hyperledger/indy-vdr-react-native'
+  - '@openwallet-foundation/askar-react-native'

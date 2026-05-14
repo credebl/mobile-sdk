@@ -1,11 +1,25 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "files": {
     "maxSize": 10000000
   },
   "formatter": {
+    "indentStyle": "space",
     "lineWidth": 120,
-    "indentStyle": "space"
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/build",
+      "!**/.idea",
+      "!**/coverage",
+      "!**/pnpm-lock.yaml",
+      "!**/.changeset"
+    ]
   },
   "javascript": {
     "parser": {
@@ -24,40 +38,51 @@
       "allowComments": true
     }
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
-    "enabled": true,
     "rules": {
-      "recommended": true,
-      "suspicious": {
-        "noConsole": "error"
-      },
-      "correctness": {
-        "recommended": true,
-        "noUnusedImports": "error"
-      }
-    }
-  },
-  "vcs": {
-    "useIgnoreFile": true,
-    "clientKind": "git",
-    "enabled": true
-  },
-  "overrides": [
-    {
-      "include": ["*.test.ts", "**/tests/*"],
-      "linter": {
-        "rules": {
-          "style": {
-            "noRestrictedGlobals": {
-              "level": "info",
-              "options": {}
+      "style": {
+        "useImportType": "off",
+        "useNodejsImportProtocol": "off",
+        "noNonNullAssertion": "error",
+        "noRestrictedGlobals": {
+          "level": "error",
+          "options": {
+            "deniedGlobals": { "Buffer": "TODO: Add a custom message here." }
+          }
+        },
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "packages/*": "using imports from packages/* is not allowed"
             }
           }
         }
+      },
+      "correctness": {
+        "noUnusedVariables": {
+          "level": "error",
+          "fix": "safe"
+        },
+        "noUnusedFunctionParameters": "off",
+        "noUnusedImports": "error",
+        "noUndeclaredDependencies": "off",
+        "noInvalidUseBeforeDeclaration": "error"
+      },
+      "suspicious": {
+        "noConsole": "error"
+      },
+      "complexity": {
+        "noBannedTypes": "error"
+      },
+      "nursery": {},
+      "performance": {
+        "noDelete": {
+          "fix": "none",
+          "level": "error"
+        }
       }
     }
-  ]
+  }
 }
