@@ -14,25 +14,31 @@ updates:
       day: "monday"
       time: "09:00"
       timezone: "Asia/Kolkata"
-    open-pull-requests-limit: 10
 
     groups:
+      # 1 PR for all patch updates (1.2.3 → 1.2.4)
+      patch-updates:
+        update-types:
+          - "patch"
+
+      # 1 PR for all minor updates (1.2.4 → 1.3.0)
       minor-updates:
-        patterns:
-          - "*"
         update-types:
           - "minor"
 
     allow:
       - dependency-type: "all"
 
+
     labels:
       - "dependencies"
       - "pnpm"                   # you can keep this label for clarity
 
+
     commit-message:
       prefix: "chore"
       include: "scope"
+
 
   # =========================
   # GitHub Actions
@@ -46,16 +52,24 @@ updates:
       time: "09:00"
       timezone: "Asia/Kolkata"
 
+
     labels:
       - "dependencies"
       - "github-actions"
+      - "devops"
+
 
     commit-message:
       prefix: "ci"
 
+
     groups:
+      # 1 PR for all patch updates of GitHub Actions
+      patch-updates:
+        update-types:
+          - "patch"
+
+      # 1 PR for all minor updates of GitHub Actions
       minor-updates:
-        patterns:
-          - "*"
         update-types:
           - "minor"
