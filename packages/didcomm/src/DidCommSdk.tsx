@@ -47,10 +47,10 @@ import { QuestionAnswerApi } from './questionAnswer'
 
 export interface DidCommConfiguration
   extends Pick<
-    DidCommConnectionsModuleConfigOptions,
-    'peerNumAlgoForDidExchangeRequests' | 'peerNumAlgoForDidRotation'
-  >,
-  Pick<DidCommModuleConfigOptions, 'processDidCommMessagesConcurrently'> {
+      DidCommConnectionsModuleConfigOptions,
+      'peerNumAlgoForDidExchangeRequests' | 'peerNumAlgoForDidRotation'
+    >,
+    Pick<DidCommModuleConfigOptions, 'processDidCommMessagesConcurrently'> {
   /**
    * Strategy to use for picking up messages from the mediator. If no strategy is provided, the agent will use the discover
    * features protocol to determine the best strategy.
