@@ -13,6 +13,7 @@ catalog:
   '@credo-ts/openid4vc': 0.6.2
   '@credo-ts/question-answer': 0.6.2
   '@credo-ts/react-native': 0.6.2
+  "@credo-ts/didcomm-push-notifications": "0.0.2-alpha-20251223125919"
   '@hyperledger/anoncreds-react-native': 0.3.4
   '@hyperledger/indy-vdr-react-native': 0.2.3
   '@openwallet-foundation/askar-react-native': 0.4.3
