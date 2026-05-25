@@ -18,9 +18,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
-    "@changesets/cli": "^2.29.6",
+    "@changesets/cli": "^2.31.0",
     "@types/node": "catalog:",
-    "tsdown": "^0.20.1",
+    "tsdown": "^0.22.0",
     "typescript": "catalog:"
   },
   "engines": {
