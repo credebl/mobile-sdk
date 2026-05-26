@@ -29,7 +29,6 @@ import {
 import { AskarModule } from '@credo-ts/askar'
 import {
   Agent,
-  Buffer,
   CacheModule,
   ClaimFormat,
   ConsoleLogger,
@@ -135,7 +134,6 @@ export {
   DidCommCredentialState,
   DidCommCredentialPreviewAttribute,
   JsonLdFormatDataCredentialDetail,
-  Buffer,
   DidCommBasicMessageRole,
   GetCredentialFormatDataReturn,
   DidCommProofFormatPayload,
