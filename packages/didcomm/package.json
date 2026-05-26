@@ -36,7 +36,8 @@
     "@credo-ts/indy-vdr": "catalog:",
     "@credo-ts/question-answer": "catalog:",
     "@credo-ts/react-native": "catalog:",
-    "rxjs": "catalog:"
+    "rxjs": "catalog:",
+    "@credo-ts/didcomm-push-notifications": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:",

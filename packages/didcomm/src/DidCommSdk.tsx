@@ -23,6 +23,7 @@ import {
   DidCommProofV2Protocol,
   DidCommWsOutboundTransport,
 } from '@credo-ts/didcomm'
+import { DidCommPushNotificationsFcmModule } from '@credo-ts/didcomm-push-notifications'
 import { IndyVdrAnonCredsRegistry, IndyVdrModule, type IndyVdrPoolConfig } from '@credo-ts/indy-vdr'
 import { QuestionAnswerModule } from '@credo-ts/question-answer'
 import { anoncreds } from '@hyperledger/anoncreds-react-native'
@@ -112,6 +113,7 @@ export const getDidCommModules = (configuration: DidCommConfiguration) => ({
       outbound: [new DidCommHttpOutboundTransport(), new DidCommWsOutboundTransport()],
     },
   }),
+  pushNotificationsFcm: new DidCommPushNotificationsFcmModule(),
   questionAnswer: new QuestionAnswerModule(),
 
   anoncreds: new AnonCredsModule({

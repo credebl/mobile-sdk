@@ -24,6 +24,9 @@ catalogs:
     '@credo-ts/didcomm':
       specifier: 0.6.2
       version: 0.6.2
+    '@credo-ts/didcomm-push-notifications':
+      specifier: 0.0.2-alpha-20251223125919
+      version: 0.0.2-alpha-20251223125919
     '@credo-ts/indy-vdr':
       specifier: 0.6.2
       version: 0.6.2
@@ -123,6 +126,9 @@ importers:
       '@credo-ts/didcomm':
         specifier: 'catalog:'
         version: 0.6.2(typescript@5.9.3)
+      '@credo-ts/didcomm-push-notifications':
+        specifier: 'catalog:'
+        version: 0.0.2-alpha-20251223125919(@credo-ts/core@0.6.2(typescript@5.9.3))(@credo-ts/didcomm@0.6.2(typescript@5.9.3))
       '@credo-ts/indy-vdr':
         specifier: 'catalog:'
         version: 0.6.2(@hyperledger/anoncreds-shared@0.3.4)(@hyperledger/indy-vdr-shared@0.2.3)(typescript@5.9.3)
@@ -959,6 +965,12 @@ packages:
 
   '@credo-ts/core@0.6.2':
     resolution: {integrity: sha512-A7yXs6y/73wIvgEHpfriVZW1osuASYhrO/TQIFlwSK/cRTjaXWFgBapzYaJh09O1PuEJ4v1A1mt72uardqCj8g==}
+
+  '@credo-ts/didcomm-push-notifications@0.0.2-alpha-20251223125919':
+    resolution: {integrity: sha512-ESIGktOzX4NZ4x/1zKyiHk8pB0YJsafmk4VlswNc0x3RPIKmme00JGyBW9JVmuUQmls92X815UyZCKo+EPKUvg==}
+    peerDependencies:
+      '@credo-ts/core': ^0.6.0
+      '@credo-ts/didcomm': ^0.6.0
 
   '@credo-ts/didcomm@0.6.2':
     resolution: {integrity: sha512-0cZP753sxzcw11Y3/3B3GY3qYPfw+r/TwqzpOvwiUHDMMdvQOP4yrfqTvI2Ae0fwzfz69ePoMo52tlXYbgAadw==}
@@ -5754,6 +5766,13 @@ snapshots:
       - encoding
       - supports-color
       - typescript
+
+  '@credo-ts/didcomm-push-notifications@0.0.2-alpha-20251223125919(@credo-ts/core@0.6.2(typescript@5.9.3))(@credo-ts/didcomm@0.6.2(typescript@5.9.3))':
+    dependencies:
+      '@credo-ts/core': 0.6.2(typescript@5.9.3)
+      '@credo-ts/didcomm': 0.6.2(typescript@5.9.3)
+      class-transformer: 0.5.1
+      class-validator: 0.14.3
 
   '@credo-ts/didcomm@0.6.2(typescript@5.9.3)':
     dependencies:
