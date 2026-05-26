@@ -1,5 +1,11 @@
 # @credebl/ssi-mobile-core
 
+## 2.1.1
+
+### Patch Changes
+
+- 1da61e1: add push notifications for didcomm
+
 ## 2.1.0
 
 ### Minor Changes
