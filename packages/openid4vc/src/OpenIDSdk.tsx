@@ -466,7 +466,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
       credential: getCredentialForDisplay(record),
       mdoc: record.firstCredential,
       issuerSignedDocument: parseIssuerSigned(
-        TypedArrayEncoder.fromBase64(record.firstCredential.base64Url),
+        TypedArrayEncoder.fromBase64Url(record.firstCredential.base64Url),
         record.firstCredential.docType
       ),
     }))
