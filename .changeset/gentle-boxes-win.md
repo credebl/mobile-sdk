@@ -1,7 +1,7 @@
 ---
-"@credebl/ssi-mobile-openid4vc": patch
-"@credebl/ssi-mobile-core": patch
-"@credebl/ssi-mobile-didcomm": patch
+"@credebl/ssi-mobile-openid4vc": minor
+"@credebl/ssi-mobile-core": minor
+"@credebl/ssi-mobile-didcomm": minor
 ---
 
 update mdoc library
