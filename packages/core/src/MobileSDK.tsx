@@ -99,7 +99,9 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     this.modules = options.modules
   }
 
-  public static async initializeSDK(options: MobileSDKOptions<any>): Promise<{ sdk: MobileSDK; agent: Agent }> {
+  public static async initializeSDK<T extends Record<string, MobileSDKModule>>(
+    options: MobileSDKOptions<T>
+  ): Promise<{ sdk: MobileSDK<T>; agent: Agent }> {
     const sdk = new MobileSDK(options)
     const agent = await sdk.initialize()
     return { sdk, agent }
@@ -307,7 +309,7 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     )
   }
 
-  public async getCredentialsByTag({ tags, format }: { tags: Record<string, any>; format?: CredentialRecord }) {
+  public async getCredentialsByTag({ tags, format }: { tags: Record<string, TagValue>; format?: CredentialRecord }) {
     const agent = this.assertAndGetAgent()
     const repositories = this.getRepositories(agent, format)
 

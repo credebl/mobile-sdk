@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@animo-id/expo-digital-credentials-api": "^0.4.0",
-    "@animo-id/mdoc": "0.5.2",
+    "@owf/mdoc": "^0.6.0",
     "@astronautlabs/jsonpath": "catalog:",
     "@credebl/ssi-mobile-core": "workspace:*",
     "@credo-ts/core": "catalog:",

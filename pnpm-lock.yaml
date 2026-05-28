@@ -40,14 +40,14 @@ catalogs:
       specifier: 0.7.0
       version: 0.7.0
     '@hyperledger/anoncreds-react-native':
-      specifier: 0.3.4
-      version: 0.3.4
+      specifier: 0.4.0
+      version: 0.4.0
     '@hyperledger/indy-vdr-react-native':
-      specifier: 0.2.3
-      version: 0.2.3
+      specifier: 0.3.0
+      version: 0.3.0
     '@openwallet-foundation/askar-react-native':
-      specifier: 0.4.3
-      version: 0.4.3
+      specifier: 0.6.0
+      version: 0.6.0
     '@types/node':
       specifier: ^20.19.25
       version: 20.19.30
@@ -85,7 +85,7 @@ importers:
     dependencies:
       '@credo-ts/askar':
         specifier: 'catalog:'
-        version: 0.7.0(@openwallet-foundation/askar-shared@0.4.3)(typescript@5.9.3)
+        version: 0.7.0(@openwallet-foundation/askar-shared@0.6.0)(typescript@5.9.3)
       '@credo-ts/core':
         specifier: 'catalog:'
         version: 0.7.0(typescript@5.9.3)
@@ -94,7 +94,7 @@ importers:
         version: 0.7.0(expo-crypto@15.0.8(expo@53.0.20(@babel/core@7.28.3)(graphql@15.8.0)(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)))(react-native-fs@2.20.0(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0)))(react-native-get-random-values@1.11.0(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0)))(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(typescript@5.9.3)
       '@openwallet-foundation/askar-react-native':
         specifier: 'catalog:'
-        version: 0.4.3(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)
+        version: 0.6.0(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)
       rxjs:
         specifier: 'catalog:'
         version: 7.8.2
@@ -116,10 +116,10 @@ importers:
         version: link:../core
       '@credo-ts/anoncreds':
         specifier: 'catalog:'
-        version: 0.7.0(@hyperledger/anoncreds-shared@0.3.4)(typescript@5.9.3)
+        version: 0.7.0(@hyperledger/anoncreds-shared@0.4.0)(typescript@5.9.3)
       '@credo-ts/askar':
         specifier: 'catalog:'
-        version: 0.7.0(@openwallet-foundation/askar-shared@0.4.3)(typescript@5.9.3)
+        version: 0.7.0(@openwallet-foundation/askar-shared@0.6.0)(typescript@5.9.3)
       '@credo-ts/core':
         specifier: 'catalog:'
         version: 0.7.0(typescript@5.9.3)
@@ -131,7 +131,7 @@ importers:
         version: 0.0.2-alpha-20251223125919(@credo-ts/core@0.7.0(typescript@5.9.3))(@credo-ts/didcomm@0.7.0(typescript@5.9.3))
       '@credo-ts/indy-vdr':
         specifier: 'catalog:'
-        version: 0.7.0(@hyperledger/anoncreds-shared@0.3.4)(@hyperledger/indy-vdr-shared@0.2.3)(typescript@5.9.3)
+        version: 0.7.0(@hyperledger/anoncreds-shared@0.4.0)(@hyperledger/indy-vdr-shared@0.3.0)(typescript@5.9.3)
       '@credo-ts/question-answer':
         specifier: 'catalog:'
         version: 0.7.0(typescript@5.9.3)
@@ -140,10 +140,10 @@ importers:
         version: 0.7.0(expo-crypto@15.0.8(expo@53.0.20(@babel/core@7.28.3)(graphql@15.8.0)(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)))(react-native-fs@2.20.0(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0)))(react-native-get-random-values@1.11.0(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0)))(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(typescript@5.9.3)
       '@hyperledger/anoncreds-react-native':
         specifier: 'catalog:'
-        version: 0.3.4(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)
+        version: 0.4.0(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)
       '@hyperledger/indy-vdr-react-native':
         specifier: 'catalog:'
-        version: 0.2.3(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)
+        version: 0.3.0(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)
       rxjs:
         specifier: 'catalog:'
         version: 7.8.2
@@ -188,9 +188,6 @@ importers:
       '@animo-id/expo-digital-credentials-api':
         specifier: ^0.4.0
         version: 0.4.0(expo@53.0.20(@babel/core@7.28.3)(graphql@15.8.0)(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0))(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)
-      '@animo-id/mdoc':
-        specifier: 0.5.2
-        version: 0.5.2
       '@astronautlabs/jsonpath':
         specifier: 'catalog:'
         version: 1.1.2
@@ -203,6 +200,9 @@ importers:
       '@credo-ts/openid4vc':
         specifier: 'catalog:'
         version: 0.7.0(typescript@5.9.3)
+      '@owf/mdoc':
+        specifier: ^0.6.0
+        version: 0.6.0
       expo-asset:
         specifier: ^12.0.10
         version: 12.0.12(expo@53.0.20(@babel/core@7.28.3)(graphql@15.8.0)(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0))(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)
@@ -1167,23 +1167,23 @@ packages:
   '@hapi/topo@5.1.0':
     resolution: {integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg==}
 
-  '@hyperledger/anoncreds-react-native@0.3.4':
-    resolution: {integrity: sha512-GF6vpV8UZk4FTPSuQeE8chW7yBnCZlBUO7mtWqG/DiQlDsP3iSSnE5tYOp51iwA10r9tN6qD24WVkIe4xMd1sw==}
+  '@hyperledger/anoncreds-react-native@0.4.0':
+    resolution: {integrity: sha512-4/YCgh805ZBqVmAGcFoa+E08w0ypKqyxc6NHKi0bWANrOwC3byz7G4PV4x8JLBfpWs7IDZ+XR+LzxLOwnnBIZw==}
     peerDependencies:
       react: '>= 16'
       react-native: '>= 0.71'
 
-  '@hyperledger/anoncreds-shared@0.3.4':
-    resolution: {integrity: sha512-XRyX39yWjn+ymUxy+4BvE0gdRIkfTmHtj1A19aOE8gALaDIAMiBbe0HxO8dkM+iAUXntBtqRJEL87Kwcx6xd8g==}
+  '@hyperledger/anoncreds-shared@0.4.0':
+    resolution: {integrity: sha512-iQM0Ok6tiuN8r1bjHzkUIUMZUlQt93yD812D0mMK2cBxAqzeccAy285G8iP/kra96/ptZe1mGxAcfoOESKPHzA==}
 
-  '@hyperledger/indy-vdr-react-native@0.2.3':
-    resolution: {integrity: sha512-DTFI6YqH9HWmNQKE0dz9wZ4a8yQFSgiczWMiRaXfFsHcxRXkZLuWFQ2/bW+y5mURuEucMlJvFJ0yRjEmKxVBsg==}
+  '@hyperledger/indy-vdr-react-native@0.3.0':
+    resolution: {integrity: sha512-zz5fdlNlgHfg8iKkiuhltk2z/Et5siaHDDZo5KY9WPri8nkCln3EUh4yvs3SqEDi/MyQq/cMqcx2pH2nbMkEhA==}
     peerDependencies:
       react: '>= 16'
       react-native: '>= 0.71'
 
-  '@hyperledger/indy-vdr-shared@0.2.3':
-    resolution: {integrity: sha512-5sZ1WO+cL7v6bLBqN4YnVEZVq5yXVBD18e1B2eWW/jwvQh+3R4XTVpQttYI2tf2fe1CrN+UztU4uuxSAWDPAng==}
+  '@hyperledger/indy-vdr-shared@0.3.0':
+    resolution: {integrity: sha512-MMH/PwmjfKSH9X7nplYPgu8oMNHsbMZSaP6F+6xFzJDJKsJ15v/y9zwi4eiTDcMVmmRcDHfSep2uBR4FWkXxzQ==}
 
   '@inquirer/external-editor@1.0.1':
     resolution: {integrity: sha512-Oau4yL24d2B5IL4ma4UpbQigkVhzPDXLoqy1ggK4gnHg/stmkffJE4oOXHXF3uz0UEpywG68KcyXsyYpA1Re/Q==}
@@ -1326,14 +1326,14 @@ packages:
   '@openid4vc/utils@0.4.6':
     resolution: {integrity: sha512-qpZ40ccnYTMdmW5zzIiN5SvNBzWHu0cUz97Itw+YMC8obosQ62c4Tg9LpwWwVirouN9oOQZ7IuF1EDakiB8w3w==}
 
-  '@openwallet-foundation/askar-react-native@0.4.3':
-    resolution: {integrity: sha512-hcUbvLByWTa4cVPKziojfdyZDRtdqI45INdyad4oJOlrDwtjjvDU9+x6MaykmO1VjaDYDk+bPTP1AhU0g3jJ4Q==}
+  '@openwallet-foundation/askar-react-native@0.6.0':
+    resolution: {integrity: sha512-cXyRuWKtslUEPx3LCUYTWox7xs8eomhLTkuvq4TAPXxxXzoZHZWuljXfMCKKCbmiaGEuxOeyYiNuDkIsFzGFOg==}
     peerDependencies:
       react: '>= 16'
       react-native: '>= 0.71'
 
-  '@openwallet-foundation/askar-shared@0.4.3':
-    resolution: {integrity: sha512-Zt9zlvjJxNs8UWlnRydZH594Lak15YPHY72VT1+iDbXh0OjTdyq6Bf0FIsh9sfFnRYIgh2zd8+VoXxZ07GjADA==}
+  '@openwallet-foundation/askar-shared@0.6.0':
+    resolution: {integrity: sha512-O9aaQCZ2BkQ5Z8jqshhqhxbS/rT2nTfN90iW32WKQEh9YUwWERFQcnqKR+XszGhV95jqwZagcwhDb72hFH3VaQ==}
 
   '@owf/mdoc@0.6.0':
     resolution: {integrity: sha512-vJL62hzjcSweBjDD9eRUH1RIMSzZUtHKjVFMMo50oHPLO9ZVZbQABFe9IFoa5AgXkwfv27HjnFv/eRbkOrlsUA==}
@@ -1672,6 +1672,7 @@ packages:
 
   '@sphereon/kmp-mdoc-core@0.2.0-SNAPSHOT.26':
     resolution: {integrity: sha512-QXJ6R8ENiZV2rPMbn06cw5JKwqUYN1kzVRbYfONqE1PEXx1noQ4md7uxr2zSczi0ubKkNcbyYDNtIMTZIhGzmQ==}
+    bundledDependencies: []
 
   '@sphereon/pex-models@2.3.2':
     resolution: {integrity: sha512-foFxfLkRwcn/MOp/eht46Q7wsvpQGlO7aowowIIb5Tz9u97kYZ2kz6K2h2ODxWuv5CRA7Q0MY8XUBGE2lfOhOQ==}
@@ -5778,12 +5779,12 @@ snapshots:
       human-id: 4.1.1
       prettier: 2.8.8
 
-  '@credo-ts/anoncreds@0.7.0(@hyperledger/anoncreds-shared@0.3.4)(typescript@5.9.3)':
+  '@credo-ts/anoncreds@0.7.0(@hyperledger/anoncreds-shared@0.4.0)(typescript@5.9.3)':
     dependencies:
       '@astronautlabs/jsonpath': 1.1.2
       '@credo-ts/core': 0.7.0(typescript@5.9.3)
       '@credo-ts/didcomm': 0.7.0(typescript@5.9.3)
-      '@hyperledger/anoncreds-shared': 0.3.4
+      '@hyperledger/anoncreds-shared': 0.4.0
       '@sphereon/pex-models': 2.3.2
       class-transformer: 0.5.1
       class-validator: 0.14.3
@@ -5793,10 +5794,10 @@ snapshots:
       - supports-color
       - typescript
 
-  '@credo-ts/askar@0.7.0(@openwallet-foundation/askar-shared@0.4.3)(typescript@5.9.3)':
+  '@credo-ts/askar@0.7.0(@openwallet-foundation/askar-shared@0.6.0)(typescript@5.9.3)':
     dependencies:
       '@credo-ts/core': 0.7.0(typescript@5.9.3)
-      '@openwallet-foundation/askar-shared': 0.4.3
+      '@openwallet-foundation/askar-shared': 0.6.0
       class-transformer: 0.5.1
       class-validator: 0.14.3
       rxjs: 7.8.2
@@ -5876,11 +5877,11 @@ snapshots:
       - supports-color
       - typescript
 
-  '@credo-ts/indy-vdr@0.7.0(@hyperledger/anoncreds-shared@0.3.4)(@hyperledger/indy-vdr-shared@0.2.3)(typescript@5.9.3)':
+  '@credo-ts/indy-vdr@0.7.0(@hyperledger/anoncreds-shared@0.4.0)(@hyperledger/indy-vdr-shared@0.3.0)(typescript@5.9.3)':
     dependencies:
-      '@credo-ts/anoncreds': 0.7.0(@hyperledger/anoncreds-shared@0.3.4)(typescript@5.9.3)
+      '@credo-ts/anoncreds': 0.7.0(@hyperledger/anoncreds-shared@0.4.0)(typescript@5.9.3)
       '@credo-ts/core': 0.7.0(typescript@5.9.3)
-      '@hyperledger/indy-vdr-shared': 0.2.3
+      '@hyperledger/indy-vdr-shared': 0.3.0
     transitivePeerDependencies:
       - '@hyperledger/anoncreds-shared'
       - encoding
@@ -6308,23 +6309,23 @@ snapshots:
       '@hapi/hoek': 9.3.0
     optional: true
 
-  '@hyperledger/anoncreds-react-native@0.3.4(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)':
+  '@hyperledger/anoncreds-react-native@0.4.0(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@hyperledger/anoncreds-shared': 0.3.4
+      '@hyperledger/anoncreds-shared': 0.4.0
       react: 19.0.0
       react-native: 0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0)
 
-  '@hyperledger/anoncreds-shared@0.3.4':
+  '@hyperledger/anoncreds-shared@0.4.0':
     dependencies:
       tar: 7.4.3
 
-  '@hyperledger/indy-vdr-react-native@0.2.3(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)':
+  '@hyperledger/indy-vdr-react-native@0.3.0(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@hyperledger/indy-vdr-shared': 0.2.3
+      '@hyperledger/indy-vdr-shared': 0.3.0
       react: 19.0.0
       react-native: 0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0)
 
-  '@hyperledger/indy-vdr-shared@0.2.3':
+  '@hyperledger/indy-vdr-shared@0.3.0':
     dependencies:
       tar: 7.4.3
 
@@ -6530,13 +6531,13 @@ snapshots:
       zod: 4.3.6
       zod-validation-error: 5.0.0(zod@4.3.6)
 
-  '@openwallet-foundation/askar-react-native@0.4.3(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)':
+  '@openwallet-foundation/askar-react-native@0.6.0(react-native@0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@openwallet-foundation/askar-shared': 0.4.3
+      '@openwallet-foundation/askar-shared': 0.6.0
       react: 19.0.0
       react-native: 0.83.1(@babel/core@7.28.3)(@react-native-community/cli@10.2.4(@babel/core@7.28.3))(@types/react@19.2.14)(react@19.0.0)
 
-  '@openwallet-foundation/askar-shared@0.4.3':
+  '@openwallet-foundation/askar-shared@0.6.0':
     dependencies:
       buffer: 6.0.3
       tar: 7.4.3
