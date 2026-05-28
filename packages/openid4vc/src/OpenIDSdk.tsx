@@ -4,7 +4,6 @@ import {
   registerCredentials,
   sendResponse,
 } from '@animo-id/expo-digital-credentials-api'
-import { DeviceRequest, limitDisclosureToDeviceRequestNameSpaces, parseIssuerSigned } from '@animo-id/mdoc'
 import type { MobileSDKModule } from '@credebl/ssi-mobile-core'
 import {
   type Agent,
@@ -16,7 +15,6 @@ import {
   SdJwtVcRecord,
   SdJwtVcRepository,
   type SdJwtVcSignOptions,
-  TypedArrayEncoder,
   W3cCredentialRecord,
   W3cCredentialRepository,
   X509Module,
@@ -34,6 +32,7 @@ import {
   OpenId4VcModule,
   preAuthorizedCodeGrantIdentifier,
 } from '@credo-ts/openid4vc'
+import { DeviceRequest, limitDisclosureToDeviceRequestNameSpaces } from '@owf/mdoc'
 import type { PropsWithChildren } from 'react'
 import { Platform } from 'react-native'
 import { getCredentialBindingResolver } from './credentialBindingResolver'
@@ -454,33 +453,30 @@ export class OpenID4VCSDK implements MobileSDKModule {
   public async getSubmissionForMdocDocumentRequest(encodedDeviceRequest: Uint8Array) {
     const agent = this.assertAndGetAgent()
 
-    const deviceRequest = DeviceRequest.parse(encodedDeviceRequest)
+    const deviceRequest = DeviceRequest.decode(encodedDeviceRequest)
 
     const matchingDocTypeRecords = await agent.mdoc.findAllByQuery({
       $or: deviceRequest.docRequests.map((request) => ({
-        docType: request.itemsRequest.data.docType,
+        docType: request.itemsRequest.docType,
       })),
     })
 
     const mdocs = matchingDocTypeRecords.map((record) => ({
       credential: getCredentialForDisplay(record),
       mdoc: record.firstCredential,
-      issuerSignedDocument: parseIssuerSigned(
-        TypedArrayEncoder.fromBase64Url(record.firstCredential.base64Url),
-        record.firstCredential.docType
-      ),
+      issuerSignedDocument: record.firstCredential.issuerSigned,
     }))
 
     const entries: FormattedSubmissionEntry[] = deviceRequest.docRequests.map(
       (docRequest): FormattedSubmissionEntry => {
         const matchingMdocs = mdocs
           .map((mdoc) => {
-            if (mdoc.mdoc.docType !== docRequest.itemsRequest.data.docType) return undefined
+            if (mdoc.mdoc.docType !== docRequest.itemsRequest.docType) return undefined
 
             try {
               const disclosedNamespaces = limitDisclosureToDeviceRequestNameSpaces(
                 mdoc.issuerSignedDocument,
-                docRequest.itemsRequest.data.nameSpaces
+                docRequest
               )
 
               return {
@@ -494,33 +490,34 @@ export class OpenID4VCSDK implements MobileSDKModule {
           .filter((m): m is NonNullable<typeof m> => m !== undefined)
 
         if (matchingMdocs.length === 0) {
-          const requestedAttributePaths = Array.from(docRequest.itemsRequest.data.nameSpaces.values()).flatMap(
-            (value) => Array.from(value.keys()).map((key) => [key])
+          const requestedAttributePaths = Array.from(docRequest.itemsRequest.namespaces.values()).flatMap((value) =>
+            Array.from(value.keys()).map((key) => [key])
           )
 
           return {
-            inputDescriptorId: docRequest.itemsRequest.data.docType,
+            inputDescriptorId: docRequest.itemsRequest.docType,
             isSatisfied: false,
-            name: docRequest.itemsRequest.data.docType,
+            name: docRequest.itemsRequest.docType,
             requestedAttributePaths,
           }
         }
 
         return {
           // input descriptor id is doctype
-          inputDescriptorId: docRequest.itemsRequest.data.docType,
+          inputDescriptorId: docRequest.itemsRequest.docType,
           isSatisfied: true,
           credentials: matchingMdocs.map((matchingMdoc): FormattedSubmissionEntrySatisfiedCredential => {
-            const disclosedAttributePaths = Array.from(matchingMdoc.disclosedNameSpaces.entries()).flatMap(
-              ([namespace, value]) =>
-                Array.from(value.values()).map((issuerSignedItem) => [namespace, issuerSignedItem.elementIdentifier])
+            const disclosedAttributePaths = Array.from(
+              matchingMdoc.disclosedNameSpaces.issuerNamespaces.entries()
+            ).flatMap(([namespace, value]) =>
+              value.map((issuerSignedItem) => [namespace, issuerSignedItem.elementIdentifier])
             )
 
             const disclosedNamespaces = Object.fromEntries(
-              Array.from(matchingMdoc.disclosedNameSpaces.entries()).map(([namespace, value]) => [
+              Array.from(matchingMdoc.disclosedNameSpaces.issuerNamespaces.entries()).map(([namespace, value]) => [
                 namespace,
                 Object.fromEntries(
-                  Array.from(value.values()).map((issuerSignedItem) => [
+                  value.map((issuerSignedItem) => [
                     issuerSignedItem.elementIdentifier,
                     // TODO: what is element value here?
                     issuerSignedItem.elementValue,
