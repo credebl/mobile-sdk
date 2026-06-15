@@ -157,7 +157,15 @@ export function safeCalculateJwkThumbprint(jwk: Kms.Jwk): string | undefined {
   try {
     const thumbprint = TypedArrayEncoder.toBase64Url(
       Hasher.hash(
-        JSON.stringify({ k: jwk.k, e: jwk.e, crv: jwk.crv, kty: jwk.kty, n: jwk.n, x: jwk.x, y: jwk.y }),
+        JSON.stringify({
+          k: jwk.k,
+          e: jwk.e,
+          crv: jwk.crv,
+          kty: jwk.kty,
+          n: jwk.n,
+          x: jwk.x,
+          y: jwk.y,
+        }),
         'sha-256'
       )
     )
@@ -244,16 +252,16 @@ export function getSelectedCredentialsForRequest(
             useMode: CredentialMultiInstanceUseMode.NewOrFirst,
           },
         ]
-    } else if (matchWithRecord.record.type === 'W3cCredentialRecord') {
-				credentials[credentialQueryId] = [
+      } else if (matchWithRecord.record.type === 'W3cCredentialRecord') {
+        credentials[credentialQueryId] = [
           {
             claimFormat: ClaimFormat.JwtVc,
             credentialRecord: matchWithRecord.record,
-            disclosedPayload:
-            matchWithRecord.claims.valid_claim_sets[0].output as JsonObject,
-            useMode: CredentialMultiInstanceUseMode.NewOrFirst
-				}]
-				}
+            disclosedPayload: matchWithRecord.claims.valid_claim_sets[0].output as JsonObject,
+            useMode: CredentialMultiInstanceUseMode.NewOrFirst,
+          },
+        ]
+      }
     }
   }
 
