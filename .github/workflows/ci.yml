@@ -3,21 +3,20 @@ name: "Continuous Integration"
 on:
   pull_request:
     branches:
-      - main
+      - v2.1.x
   push:
     branches:
-      - main
-  pull_request_review:
+      - v2.1.x
 
-permissions:
-  id-token: write # Required for OIDC
-  contents: read
+concurrency:
+  # Cancel previous runs that are not completed yet
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   continuous-integration:
     name: "Continuous Integration"
     runs-on: ubuntu-24.04
-    if: github.event_name != 'pull_request_review' ||  github.event.pull_request.head.ref == 'changeset-release/main'
 
     steps:
       - name: Checkout Repo

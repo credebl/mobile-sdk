@@ -11,13 +11,13 @@ env:
 on:
   push:
     branches:
-      - main
+      - v2.1.x
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/v2.1.x'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v6
@@ -64,7 +64,7 @@ jobs:
     # We don't want to run release and release-unstable concurrently as NPM doesn't allow publishing packages while another version of the same package is
     # still processing. So we wait for release to finish, and the always() ensure that it will run no matter the result of release.
     needs: [release]
-    if: "always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && !startsWith(github.event.head_commit.message, 'chore(release): new version')"
+    if: "always() && github.event_name == 'push' && github.ref == 'refs/heads/v2.1.x' && !startsWith(github.event.head_commit.message, 'chore(release): new version')"
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v6
@@ -109,3 +109,4 @@ jobs:
           git push origin v$CURRENT_PACKAGE_VERSION --no-verify
 
           echo "Published version: $CURRENT_PACKAGE_VERSION with tag: alpha"
+
