@@ -1,5 +1,11 @@
 # @credebl/ssi-mobile-core
 
+## 2.1.2
+
+### Patch Changes
+
+- ab4269c: add support for w3c openid4vc
+
 ## 2.1.1
 
 ### Patch Changes
