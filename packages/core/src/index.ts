@@ -15,6 +15,7 @@ export { KeyDidCreateOptions, TypedArrayEncoder, Hasher, JwtPayload, JwsProtecte
 
 export * from './contexts'
 export * from './hooks'
+export * from './keyManagement'
 export * from './MobileSDK'
 export * from './providers'
 export * from './wallet'
