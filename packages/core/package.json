@@ -25,6 +25,7 @@
   },
   "scripts": {
     "build": "tsdown --config-loader unconfig",
+    "test": "pnpm build && node --test test/keyManagement.test.mjs",
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {

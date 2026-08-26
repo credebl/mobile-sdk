@@ -17,6 +17,7 @@ import {
   JwtPayload,
   KeyDidRegistrar,
   KeyDidResolver,
+  Kms,
   MdocRecord,
   MdocRepository,
   type ModulesMap,
@@ -34,6 +35,7 @@ import { agentDependencies } from '@credo-ts/react-native'
 import { askar } from '@openwallet-foundation/askar-react-native'
 import type { PropsWithChildren } from 'react'
 import { useMobileSDK } from './contexts'
+import { type MobileSDKKeyManagementOptions, registerKeyManagementBackends } from './keyManagement'
 import AgentProvider from './providers/AgentProvider'
 
 export type WithBackend<T> = T & {
@@ -88,6 +90,10 @@ export type MobileSDKOptions<T extends Record<string, MobileSDKModule> = Record<
     registrars?: DidRegistrar[]
     resolvers?: DidResolver[]
   }
+  /**
+   * Additional Credo KMS backends. Askar remains the default backend.
+   */
+  keyManagement?: MobileSDKKeyManagementOptions
 }
 export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string, MobileSDKModule>> {
   private localAgent: Agent<ReturnType<typeof getCoreModules>> | null = null
@@ -123,6 +129,11 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
       dependencies: agentDependencies,
       modules,
     })
+
+    registerKeyManagementBackends(
+      agent.dependencyManager.resolve(Kms.KeyManagementModuleConfig),
+      this.configuration.keyManagement?.backends
+    )
     await agent.initialize()
 
     // Initialize modules after agent is initialized to ensure all dependencies are available

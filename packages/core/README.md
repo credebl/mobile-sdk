@@ -332,12 +332,53 @@ await sdk.exportWallet({
 
 ### Key Management
 
+#### Register an additional KMS backend
+
+Askar remains the default backend for storage and key operations. Applications can register additional
+[Credo KMS backends](https://credo.js.org/) during SDK initialization and select them explicitly per operation.
+
+```tsx
+import { SecureEnvironmentKeyManagementService } from '@credo-ts/react-native'
+
+initializeSDK({
+  // existing agentConfig, askarConfig, and modules
+  keyManagement: {
+    backends: [new SecureEnvironmentKeyManagementService()],
+  },
+})
+```
+
+The example backend requires the optional `@animo-id/expo-secure-environment` peer dependency and supports only
+P-256 key creation and ES256 signing. Registering a backend does not by itself make a key hardware-backed; that
+property is determined by the backend's native implementation and device capabilities.
+
+To create a DID using a non-default backend, first create its key with that backend and then supply the returned
+`keyId` when creating the DID. This works around current Credo registrar options, which do not accept a backend on
+the single-call DID creation path.
+
+```tsx
+const key = await sdk.createKey({
+  backend: 'secureEnvironment',
+  type: { kty: 'EC', crv: 'P-256' },
+})
+
+const did = await sdk.createDid({
+  method: 'jwk',
+  options: { keyId: key.keyId },
+})
+```
+
+`did:key` and `did:jwk` are immutable. Key rotation after device replacement requires a DID method and registrar
+that support DID updates.
+
 #### `sdk.createKey(options)`
 
 Create a cryptographic key pair stored in the wallet.
 
 ```tsx
-const keyPair = await sdk.createKey({ keyType: 'Ed25519' })
+const keyPair = await sdk.createKey({
+  type: { kty: 'OKP', crv: 'Ed25519' },
+})
 console.log(keyPair.keyId)
 ```
 
@@ -350,6 +391,7 @@ Sign data with a key from the wallet.
 ```tsx
 const signature = await sdk.signData({
   keyId: keyPair.keyId,
+  algorithm: 'EdDSA',
   data: new Uint8Array([1, 2, 3]),
 })
 ```
@@ -362,7 +404,8 @@ Verify that a signature was produced by a given key.
 
 ```tsx
 const isValid = await sdk.verifyData({
-  keyId: keyPair.keyId,
+  key: { keyId: keyPair.keyId },
+  algorithm: 'EdDSA',
   data: new Uint8Array([1, 2, 3]),
   signature,
 })
