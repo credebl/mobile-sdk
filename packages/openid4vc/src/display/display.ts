@@ -310,7 +310,7 @@ function getW3cIssuerDisplay(
   const issuerJson = typeof jffCredential.issuer === 'string' ? undefined : jffCredential.issuer
 
   // Issuer Display from JFF
-  if (!issuerDisplay.logo || !issuerDisplay.logo.url) {
+  if (!issuerDisplay.logo?.url) {
     if (issuerJson?.logoUrl) {
       issuerDisplay.logo = {
         url: issuerJson?.logoUrl,
