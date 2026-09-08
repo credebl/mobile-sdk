@@ -26,3 +26,14 @@ onlyBuiltDependencies:
   - '@hyperledger/indy-vdr-react-native'
   - '@openwallet-foundation/askar-react-native'
   - cbor-extract
+
+overrides:
+  '@isaacs/brace-expansion': 5.0.1
+  'brace-expansion@<2': 1.1.18
+  defu: 6.1.7
+  fast-uri: 3.1.7
+  'minimatch@<4': 3.1.5
+  'minimatch@^10': 10.2.6
+  path-to-regexp: 8.4.2
+  'picomatch@^4': 4.0.7
+  postcss: 8.5.28
