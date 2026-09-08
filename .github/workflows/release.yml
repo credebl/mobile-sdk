@@ -45,7 +45,7 @@ jobs:
           pr-title: "chore(release): new version"
           commit-message: "chore(release): new version"
           publish-script: pnpm release
-          version-script: git config user.name "github-actions[bot]" && git config user.email "41898282+github-actions[bot]@users.noreply.github.com" && pnpm changeset-version
+          version-script: pnpm changeset-version-ci
           create-github-releases: false
           push-git-tags: false
 
