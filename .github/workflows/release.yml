@@ -48,6 +48,7 @@ jobs:
           version-script: pnpm changeset-version-ci
           create-github-releases: false
           push-git-tags: false
+          push-with-git-cli: true
 
       - name: Get current package version
         id: get_version
