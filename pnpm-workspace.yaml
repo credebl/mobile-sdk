@@ -29,11 +29,20 @@ onlyBuiltDependencies:
 
 overrides:
   '@isaacs/brace-expansion': 5.0.1
+  ajv: 8.20.0
+  body-parser: 2.3.0
   'brace-expansion@<2': 1.1.18
+  decode-uri-component: 0.5.0
   defu: 6.1.7
   fast-uri: 3.1.7
+  fast-xml-parser: 5.11.1
   'minimatch@<4': 3.1.5
   'minimatch@^10': 10.2.6
   path-to-regexp: 8.4.2
   'picomatch@^4': 4.0.7
   postcss: 8.5.28
+  qs: 6.16.0
+  'uuid@7': 11.1.1
+  'uuid@13': 13.0.1
+  valibot: 1.4.2
+  yaml: 2.9.0
