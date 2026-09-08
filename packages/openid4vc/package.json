@@ -25,6 +25,7 @@
   },
   "scripts": {
     "build": "tsdown --config-loader unconfig",
+    "test": "pnpm build && node --test test/*.test.mjs",
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
@@ -35,8 +36,8 @@
     "@credo-ts/core": "catalog:",
     "@credo-ts/openid4vc": "catalog:",
     "expo-asset": "^12.0.10",
-    "expo-image": "^3.0.10",
-    "expo-image-manipulator": "^14.0.7",
+    "expo-image": "^56.0.9",
+    "expo-image-manipulator": "^57.0.9",
     "rxjs": "catalog:"
   },
   "devDependencies": {
