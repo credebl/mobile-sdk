@@ -1,5 +1,32 @@
 # @credebl/ssi-mobile-didcomm
 
+## 2.2.0
+
+### Minor Changes
+
+- 83e6e96: update mdoc library
+- 22a3c8a: upgrade credo-ts to 0.7.0
+  
+  BREAKING CHANGE: All `@credo-ts/*` packages have been upgraded from `0.6.2` to `0.7.0`.
+  
+  - `Buffer` has been removed from the `@credebl/ssi-mobile-didcomm` exports - import it from `@credo-ts/core` directly instead
+  - Apps must add `@credo-ts/*` package resolutions pointing to `0.7.0` in their root `package.json` to ensure all credo-ts packages resolve to the same versions
+
+### Patch Changes
+
+- 0d6d9a6: Upgrade GitHub Actions used by the CI and release workflows (no runtime code change):
+  
+  - `actions/checkout` v6 → v7
+  - `actions/setup-node` v6 → v7
+  - `pnpm/action-setup` v4 → v6
+  - `changesets/action` v1 → v2 (release workflow `with:` inputs migrated to the v2 schema: `pr-title`, `commit-message`, `publish-script`, `version-script`, `create-github-releases`, `push-git-tags`)
+  - `softprops/action-gh-release` v2 → v3
+- Updated dependencies [aa74654]
+- Updated dependencies [83e6e96]
+- Updated dependencies [0d6d9a6]
+- Updated dependencies [22a3c8a]
+  - @credebl/ssi-mobile-core@2.2.0
+
 ## 2.1.1
 
 ### Patch Changes
