@@ -15,7 +15,8 @@
     "test": "pnpm -r --if-present run test",
     "validate": "pnpm types:check && pnpm style:check",
     "release": "pnpm build && pnpm changeset publish --no-git-tag",
-    "changeset-version": "pnpm changeset version && pnpm style:fix"
+    "changeset-version": "pnpm changeset version && pnpm style:fix",
+    "changeset-version-ci": "git config user.name \"github-actions[bot]\" && git config user.email \"41898282+github-actions[bot]@users.noreply.github.com\" && pnpm changeset-version"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
