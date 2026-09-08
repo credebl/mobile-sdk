@@ -1,8 +1,23 @@
 const { execSync } = require('node:child_process')
 
+const FALLBACK_NAME = 'github-actions[bot]'
+const FALLBACK_EMAIL = '41898282+github-actions[bot]@users.noreply.github.com'
+
 const getSignedOffBy = () => {
-  const gitUserName = execSync('git config user.name').toString('utf-8').trim()
-  const gitEmail = execSync('git config user.email').toString('utf-8').trim()
+  let gitUserName = FALLBACK_NAME
+  let gitEmail = FALLBACK_EMAIL
+
+  try {
+    gitUserName = execSync('git config user.name', { stdio: ['ignore', 'pipe', 'ignore'] })
+      .toString('utf-8')
+      .trim()
+  } catch {}
+
+  try {
+    gitEmail = execSync('git config user.email', { stdio: ['ignore', 'pipe', 'ignore'] })
+      .toString('utf-8')
+      .trim()
+  } catch {}
 
   return `Signed-off-by: ${gitUserName} <${gitEmail}>`
 }
@@ -12,10 +27,10 @@ const getAddMessage = async (changeset) => {
 }
 
 const getVersionMessage = async (releasePlan) => {
-  const publishableReleases = releasePlan.releases.filter((release) => release.type !== 'none')
-  const releasedVersion = publishableReleases[0].newVersion
-
-  return `chore(release): version ${releasedVersion}\n\n${getSignedOffBy()}\n`
+  // Keep the version commit message aligned with the release workflow's
+  // GitHub Release trigger (release.yml matches head commits starting with
+  // "chore(release): new version"), while still carrying the DCO sign-off.
+  return `chore(release): new version\n\n${getSignedOffBy()}\n`
 }
 
 module.exports = {
