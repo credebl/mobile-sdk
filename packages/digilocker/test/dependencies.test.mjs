@@ -36,4 +36,9 @@ test('uuid provides the API used by digilocker', () => {
   const { v4 } = require('uuid')
   assert.equal(typeof v4, 'function')
   assert.match(v4(), /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
+
+  const { version } = require('uuid/package.json')
+  // PR #78/#98 bump ^9.0.1 -> ^14.0.0. uuid 14+ ships its own types (so
+  // @types/uuid is dropped) and must keep the v4 runtime API.
+  assert.ok(version >= '14.0.0', `expected uuid >= 14.0.0, got ${version}`)
 })
