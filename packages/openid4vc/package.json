@@ -37,7 +37,7 @@
     "@credo-ts/openid4vc": "catalog:",
     "expo-asset": "^12.0.10",
     "expo-image": "^56.0.9",
-    "expo-image-manipulator": "^57.0.9",
+    "expo-image-manipulator": "^57.0.20",
     "rxjs": "catalog:"
   },
   "devDependencies": {
