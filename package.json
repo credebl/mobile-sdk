@@ -22,7 +22,7 @@
     "@biomejs/biome": "catalog:",
     "@changesets/cli": "^3.0.2",
     "@types/node": "catalog:",
-    "tsdown": "^0.20.1",
+    "tsdown": "^0.23.0",
     "typescript": "catalog:"
   },
   "engines": {

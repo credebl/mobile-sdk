@@ -29,8 +29,8 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@animo-id/expo-digital-credentials-api": "^0.4.0",
-    "@owf/mdoc": "^0.6.0",
+    "@animo-id/expo-digital-credentials-api": "^0.5.1",
+    "@owf/mdoc": "^0.8.2",
     "@astronautlabs/jsonpath": "catalog:",
     "@credebl/ssi-mobile-core": "workspace:*",
     "@credo-ts/core": "catalog:",
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@types/react": "catalog:",
-    "react-native": "^0.83.1",
+    "react-native": "^0.87.1",
     "typescript": "catalog:"
   },
   "peerDependencies": {
