@@ -3,7 +3,7 @@ packages:
 
 catalog:
   '@astronautlabs/jsonpath': ^1.1.2
-  '@biomejs/biome': 2.5.12
+  '@biomejs/biome': 2.6.2
   '@credo-ts/anoncreds': 0.7.0
   '@credo-ts/askar': 0.7.0
   '@credo-ts/core': 0.7.0
@@ -17,7 +17,7 @@ catalog:
   '@hyperledger/indy-vdr-react-native': 0.3.0
   '@openwallet-foundation/askar-react-native': 0.6.0
   '@types/node': ^20.19.25
-  '@types/react': ^19.2.18
+  '@types/react': ^19.3.0
   rxjs: ^7.8.2
   typescript: ~5.9.3
 
