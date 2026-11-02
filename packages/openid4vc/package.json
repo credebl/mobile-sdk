@@ -24,7 +24,7 @@
     "directory": "packages/openid4vc"
   },
   "scripts": {
-    "build": "tsdown --config-loader unconfig",
+    "build": "tsdown --config-loader unrun",
     "test": "pnpm build && node --test test/*.test.mjs",
     "prepublishOnly": "pnpm run build"
   },
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@types/react": "catalog:",
-    "react-native": "^0.83.1",
+    "react-native": "^0.88.1",
     "typescript": "catalog:"
   },
   "peerDependencies": {
