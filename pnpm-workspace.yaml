@@ -13,9 +13,9 @@ catalog:
   '@credo-ts/openid4vc': 0.7.4
   '@credo-ts/question-answer': 0.7.4
   '@credo-ts/react-native': 0.7.4
-  '@hyperledger/anoncreds-react-native': 0.4.0
+  '@hyperledger/anoncreds-react-native': 0.4.1
   '@hyperledger/indy-vdr-react-native': 0.3.0
-  '@openwallet-foundation/askar-react-native': 0.6.0
+  '@openwallet-foundation/askar-react-native': 0.6.1
   '@types/node': ^20.19.25
   '@types/react': ^19.2.18
   rxjs: ^7.8.2
