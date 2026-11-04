@@ -201,7 +201,15 @@ export function formatDcqlCredentialsForRequest(dcqlQueryResult: DcqlQueryResult
   }
 }
 
-export function extractCredentialPlaceholderFromQueryCredential(credential: DcqlQueryResult['credentials'][number]) {
+export interface CredentialPlaceholder {
+  claimFormat: ClaimFormat
+  credentialName?: string
+  requestedAttributePaths?: Array<Array<string | number | null>>
+}
+
+export function extractCredentialPlaceholderFromQueryCredential(
+  credential: DcqlQueryResult['credentials'][number]
+): CredentialPlaceholder {
   if (credential.format === 'mso_mdoc') {
     return {
       claimFormat: ClaimFormat.MsoMdoc,
@@ -229,6 +237,14 @@ export function extractCredentialPlaceholderFromQueryCredential(credential: Dcql
     return {
       claimFormat: ClaimFormat.SdJwtDc,
       credentialName: credential.meta?.vct_values?.[0].replace('https://', ''),
+      requestedAttributePaths: credential.claims?.map((c) => c.path),
+    }
+  }
+
+  if (credential.format === 'ldp_vc') {
+    return {
+      claimFormat: ClaimFormat.LdpVc,
+      credentialName: credential.meta?.type_values?.[0]?.at(-1)?.replace('https://', ''),
       requestedAttributePaths: credential.claims?.map((c) => c.path),
     }
   }

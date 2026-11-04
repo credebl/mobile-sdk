@@ -32,7 +32,7 @@ import {
   OpenId4VcModule,
   preAuthorizedCodeGrantIdentifier,
 } from '@credo-ts/openid4vc'
-import { DeviceRequest, limitDisclosureToDeviceRequestNameSpaces } from '@owf/mdoc'
+import { DeviceRequest, type DocRequest, type IssuerSigned, type IssuerSignedItem } from '@owf/mdoc'
 import type { PropsWithChildren } from 'react'
 import { Platform } from 'react-native'
 import { getCredentialBindingResolver } from './credentialBindingResolver'
@@ -82,6 +82,37 @@ export const getOpenid4VcModules = (configuration: OpenId4VcConfiguration) =>
   }) as const
 
 export type OpenId4VcAgent = Agent<ReturnType<typeof getOpenid4VcModules>>
+
+/**
+ * Returns the issuer-signed items of a credential that answer a doc request. Throws when the
+ * credential cannot disclose a requested namespace or element, so it is not offered as a match.
+ */
+function limitDisclosureToDeviceRequestNameSpaces(issuerSigned: IssuerSigned, docRequest: DocRequest) {
+  const issuerNamespaces = issuerSigned.issuerNamespaces?.issuerNamespaces
+  const disclosedNamespaces = new Map<string, IssuerSignedItem[]>()
+
+  for (const [namespace, requestedElements] of docRequest.itemsRequest.namespaces) {
+    const namespaceItems = issuerNamespaces?.get(namespace)
+    if (!namespaceItems) {
+      throw new Error(`Credential does not contain the requested namespace '${namespace}'`)
+    }
+
+    const disclosedItems: IssuerSignedItem[] = []
+    for (const elementIdentifier of requestedElements.keys()) {
+      const item = namespaceItems.find((issuerSignedItem) => issuerSignedItem.elementIdentifier === elementIdentifier)
+      if (!item) {
+        throw new Error(
+          `Credential does not contain the requested element '${elementIdentifier}' in namespace '${namespace}'`
+        )
+      }
+      disclosedItems.push(item)
+    }
+
+    disclosedNamespaces.set(namespace, disclosedItems)
+  }
+
+  return disclosedNamespaces
+}
 
 export class OpenID4VCSDK implements MobileSDKModule {
   private agent?: OpenId4VcAgent
@@ -507,14 +538,12 @@ export class OpenID4VCSDK implements MobileSDKModule {
           inputDescriptorId: docRequest.itemsRequest.docType,
           isSatisfied: true,
           credentials: matchingMdocs.map((matchingMdoc): FormattedSubmissionEntrySatisfiedCredential => {
-            const disclosedAttributePaths = Array.from(
-              matchingMdoc.disclosedNameSpaces.issuerNamespaces.entries()
-            ).flatMap(([namespace, value]) =>
-              value.map((issuerSignedItem) => [namespace, issuerSignedItem.elementIdentifier])
+            const disclosedAttributePaths = Array.from(matchingMdoc.disclosedNameSpaces.entries()).flatMap(
+              ([namespace, value]) => value.map((issuerSignedItem) => [namespace, issuerSignedItem.elementIdentifier])
             )
 
             const disclosedNamespaces = Object.fromEntries(
-              Array.from(matchingMdoc.disclosedNameSpaces.issuerNamespaces.entries()).map(([namespace, value]) => [
+              Array.from(matchingMdoc.disclosedNameSpaces.entries()).map(([namespace, value]) => [
                 namespace,
                 Object.fromEntries(
                   value.map((issuerSignedItem) => [

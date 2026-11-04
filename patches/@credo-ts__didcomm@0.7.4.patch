@@ -1,0 +1,56 @@
+diff --git a/build/DidCommEnvelopeService.mjs b/build/DidCommEnvelopeService.mjs
+index 78d59f8b7b3390a094eb443f1f3c1a47f536cf5e..2b2151f8b9b004e471900504d393fd972c95aeb4 100644
+--- a/build/DidCommEnvelopeService.mjs
++++ b/build/DidCommEnvelopeService.mjs
+@@ -148,6 +148,7 @@ let DidCommEnvelopeService = class DidCommEnvelopeService {
+ 				to: TypedArrayEncoder.toBase58(recipientKeys[0].publicKey.publicKey),
+ 				message: encryptedMessage
+ 			});
++			forwardMessage["messageType"] = message['@type'];
+ 			recipientKeys = [routingKey];
+ 			this.logger.debug("Forward message created", forwardMessage);
+ 			const forwardJson = forwardMessage.toJSON({ useDidSovPrefixWhereAllowed: didcommConfig.useDidSovPrefixWhereAllowed });
+diff --git a/build/modules/routing/messages/DidCommForwardMessage.d.mts b/build/modules/routing/messages/DidCommForwardMessage.d.mts
+index 58b4523a3877788da0e70e37d3a56741afec9cff..9f0bf2ae25a5850293efd3f6c4a9b68304e2a62e 100644
+--- a/build/modules/routing/messages/DidCommForwardMessage.d.mts
++++ b/build/modules/routing/messages/DidCommForwardMessage.d.mts
+@@ -6,6 +6,7 @@ import "../../../index.mjs";
+ export interface DidCommForwardMessageOptions {
+   id?: string;
+   to: string;
++  messageType?: string;
+   message: DidCommEncryptedMessage;
+ }
+ /**
+@@ -22,6 +23,7 @@ export declare class DidCommForwardMessage extends DidCommMessage {
+   readonly type: string;
+   static readonly type: ParsedMessageType;
+   to: string;
++  messageType?: string;
+   message: DidCommEncryptedMessage;
+ }
+ //#endregion
+diff --git a/build/modules/routing/messages/DidCommForwardMessage.mjs b/build/modules/routing/messages/DidCommForwardMessage.mjs
+index 4c8bfae2bf31882a388726a3d04e451aed37828c..82744496945c4b1b1fa0fb61322139724f265e10 100644
+--- a/build/modules/routing/messages/DidCommForwardMessage.mjs
++++ b/build/modules/routing/messages/DidCommForwardMessage.mjs
+@@ -21,6 +21,7 @@ var DidCommForwardMessage = class DidCommForwardMessage extends DidCommMessage {
+ 		if (options) {
+ 			this.id = options.id || this.generateId();
+ 			this.to = options.to;
++			this.messageType = options.messageType;
+ 			this.message = options.message;
+ 		}
+ 	}
+diff --git a/build/types.d.mts b/build/types.d.mts
+index 209a43016723ac625a60087af1c6c1d9613f6f7a..01c71a15a84e05185825785998bfd133b269ef60 100644
+--- a/build/types.d.mts
++++ b/build/types.d.mts
+@@ -7,6 +7,7 @@ export interface DidCommPlaintextMessage {
+     thid?: string;
+     pthid?: string;
+   };
++  messageType?: string;
+   [key: string]: unknown;
+ }
+ export type DidCommEncryptedMessage = {

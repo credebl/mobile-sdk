@@ -255,7 +255,7 @@ export function getSelectedCredentialsForRequest(
       } else if (matchWithRecord.record.type === 'W3cCredentialRecord') {
         credentials[credentialQueryId] = [
           {
-            claimFormat: ClaimFormat.JwtVc,
+            claimFormat: matchWithRecord.record.firstCredential.claimFormat,
             credentialRecord: matchWithRecord.record,
             disclosedPayload: matchWithRecord.claims.valid_claim_sets[0].output as JsonObject,
             useMode: CredentialMultiInstanceUseMode.NewOrFirst,

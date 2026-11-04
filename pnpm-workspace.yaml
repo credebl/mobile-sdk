@@ -4,15 +4,15 @@ packages:
 catalog:
   '@astronautlabs/jsonpath': ^1.1.2
   '@biomejs/biome': 2.5.12
-  '@credo-ts/anoncreds': 0.7.0
-  '@credo-ts/askar': 0.7.0
-  '@credo-ts/core': 0.7.0
-  '@credo-ts/didcomm': 0.7.0
-  '@credo-ts/didcomm-push-notifications': 0.0.2-alpha-20251223125919
-  '@credo-ts/indy-vdr': 0.7.0
-  '@credo-ts/openid4vc': 0.7.0
-  '@credo-ts/question-answer': 0.7.0
-  '@credo-ts/react-native': 0.7.0
+  '@credo-ts/anoncreds': 0.7.4
+  '@credo-ts/askar': 0.7.4
+  '@credo-ts/core': 0.7.4
+  '@credo-ts/didcomm': 0.7.4
+  '@credo-ts/didcomm-push-notifications': 0.0.4-alpha-20261026124349
+  '@credo-ts/indy-vdr': 0.7.4
+  '@credo-ts/openid4vc': 0.7.4
+  '@credo-ts/question-answer': 0.7.4
+  '@credo-ts/react-native': 0.7.4
   '@hyperledger/anoncreds-react-native': 0.4.0
   '@hyperledger/indy-vdr-react-native': 0.3.0
   '@openwallet-foundation/askar-react-native': 0.6.0
@@ -46,3 +46,10 @@ overrides:
   'uuid@13': 13.0.1
   valibot: 1.4.2
   yaml: 2.9.0
+
+patchedDependencies:
+  '@credo-ts/core@0.7.4': patches/@credo-ts__core@0.7.4.patch
+  '@credo-ts/didcomm@0.7.4': patches/@credo-ts__didcomm@0.7.4.patch
+  '@credo-ts/openid4vc@0.7.4': patches/@credo-ts__openid4vc@0.7.4.patch
+  '@digitalcredentials/jsonld-signatures@12.0.1': patches/@digitalcredentials__jsonld-signatures@12.0.1.patch
+  '@digitalcredentials/jsonld@9.0.0': patches/@digitalcredentials__jsonld@9.0.0.patch

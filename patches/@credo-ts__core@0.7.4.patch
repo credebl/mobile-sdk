@@ -1,0 +1,105 @@
+diff --git a/build/modules/dcql/DcqlService.mjs b/build/modules/dcql/DcqlService.mjs
+index 15b71d37cf29b67e9dfbf261b8cb02111993475b..f3fa190013361a143830fa6f7b4e2c92102795e3 100644
+--- a/build/modules/dcql/DcqlService.mjs
++++ b/build/modules/dcql/DcqlService.mjs
+@@ -80,7 +80,7 @@ let DcqlService = class DcqlService {
+ 		if (formats.has("ldp_vc")) {
+ 			const w3cRecords = await w3cCredentialRepository.findByQuery(agentContext, {
+ 				claimFormat: "ldp_vc",
+-				$or: dcqlQuery.credentials.flatMap((c) => c.format === "jwt_vc_json" ? c.meta.type_values : []).map((typeValues) => ({ expandedTypes: typeValues }))
++				$or: dcqlQuery.credentials.flatMap((c) => c.format === "ldp_vc" ? c.meta.type_values : []).map((typeValues) => ({ expandedTypes: typeValues }))
+ 			});
+ 			allRecords.push(...w3cRecords);
+ 		}
+@@ -617,11 +617,20 @@ let DcqlService = class DcqlService {
+ 	getProofTypeForLdpVc(agentContext, verificationMethod) {
+ 		const signatureSuiteRegistry = agentContext.dependencyManager.resolve(SignatureSuiteRegistry);
+ 		const publicJwk = getPublicJwkFromVerificationMethod(verificationMethod);
+-		const supportedSignatureSuites = signatureSuiteRegistry.getAllByPublicJwkType(publicJwk);
++		const supportedSignatureSuites = preferSuitesForVerificationMethodType(signatureSuiteRegistry.getAllByPublicJwkType(publicJwk), verificationMethod.type);
+ 		if (supportedSignatureSuites.length === 0) throw new DcqlError(`Couldn't find a supported signature suite for the given jwk ${publicJwk.jwkTypeHumanDescription}`);
+ 		return supportedSignatureSuites[0].proofType;
+ 	}
+ };
++/**
++* Keeps the signature suites that accept the verification method's type, so an Ed25519VerificationKey2020
++* key is used with Ed25519Signature2020 rather than the first suite for its key type (Ed25519Signature2018).
++* Falls back to all suites for the key type when none lists the verification method type.
++*/
++function preferSuitesForVerificationMethodType(suites, verificationMethodType) {
++	const matching = suites.filter((suite) => suite.verificationMethodTypes.includes(verificationMethodType));
++	return matching.length > 0 ? matching : suites;
++}
+ DcqlService = __decorate([injectable()], DcqlService);
+ /**
+ * A credential is bound to its holder through a key (`cnf`) or its subject. Verifying a presentation
+diff --git a/build/modules/dif-presentation-exchange/DifPresentationExchangeService.mjs b/build/modules/dif-presentation-exchange/DifPresentationExchangeService.mjs
+index 3367607190fc33c7a1e45d964a3dd1473a216c82..716e2c814a8fbc4577996b58d18da15facc7f14a 100644
+--- a/build/modules/dif-presentation-exchange/DifPresentationExchangeService.mjs
++++ b/build/modules/dif-presentation-exchange/DifPresentationExchangeService.mjs
+@@ -197,7 +197,7 @@ let DifPresentationExchangeService = class DifPresentationExchangeService {
+ 		const suitableSignatureSuites = this.getSigningAlgorithmsForPresentationDefinitionAndInputDescriptors(algorithmsSatisfyingDefinition, inputDescriptorAlgorithms);
+ 		const signatureSuiteRegistry = agentContext.dependencyManager.resolve(SignatureSuiteRegistry);
+ 		const publicJwk = getPublicJwkFromVerificationMethod(verificationMethod);
+-		const supportedSignatureSuites = signatureSuiteRegistry.getAllByPublicJwkType(publicJwk);
++		const supportedSignatureSuites = preferSuitesForVerificationMethodType(signatureSuiteRegistry.getAllByPublicJwkType(publicJwk), verificationMethod.type);
+ 		if (supportedSignatureSuites.length === 0) throw new DifPresentationExchangeError(`Couldn't find a supported signature suite for the given jwk ${getJwkHumanDescription(publicJwk.toJson())}`);
+ 		if (suitableSignatureSuites) {
+ 			const foundSignatureSuite = supportedSignatureSuites.find((suite) => suitableSignatureSuites.includes(suite.proofType));
+@@ -353,6 +353,15 @@ let DifPresentationExchangeService = class DifPresentationExchangeService {
+ 		return agentContext.dependencyManager.resolve(MdocApi);
+ 	}
+ };
++/**
++* Keeps the signature suites that accept the verification method's type, so an Ed25519VerificationKey2020
++* key is used with Ed25519Signature2020 rather than the first suite for its key type (Ed25519Signature2018).
++* Falls back to all suites for the key type when none lists the verification method type.
++*/
++function preferSuitesForVerificationMethodType(suites, verificationMethodType) {
++	const matching = suites.filter((suite) => suite.verificationMethodTypes.includes(verificationMethodType));
++	return matching.length > 0 ? matching : suites;
++}
+ DifPresentationExchangeService = __decorate([injectable(), __decorateMetadata("design:paramtypes", [typeof W3cCredentialService === "undefined" ? Object : W3cCredentialService])], DifPresentationExchangeService);
+ //#endregion
+ export { DifPresentationExchangeService };
+diff --git a/build/modules/vc/models/credential/W3cCredential.mjs b/build/modules/vc/models/credential/W3cCredential.mjs
+index 5d004479dd086c7616abfe9ecfae98cf610c6998..1ac877e5523f0f82d59273bfd490aa4285737462 100644
+--- a/build/modules/vc/models/credential/W3cCredential.mjs
++++ b/build/modules/vc/models/credential/W3cCredential.mjs
+@@ -17,11 +17,11 @@ var W3cCredential = class W3cCredential {
+ 	constructor(options) {
+ 		if (options) {
+ 			this.context = options.context ?? ["https://www.w3.org/2018/credentials/v1"];
+-			this.id = options.id;
++			if (options.id !== undefined) this.id = options.id;
+ 			this.type = options.type || ["VerifiableCredential"];
+ 			this.issuer = typeof options.issuer === "string" || options.issuer instanceof W3cIssuer ? options.issuer : new W3cIssuer(options.issuer);
+ 			this.issuanceDate = options.issuanceDate;
+-			this.expirationDate = options.expirationDate;
++			if (options.expirationDate !== undefined) this.expirationDate = options.expirationDate;
+ 			this.credentialSubject = mapSingleOrArray(options.credentialSubject, (subject) => subject instanceof W3cCredentialSubject ? subject : new W3cCredentialSubject(subject));
+ 			if (options.credentialStatus) this.credentialStatus = options.credentialStatus instanceof W3cCredentialStatus ? options.credentialStatus : new W3cCredentialStatus(options.credentialStatus);
+ 			if (options.credentialSchema) this.credentialSchema = mapSingleOrArray(options.credentialSchema, (schema) => schema instanceof W3cCredentialSchema ? schema : new W3cCredentialSchema(schema));
+diff --git a/build/modules/vc/models/presentation/W3cPresentation.mjs b/build/modules/vc/models/presentation/W3cPresentation.mjs
+index e408f1046a325f40838d3d4c7caa0ce5947766a8..737f7c661e8a25270243614548ee79fa7e42a851 100644
+--- a/build/modules/vc/models/presentation/W3cPresentation.mjs
++++ b/build/modules/vc/models/presentation/W3cPresentation.mjs
+@@ -15,7 +15,7 @@ import { IsOptional, ValidateNested } from "class-validator";
+ var W3cPresentation = class {
+ 	constructor(options) {
+ 		if (options) {
+-			this.id = options.id;
++			if (options.id !== undefined) this.id = options.id;
+ 			this.context = options.context ?? ["https://www.w3.org/2018/credentials/v1"];
+ 			this.type = options.type ?? ["VerifiablePresentation"];
+ 			this.verifiableCredential = options.verifiableCredential;
+diff --git a/build/utils/version.d.mts b/build/utils/version.d.mts
+index 2f72ef11473a4665ac12bd769e957eba5c9afed0..c1c682e5fb88f9f9f346c0da8372d7e316fad81b 100644
+--- a/build/utils/version.d.mts
++++ b/build/utils/version.d.mts
+@@ -1,4 +1,4 @@
+ //#region src/utils/version.d.ts
+-export type VersionString = `${number}.${number}` | `${number}.${number}.${number}`;
++export type VersionString = string;
+ //#endregion
+ //# sourceMappingURL=version.d.mts.map
