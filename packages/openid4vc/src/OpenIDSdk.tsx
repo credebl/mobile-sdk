@@ -32,10 +32,15 @@ import {
   OpenId4VcModule,
   preAuthorizedCodeGrantIdentifier,
 } from '@credo-ts/openid4vc'
-import { DeviceRequest, limitDisclosureToDeviceRequestNameSpaces } from '@owf/mdoc'
+import { DeviceRequest, type DocRequest, type IssuerSigned, type IssuerSignedItem } from '@owf/mdoc'
 import type { PropsWithChildren } from 'react'
 import { Platform } from 'react-native'
-import { getCredentialBindingResolver } from './credentialBindingResolver'
+import {
+  assertOfferAcceptsHolderDid,
+  assertW3cCredentialsBoundToHolderDid,
+  type CredentialBindingPolicy,
+  getCredentialBindingResolver,
+} from './credentialBindingResolver'
 import {
   CredentialItem,
   loadCachedImageAsBase64DataUrl,
@@ -82,6 +87,37 @@ export const getOpenid4VcModules = (configuration: OpenId4VcConfiguration) =>
   }) as const
 
 export type OpenId4VcAgent = Agent<ReturnType<typeof getOpenid4VcModules>>
+
+/**
+ * Returns the issuer-signed items of a credential that answer a doc request. Throws when the
+ * credential cannot disclose a requested namespace or element, so it is not offered as a match.
+ */
+function limitDisclosureToDeviceRequestNameSpaces(issuerSigned: IssuerSigned, docRequest: DocRequest) {
+  const issuerNamespaces = issuerSigned.issuerNamespaces?.issuerNamespaces
+  const disclosedNamespaces = new Map<string, IssuerSignedItem[]>()
+
+  for (const [namespace, requestedElements] of docRequest.itemsRequest.namespaces) {
+    const namespaceItems = issuerNamespaces?.get(namespace)
+    if (!namespaceItems) {
+      throw new Error(`Credential does not contain the requested namespace '${namespace}'`)
+    }
+
+    const disclosedItems: IssuerSignedItem[] = []
+    for (const elementIdentifier of requestedElements.keys()) {
+      const item = namespaceItems.find((issuerSignedItem) => issuerSignedItem.elementIdentifier === elementIdentifier)
+      if (!item) {
+        throw new Error(
+          `Credential does not contain the requested element '${elementIdentifier}' in namespace '${namespace}'`
+        )
+      }
+      disclosedItems.push(item)
+    }
+
+    disclosedNamespaces.set(namespace, disclosedItems)
+  }
+
+  return disclosedNamespaces
+}
 
 export class OpenID4VCSDK implements MobileSDKModule {
   private agent?: OpenId4VcAgent
@@ -205,12 +241,26 @@ export class OpenID4VCSDK implements MobileSDKModule {
     clientId,
     pidSchemes,
     requestBatch,
+    holderDidUrl,
+    bindingPolicy,
   }: {
     resolvedCredentialOffer: OpenId4VciResolvedCredentialOffer
     credentialConfigurationIdsToRequest?: string[]
     clientId?: string
     pidSchemes?: { sdJwtVcVcts: Array<string>; msoMdocDoctypes: Array<string> }
     requestBatch?: boolean | number
+    /**
+     * Bind the credentials to this DID instead of a new key: a verification method id
+     * (e.g. `did:web:example.com#key-1`), or a bare DID to use its first authentication key.
+     * The DID must have been created or imported in this agent.
+     */
+    holderDidUrl?: string
+    /**
+     * What to do when the issuer does not support `holderDidUrl` (DID method or key algorithm):
+     * `require` fails the request, `prefer` binds to a new key instead. Ignored without `holderDidUrl`.
+     * @default "require"
+     */
+    bindingPolicy?: CredentialBindingPolicy
 
     // TODO: cNonce should maybe be provided separately (multiple calls can have different c_nonce values)
     accessToken: OpenId4VciRequestTokenResponse
@@ -229,12 +279,21 @@ export class OpenID4VCSDK implements MobileSDKModule {
       )
     }
 
+    const credentialConfigurationIds = Object.keys(offeredCredentialsToRequest)
+
+    if (holderDidUrl) {
+      await assertOfferAcceptsHolderDid(agent.context, resolvedCredentialOffer, credentialConfigurationIds, {
+        holderDidUrl,
+        bindingPolicy,
+      })
+    }
+
     try {
       const { credentials, deferredCredentials } = await agent.openid4vc.holder.requestCredentials({
         resolvedCredentialOffer,
         ...accessToken,
         clientId,
-        credentialConfigurationIds: Object.keys(offeredCredentialsToRequest),
+        credentialConfigurationIds,
         verifyCredentialStatus: false,
         allowedProofOfPossessionSignatureAlgorithms: [
           Kms.KnownJwaSignatureAlgorithms.ES256,
@@ -243,8 +302,17 @@ export class OpenID4VCSDK implements MobileSDKModule {
         credentialBindingResolver: await getCredentialBindingResolver({
           pidSchemes,
           requestBatch,
+          holderDidUrl,
+          bindingPolicy,
         }),
       })
+
+      if (holderDidUrl && bindingPolicy !== 'prefer') {
+        assertW3cCredentialsBoundToHolderDid(
+          credentials.map((credential) => credential.record),
+          holderDidUrl
+        )
+      }
 
       return {
         deferredCredentials,
@@ -507,14 +575,12 @@ export class OpenID4VCSDK implements MobileSDKModule {
           inputDescriptorId: docRequest.itemsRequest.docType,
           isSatisfied: true,
           credentials: matchingMdocs.map((matchingMdoc): FormattedSubmissionEntrySatisfiedCredential => {
-            const disclosedAttributePaths = Array.from(
-              matchingMdoc.disclosedNameSpaces.issuerNamespaces.entries()
-            ).flatMap(([namespace, value]) =>
-              value.map((issuerSignedItem) => [namespace, issuerSignedItem.elementIdentifier])
+            const disclosedAttributePaths = Array.from(matchingMdoc.disclosedNameSpaces.entries()).flatMap(
+              ([namespace, value]) => value.map((issuerSignedItem) => [namespace, issuerSignedItem.elementIdentifier])
             )
 
             const disclosedNamespaces = Object.fromEntries(
-              Array.from(matchingMdoc.disclosedNameSpaces.issuerNamespaces.entries()).map(([namespace, value]) => [
+              Array.from(matchingMdoc.disclosedNameSpaces.entries()).map(([namespace, value]) => [
                 namespace,
                 Object.fromEntries(
                   value.map((issuerSignedItem) => [
