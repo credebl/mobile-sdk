@@ -41,7 +41,9 @@ overrides:
   path-to-regexp: 8.4.2
   'picomatch@^4': 4.0.7
   postcss: 8.5.28
+  proxy-addr: 2.0.8
   qs: 6.16.0
+  'shell-quote@<1.11.0': 1.12.0
   'uuid@7': 11.1.1
   'uuid@13': 13.0.1
   valibot: 1.4.2
