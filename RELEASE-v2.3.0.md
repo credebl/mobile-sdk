@@ -27,6 +27,7 @@ Previous stable release: v2.2.1.
 
 - OID4VCI: accept `ldp_vc` credentials whose issuer lists JWA algorithms such as `EdDSA` or `ES256` in `proof_signing_alg_values_supported`. Older issuers that list signature-suite names remain supported.
 - OID4VCI: allow plain JWK holder binding for `ldp_vc` and `jwt_vc_json` configuration formats.
+- OID4VCI: bind credentials to an existing holder DID with `holderDidUrl` (a verification method id or a bare DID) and `bindingPolicy` (`require` by default, or `prefer` to fall back to a new key). The wallet validates the DID method and proof algorithms against the issuer before requesting, and with `require` verifies that W3C credentials name the holder DID as their subject.
 - DCQL: use the stored W3C credential claim format (`JwtVc` or `LdpVc`) instead of always reporting `JwtVc`.
 - DCQL: render `ldp_vc` placeholders for unsatisfied credential queries, including a display name from `meta.type_values`.
 - DCQL and PEX: prefer the signature suite that accepts the holder verification method type, so an `Ed25519VerificationKey2020` key signs with `Ed25519Signature2020` rather than `Ed25519Signature2018`.
@@ -54,6 +55,7 @@ Patches live in `patches/` and are registered under `patchedDependencies` in `pn
 - Run `pnpm install` with the committed lockfile. `pnpm-lock.yaml` pins the patched Credo builds.
 - Native mdoc handling now uses `@owf/mdoc` 0.8. Rebuild the iOS/Android app rather than reusing a Metro cache or an old native bundle.
 - Verify the issuer supports `ldp_vc` over OID4VCI before requesting a JSON-LD credential. The wallet still requests proof of possession with the algorithms listed by the issuer.
+- To bind a credential to an existing DID, pass `holderDidUrl` to `receiveCredentialFromOpenId4VciOffer`. It accepts a verification method id (for example `did:web:wallet.example.com#key-1`) or a bare DID, which uses the DID document's first authentication key. The DID must already be created or imported in the wallet. With the default `bindingPolicy: 'require'`, the request fails if the issuer does not support that DID method or key algorithm; use `bindingPolicy: 'prefer'` to fall back to a newly created key. For W3C credentials, `require` also verifies that the issued subject is the holder DID.
 
 ## Verification
 
@@ -65,7 +67,6 @@ Patches live in `patches/` and are registered under `patchedDependencies` in `pn
 
 ## Known issues and follow-ups
 
-- Holder DID binding via `holderDidUrl` and `bindingPolicy` is not exposed by `receiveCredentialFromOpenId4VciOffer` yet. The SDK continues to create a fresh `did:jwk`/`did:key` (or JWK) per issuance. Add this when wallets need to bind credentials to an existing holder DID.
 - `W3cV2CredentialRecord` is not yet handled by the DCQL selection helper.
 - The `ldp_vc` presentation path depends on the verifier accepting JSON-LD credentials and on the credential contexts being resolvable. Use the X.509 trusted-issuer configuration where required.
 - The patches modify Credo build output. If Credo changes its build layout, regenerate the patches instead of editing them by hand.

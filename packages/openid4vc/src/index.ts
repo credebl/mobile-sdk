@@ -7,6 +7,11 @@ import {
   OpenId4VciTxCode,
 } from '@credo-ts/openid4vc'
 
+export {
+  type CredentialBindingPolicy,
+  HolderBindingMismatchError,
+  HolderBindingNotSupportedError,
+} from './credentialBindingResolver'
 export * from './dcapi'
 export * from './display'
 export * from './OpenIDSdk'
