@@ -8,7 +8,7 @@ catalog:
   '@credo-ts/askar': 0.7.4
   '@credo-ts/core': 0.7.4
   '@credo-ts/didcomm': 0.7.4
-  '@credo-ts/didcomm-push-notifications': 0.0.4-alpha-20261026124349
+  '@credo-ts/didcomm-push-notifications': 0.0.4-alpha-20261105172857
   '@credo-ts/indy-vdr': 0.7.4
   '@credo-ts/openid4vc': 0.7.4
   '@credo-ts/question-answer': 0.7.4
