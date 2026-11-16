@@ -39,6 +39,7 @@
     "react-native": ">=0.76"
   },
   "devDependencies": {
+    "@openwallet-foundation/askar-shared": "catalog:",
     "@types/react": "catalog:",
     "react-native": "^0.88.1",
     "typescript": "catalog:"
