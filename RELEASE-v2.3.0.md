@@ -1,7 +1,20 @@
 # CREDEBL Mobile SDK v2.3.0
 
-Released alongside CREDEBL Platform v2.3.0 and aligned with agent-controller v2.3.2.
+Released alongside CREDEBL Platform v2.3.0 and aligned with agent-controller v2.3.3.
 Previous stable release: v2.2.1.
+
+## Release candidate
+
+2.3.0 is published first as a release candidate, `2.3.0-rc.0`, under the npm `rc` dist-tag. It is tested
+together with CREDEBL Platform `v2.3.0-rc.3` and agent-controller `v2.3.3-rc.1` before the final 2.3.0. The
+`latest` dist-tag stays on 2.2.1 until then. To try the release candidate:
+
+```bash
+npm install @credebl/ssi-mobile-core@rc @credebl/ssi-mobile-didcomm@rc @credebl/ssi-mobile-openid4vc@rc
+```
+
+Further release candidates (`2.3.0-rc.1`, …) follow if fixes land. For the final release, maintainers run
+`pnpm changeset pre exit` on `main`; the next version PR then releases 2.3.0 under `latest`.
 
 ## Compatibility
 
@@ -10,14 +23,14 @@ Previous stable release: v2.2.1.
 | `@credebl/ssi-mobile-core` | 2.3.0 |
 | `@credebl/ssi-mobile-didcomm` | 2.3.0 |
 | `@credebl/ssi-mobile-openid4vc` | 2.3.0 |
-| `@credebl/ssi-mobile-digilocker` | 2.2.1 (unchanged) |
+| `@credebl/digilocker-mobile` | 1.1.0 (unchanged) |
 | Credo stack | 0.7.4 |
 | `@owf/mdoc` | 0.8.3 |
 | `@openwallet-foundation/askar-react-native` | 0.6.0 |
 | `@hyperledger/anoncreds-react-native` | 0.4.0 |
 | `@animo-id/expo-digital-credentials-api` | 0.4.x |
-| CREDEBL Platform | 2.3.0 |
-| agent-controller | 2.3.2 (minimum 2.3.0) |
+| CREDEBL Platform | 2.3.0 (release candidate: 2.3.0-rc.3) |
+| agent-controller | 2.3.3 (release candidate: 2.3.3-rc.1; minimum 2.3.0) |
 | React Native | >= 0.76 |
 
 ## Dependency updates

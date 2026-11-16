@@ -59,6 +59,8 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ env.CURRENT_PACKAGE_VERSION }}
+          # Release candidates (e.g. 2.3.0-rc.0) are marked as GitHub pre-releases
+          prerelease: ${{ contains(env.CURRENT_PACKAGE_VERSION, '-') }}
 
   release-unstable:
     name: Release Unstable
@@ -91,6 +93,10 @@ jobs:
           TAG: ${{ github.event_name == 'push' && 'alpha' || format('pr-{0}', github.event.number) }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Snapshot versions are not allowed in changesets pre mode (.changeset/pre.json). Leave pre mode
+          # in this throwaway checkout only, so alpha snapshots keep being published under the alpha tag.
+          rm -f .changeset/pre.json
+
           # this ensures there's always a patch release created
           cat << 'EOF' > .changeset/snapshot-template-changeset.md
           ---

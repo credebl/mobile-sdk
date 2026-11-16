@@ -4,7 +4,7 @@
 '@credebl/ssi-mobile-openid4vc': minor
 ---
 
-Align the mobile SDK with CREDEBL Platform v2.3.0 and agent-controller v2.3.2.
+Align the mobile SDK with CREDEBL Platform v2.3.0 and agent-controller v2.3.3.
 
 - Upgrade the Credo stack from 0.7.0 to 0.7.4 and `@owf/mdoc` from 0.6 to 0.8.3.
 - Add wallet-side `ldp_vc` support for OID4VCI issuance, DCQL selection, and OID4VP presentation.
