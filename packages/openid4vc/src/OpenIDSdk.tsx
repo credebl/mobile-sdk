@@ -57,6 +57,16 @@ import {
   getSelectedCredentialsForRequest,
 } from './display'
 import { extractOpenId4VcCredentialMetadata, setOpenId4VcCredentialMetadata } from './metadata'
+import {
+  type CredentialNotificationEvent,
+  type CredentialNotificationResult,
+  createNotificationContexts,
+  DEFAULT_NOTIFICATION_TIMEOUT_MS,
+  type OpenId4VciNotificationContext,
+  type StoreAndNotifyResult,
+  sendCredentialNotifications,
+  storeCredentialsAndNotify,
+} from './notifications'
 import { MdocRecordProvider, SdJwtVcRecordProvider } from './providers'
 import {
   formatDcqlCredentialsForRequest,
@@ -75,7 +85,22 @@ export { extractCredentialPlaceholderFromQueryCredential } from '../src/resolver
 
 export type CredentialsForProofRequest = Awaited<ReturnType<OpenID4VCSDK['getCredentialsForProofRequest']>>
 
-export type OpenId4VcConfiguration = {} & X509ModuleConfigOptions
+export type OpenId4VcConfiguration = {
+  /**
+   * How long to wait for the issuer to answer one OID4VCI notification before giving up on it.
+   * After a timeout, no further notifications are sent for that batch.
+   * @default 5000
+   */
+  notificationTimeoutMs?: number
+} & X509ModuleConfigOptions
+
+type OpenIdCredentialRecord = W3cCredentialRecord | SdJwtVcRecord | MdocRecord
+
+/**
+ * A credential to notify the issuer about: one of the `credentials` returned by
+ * `receiveCredentialFromOpenId4VciOffer`, or anything carrying its `notification` context.
+ */
+export type NotifiableCredential = { notification?: OpenId4VciNotificationContext }
 
 export const getOpenid4VcModules = (configuration: OpenId4VcConfiguration) =>
   ({
@@ -218,8 +243,12 @@ export class OpenID4VCSDK implements MobileSDKModule {
     })
   }
 
-  async parseCredentialResponses(credentials: OpenId4VciCredentialResponse[], issuerMetadata: OpenId4VciMetadata) {
-    return credentials.map(({ record, ...credentialResponse }) => {
+  async parseCredentialResponses(
+    credentials: OpenId4VciCredentialResponse[],
+    issuerMetadata: OpenId4VciMetadata,
+    notificationContexts: OpenId4VciNotificationContext[] = []
+  ) {
+    return credentials.map(({ record, ...credentialResponse }, index) => {
       // OpenID4VC metadata
       const openId4VcMetadata = extractOpenId4VcCredentialMetadata(credentialResponse.credentialConfiguration, {
         id: issuerMetadata.credentialIssuer.credential_issuer,
@@ -230,6 +259,11 @@ export class OpenID4VCSDK implements MobileSDKModule {
       return {
         ...credentialResponse,
         credential: record,
+        /**
+         * Pass this credential to `sendCredentialNotification` after storing it. Holds the access token
+         * of the issuance: keep it in memory only.
+         */
+        notification: notificationContexts[index] as OpenId4VciNotificationContext | undefined,
       }
     })
   }
@@ -243,6 +277,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
     requestBatch,
     holderDidUrl,
     bindingPolicy,
+    sendNotification = true,
   }: {
     resolvedCredentialOffer: OpenId4VciResolvedCredentialOffer
     credentialConfigurationIdsToRequest?: string[]
@@ -261,6 +296,14 @@ export class OpenID4VCSDK implements MobileSDKModule {
      * @default "require"
      */
     bindingPolicy?: CredentialBindingPolicy
+    /**
+     * Allow OID4VCI notifications (`credential_accepted`, `credential_failure`, `credential_deleted`)
+     * for the returned credentials. With `false`, `sendCredentialNotification` skips them.
+     * When the W3C subject check of `holderDidUrl` fails, `credential_failure` is sent for each
+     * credential before the error is thrown.
+     * @default true
+     */
+    sendNotification?: boolean
 
     // TODO: cNonce should maybe be provided separately (multiple calls can have different c_nonce values)
     accessToken: OpenId4VciRequestTokenResponse
@@ -289,7 +332,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
     }
 
     try {
-      const { credentials, deferredCredentials } = await agent.openid4vc.holder.requestCredentials({
+      const { credentials, deferredCredentials, dpop } = await agent.openid4vc.holder.requestCredentials({
         resolvedCredentialOffer,
         ...accessToken,
         clientId,
@@ -307,16 +350,34 @@ export class OpenID4VCSDK implements MobileSDKModule {
         }),
       })
 
+      const notificationContexts = createNotificationContexts({
+        enabled: sendNotification,
+        metadata: resolvedCredentialOffer.metadata,
+        tokenResponse: accessToken,
+        dpop,
+        credentials,
+      })
+
       if (holderDidUrl && bindingPolicy !== 'prefer') {
-        assertW3cCredentialsBoundToHolderDid(
-          credentials.map((credential) => credential.record),
-          holderDidUrl
-        )
+        try {
+          assertW3cCredentialsBoundToHolderDid(
+            credentials.map((credential) => credential.record),
+            holderDidUrl
+          )
+        } catch (error) {
+          // None of the credentials can be stored, so tell the issuer that each of them failed
+          await this.notify(notificationContexts.map((context) => ({ context, event: 'credential_failure' })))
+          throw error
+        }
       }
 
       return {
         deferredCredentials,
-        credentials: await this.parseCredentialResponses(credentials, resolvedCredentialOffer.metadata),
+        credentials: await this.parseCredentialResponses(
+          credentials,
+          resolvedCredentialOffer.metadata,
+          notificationContexts
+        ),
       }
     } catch (error) {
       // TODO: if one biometric operation fails it will fail the whole credential receiving. We should have more control so we
@@ -326,8 +387,80 @@ export class OpenID4VCSDK implements MobileSDKModule {
     }
   }
 
+  /**
+   * Sends an OID4VCI notification (OpenID4VCI 1.0 §11) to the issuer of a credential received with
+   * `receiveCredentialFromOpenId4VciOffer`: `credential_accepted` after storing it, `credential_failure`
+   * when it could not be stored, or `credential_deleted` when the user deleted or declined it.
+   *
+   * Never throws: the result says whether the notification was sent, skipped (no `notification_endpoint`,
+   * no `notification_id`, `sendNotification: false`, or an expired access token) or failed, with the
+   * issuer's HTTP status and error code. Uses the access token of the issuance, so it only works until
+   * that token expires (CREDEBL issuers default to 3600 seconds, with no refresh token).
+   */
+  public async sendCredentialNotification({
+    credential,
+    event,
+  }: {
+    credential: NotifiableCredential
+    event: CredentialNotificationEvent
+  }): Promise<CredentialNotificationResult> {
+    const [result] = await this.sendCredentialNotifications({ notifications: [{ credential, event }] })
+    return result
+  }
+
+  /**
+   * Like `sendCredentialNotification` for several credentials. Sends one at a time, in order; after a
+   * notification times out, the remaining ones are skipped.
+   */
+  public async sendCredentialNotifications({
+    notifications,
+  }: {
+    notifications: Array<{ credential: NotifiableCredential; event: CredentialNotificationEvent }>
+  }): Promise<CredentialNotificationResult[]> {
+    return await this.notify(
+      notifications.map(({ credential, event }) => ({ context: credential.notification, event }))
+    )
+  }
+
+  /**
+   * Stores the credentials returned by `receiveCredentialFromOpenId4VciOffer` one at a time, then sends
+   * `credential_accepted` for each stored credential and `credential_failure` for each one that could
+   * not be stored. Never throws: check `stored` (and `error`) on each result.
+   */
+  public async storeOpenIdCredentialsAndNotify<
+    Credential extends NotifiableCredential & { credential: OpenId4VciCredentialResponse['record'] },
+  >({
+    credentials,
+    matcher = 'ubique',
+  }: {
+    credentials: Credential[]
+    matcher?: DigitalCredentialsApiMatcher
+  }): Promise<Array<StoreAndNotifyResult<Credential>>> {
+    const agent = this.assertAndGetAgent()
+    return await storeCredentialsAndNotify({
+      holder: agent.modules.openid4vc.holder,
+      logger: agent.config.logger,
+      timeoutMs: this.configuration?.notificationTimeoutMs ?? DEFAULT_NOTIFICATION_TIMEOUT_MS,
+      credentials,
+      // storeOpenIdCredential rejects unsupported record types, which is reported as credential_failure
+      store: ({ credential }) => this.storeOpenIdCredential(credential as OpenIdCredentialRecord, matcher),
+    })
+  }
+
+  private async notify(
+    notifications: Array<{ context?: OpenId4VciNotificationContext; event: CredentialNotificationEvent }>
+  ) {
+    const agent = this.assertAndGetAgent()
+    return await sendCredentialNotifications({
+      holder: agent.modules.openid4vc.holder,
+      logger: agent.config.logger,
+      timeoutMs: this.configuration?.notificationTimeoutMs ?? DEFAULT_NOTIFICATION_TIMEOUT_MS,
+      notifications,
+    })
+  }
+
   public async storeOpenIdCredential(
-    cred: W3cCredentialRecord | SdJwtVcRecord | MdocRecord,
+    cred: OpenIdCredentialRecord,
     matcher: DigitalCredentialsApiMatcher = 'ubique'
   ): Promise<void> {
     const agent = this.assertAndGetAgent()

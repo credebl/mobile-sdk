@@ -14,6 +14,13 @@ export {
 } from './credentialBindingResolver'
 export * from './dcapi'
 export * from './display'
+export {
+  type CredentialNotificationEvent,
+  type CredentialNotificationResult,
+  DEFAULT_NOTIFICATION_TIMEOUT_MS,
+  type OpenId4VciNotificationContext,
+  type StoreAndNotifyResult,
+} from './notifications'
 export * from './OpenIDSdk'
 export * from './providers'
 export * from './utils'
