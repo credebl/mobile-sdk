@@ -1,6 +1,6 @@
 ---
-
-## '@credebl/ssi-mobile-openid4vc': minor
+'@credebl/ssi-mobile-openid4vc': minor
+---
 
 Send OID4VCI wallet notifications (OpenID4VCI 1.0 §11) to the issuer's `notification_endpoint`.
 
