@@ -29,6 +29,26 @@ updates:
     allow:
       - dependency-type: "all"
 
+    # For 0.x packages a "minor" bump is breaking, and these must stay in step with the Credo
+    # release the SDK is built on (native bindings, @owf/mdoc, Digital Credentials API) or change
+    # the build output and lint rules (tsdown, biome). Upgrade them deliberately, not in the
+    # weekly group. Security updates are still raised.
+    ignore:
+      - dependency-name: "@credo-ts/*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@openwallet-foundation/askar-*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@hyperledger/*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@owf/mdoc"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@animo-id/expo-digital-credentials-api"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "tsdown"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@biomejs/biome"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
 
     labels:
       - "dependencies"

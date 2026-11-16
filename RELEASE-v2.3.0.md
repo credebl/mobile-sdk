@@ -13,6 +13,9 @@ Previous stable release: v2.2.1.
 | `@credebl/ssi-mobile-digilocker` | 2.2.1 (unchanged) |
 | Credo stack | 0.7.4 |
 | `@owf/mdoc` | 0.8.3 |
+| `@openwallet-foundation/askar-react-native` | 0.6.0 |
+| `@hyperledger/anoncreds-react-native` | 0.4.0 |
+| `@animo-id/expo-digital-credentials-api` | 0.4.x |
 | CREDEBL Platform | 2.3.0 |
 | agent-controller | 2.3.2 (minimum 2.3.0) |
 | React Native | >= 0.76 |
@@ -53,6 +56,7 @@ Patches live in `patches/` and are registered under `patchedDependencies` in `pn
 
 - Update all `@credebl/ssi-mobile-*` packages together. The core, DIDComm, and OpenID4VC packages were released as a fixed minor version.
 - Run `pnpm install` with the committed lockfile. `pnpm-lock.yaml` pins the patched Credo builds.
+- Install `@openwallet-foundation/askar-react-native` 0.6.0 and `@hyperledger/anoncreds-react-native` 0.4.0 in the app. Newer bindings (askar 0.7, anoncreds 0.5) are outside the peer ranges of Credo 0.7.4 and are not supported in this release.
 - Native mdoc handling now uses `@owf/mdoc` 0.8. Rebuild the iOS/Android app rather than reusing a Metro cache or an old native bundle.
 - Verify the issuer supports `ldp_vc` over OID4VCI before requesting a JSON-LD credential. The wallet still requests proof of possession with the algorithms listed by the issuer.
 - To bind a credential to an existing DID, pass `holderDidUrl` to `receiveCredentialFromOpenId4VciOffer`. It accepts a verification method id (for example `did:web:wallet.example.com#key-1`) or a bare DID, which uses the DID document's first authentication key. The DID must already be created or imported in the wallet. With the default `bindingPolicy: 'require'`, the request fails if the issuer does not support that DID method or key algorithm; use `bindingPolicy: 'prefer'` to fall back to a newly created key. For W3C credentials, `require` also verifies that the issued subject is the holder DID.

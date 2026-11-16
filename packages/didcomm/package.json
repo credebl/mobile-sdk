@@ -40,6 +40,8 @@
     "@credo-ts/didcomm-push-notifications": "catalog:"
   },
   "devDependencies": {
+    "@hyperledger/anoncreds-shared": "catalog:",
+    "@openwallet-foundation/askar-shared": "catalog:",
     "@types/react": "catalog:",
     "react-native": "^0.88.1",
     "typescript": "catalog:"

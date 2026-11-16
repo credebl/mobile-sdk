@@ -29,8 +29,8 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@animo-id/expo-digital-credentials-api": "^0.7.0",
-    "@owf/mdoc": "^0.9.3",
+    "@animo-id/expo-digital-credentials-api": "^0.4.0",
+    "@owf/mdoc": "^0.8.1",
     "@astronautlabs/jsonpath": "catalog:",
     "@credebl/ssi-mobile-core": "workspace:*",
     "@credo-ts/core": "catalog:",
