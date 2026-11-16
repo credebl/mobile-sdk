@@ -243,8 +243,8 @@ importers:
         specifier: ^12.0.10
         version: 12.0.12(expo@53.0.20(@babel/core@7.29.13)(graphql@15.8.0)(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0))(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)
       expo-image:
-        specifier: ^56.0.9
-        version: 56.0.12(expo@53.0.20(@babel/core@7.29.13)(graphql@15.8.0)(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0))(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)
+        specifier: ^58.0.18
+        version: 58.0.18(expo@53.0.20(@babel/core@7.29.13)(graphql@15.8.0)(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0))(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)
       expo-image-manipulator:
         specifier: ^57.0.9
         version: 57.0.16(expo@53.0.20(@babel/core@7.29.13)(graphql@15.8.0)(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0))
@@ -2746,8 +2746,8 @@ packages:
     peerDependencies:
       expo: '*'
 
-  expo-image@56.0.12:
-    resolution: {integrity: sha512-R1LDk/D/VazqcmT1OIEBV7+BDezyyJbi594ZstlklCR6aMUBNBcjQNxoEa8YaIxNdT3BsRS46/VDHpmHg4B23Q==}
+  expo-image@58.0.18:
+    resolution: {integrity: sha512-bWbFD8eBbZywr1WssV6KtcglRlpD5WpzVj+oA3hfjX1MJBN43IeB7A6EQAGXE0eGBVG93Mf2dRBmCRJ/e/Hw6g==}
     peerDependencies:
       expo: '*'
       react: '*'
@@ -8193,7 +8193,7 @@ snapshots:
       expo: 53.0.20(@babel/core@7.29.13)(graphql@15.8.0)(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)
       expo-image-loader: 57.0.1(expo@53.0.20(@babel/core@7.29.13)(graphql@15.8.0)(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0))
 
-  expo-image@56.0.12(expo@53.0.20(@babel/core@7.29.13)(graphql@15.8.0)(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0))(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0):
+  expo-image@58.0.18(expo@53.0.20(@babel/core@7.29.13)(graphql@15.8.0)(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0))(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0):
     dependencies:
       expo: 53.0.20(@babel/core@7.29.13)(graphql@15.8.0)(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)
       react: 19.0.0
