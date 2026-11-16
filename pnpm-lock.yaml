@@ -10,8 +10,8 @@ catalogs:
       specifier: ^1.1.2
       version: 1.1.2
     '@biomejs/biome':
-      specifier: 2.5.12
-      version: 2.5.12
+      specifier: 2.5.15
+      version: 2.5.15
     '@credo-ts/anoncreds':
       specifier: 0.7.4
       version: 0.7.4
@@ -40,20 +40,20 @@ catalogs:
       specifier: 0.7.4
       version: 0.7.4
     '@hyperledger/anoncreds-react-native':
-      specifier: 0.4.0
-      version: 0.4.0
+      specifier: 0.4.1
+      version: 0.4.1
     '@hyperledger/anoncreds-shared':
-      specifier: 0.4.0
-      version: 0.4.0
+      specifier: 0.4.1
+      version: 0.4.1
     '@hyperledger/indy-vdr-react-native':
       specifier: 0.3.0
       version: 0.3.0
     '@openwallet-foundation/askar-react-native':
-      specifier: 0.6.0
-      version: 0.6.0
+      specifier: 0.6.1
+      version: 0.6.1
     '@openwallet-foundation/askar-shared':
-      specifier: 0.6.0
-      version: 0.6.0
+      specifier: 0.6.1
+      version: 0.6.1
     '@types/node':
       specifier: ^20.19.25
       version: 20.19.30
@@ -112,10 +112,10 @@ importers:
     devDependencies:
       '@biomejs/biome':
         specifier: 'catalog:'
-        version: 2.5.12
+        version: 2.5.15
       '@changesets/cli':
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^3.0.3
+        version: 3.0.3
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.30
@@ -130,7 +130,7 @@ importers:
     dependencies:
       '@credo-ts/askar':
         specifier: 'catalog:'
-        version: 0.7.4(@openwallet-foundation/askar-shared@0.6.0)(typescript@5.9.3)
+        version: 0.7.4(@openwallet-foundation/askar-shared@0.6.1)(typescript@5.9.3)
       '@credo-ts/core':
         specifier: 'catalog:'
         version: 0.7.4(patch_hash=81f9979af246191445ea21d1fd6fdf19558a7daa3d76e6926ca0c4949f17340b)(typescript@5.9.3)
@@ -139,14 +139,14 @@ importers:
         version: 0.7.4(expo-crypto@15.0.8(expo@53.0.20(@babel/core@7.29.13)(graphql@15.8.0)(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)))(react-native-fs@2.20.0(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0)))(react-native-get-random-values@1.11.0(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0)))(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(typescript@5.9.3)
       '@openwallet-foundation/askar-react-native':
         specifier: 'catalog:'
-        version: 0.6.0(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)
+        version: 0.6.1(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)
       rxjs:
         specifier: 'catalog:'
         version: 7.8.2
     devDependencies:
       '@openwallet-foundation/askar-shared':
         specifier: 'catalog:'
-        version: 0.6.0
+        version: 0.6.1
       '@types/react':
         specifier: 'catalog:'
         version: 19.3.0
@@ -164,10 +164,10 @@ importers:
         version: link:../core
       '@credo-ts/anoncreds':
         specifier: 'catalog:'
-        version: 0.7.4(@hyperledger/anoncreds-shared@0.4.0)(typescript@5.9.3)
+        version: 0.7.4(@hyperledger/anoncreds-shared@0.4.1)(typescript@5.9.3)
       '@credo-ts/askar':
         specifier: 'catalog:'
-        version: 0.7.4(@openwallet-foundation/askar-shared@0.6.0)(typescript@5.9.3)
+        version: 0.7.4(@openwallet-foundation/askar-shared@0.6.1)(typescript@5.9.3)
       '@credo-ts/core':
         specifier: 'catalog:'
         version: 0.7.4(patch_hash=81f9979af246191445ea21d1fd6fdf19558a7daa3d76e6926ca0c4949f17340b)(typescript@5.9.3)
@@ -179,7 +179,7 @@ importers:
         version: 0.0.4-alpha-20261026124349(@credo-ts/core@0.7.4(patch_hash=81f9979af246191445ea21d1fd6fdf19558a7daa3d76e6926ca0c4949f17340b)(typescript@5.9.3))(@credo-ts/didcomm@0.7.4(patch_hash=0e72a8e222f2368bfce43b0ddb24e2fff36479131fb035a093e6b69e5dc5e14b)(typescript@5.9.3))
       '@credo-ts/indy-vdr':
         specifier: 'catalog:'
-        version: 0.7.4(@hyperledger/anoncreds-shared@0.4.0)(@hyperledger/indy-vdr-shared@0.3.0)(typescript@5.9.3)
+        version: 0.7.4(@hyperledger/anoncreds-shared@0.4.1)(@hyperledger/indy-vdr-shared@0.3.0)(typescript@5.9.3)
       '@credo-ts/question-answer':
         specifier: 'catalog:'
         version: 0.7.4(typescript@5.9.3)
@@ -188,7 +188,7 @@ importers:
         version: 0.7.4(expo-crypto@15.0.8(expo@53.0.20(@babel/core@7.29.13)(graphql@15.8.0)(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)))(react-native-fs@2.20.0(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0)))(react-native-get-random-values@1.11.0(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0)))(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(typescript@5.9.3)
       '@hyperledger/anoncreds-react-native':
         specifier: 'catalog:'
-        version: 0.4.0(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)
+        version: 0.4.1(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)
       '@hyperledger/indy-vdr-react-native':
         specifier: 'catalog:'
         version: 0.3.0(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)
@@ -198,10 +198,10 @@ importers:
     devDependencies:
       '@hyperledger/anoncreds-shared':
         specifier: 'catalog:'
-        version: 0.4.0
+        version: 0.4.1
       '@openwallet-foundation/askar-shared':
         specifier: 'catalog:'
-        version: 0.6.0
+        version: 0.6.1
       '@types/react':
         specifier: 'catalog:'
         version: 19.3.0
@@ -221,8 +221,8 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0
       uuid:
-        specifier: ^14.0.0
-        version: 14.0.2
+        specifier: ^14.0.3
+        version: 14.0.3
       xml2js:
         specifier: ^0.6.2
         version: 0.6.2
@@ -856,55 +856,59 @@ packages:
     resolution: {integrity: sha512-uXt6qt2f5G61jZwNIzK1RKu7l5Xjt1VXtPPOGuVveha9fxbx0QM94U1kM4pFZKTRLjWK+X8vmwjwbIemJjiQTA==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
-  '@biomejs/biome@2.5.12':
-    resolution: {integrity: sha512-Lw4VHZRebrReBBnlHa12JQjnIBm3JJAA55PDB9LbBVBF0q4RYphm6KfmIjqtPhf61MxZ5Q9KoK8R8x+7per5Aw==}
+  '@biomejs/biome@2.5.15':
+    resolution: {integrity: sha512-WZTW4slm/pdkh92K6t/3aEN++44JD1PQ7squ7RCMLI1flHGl43DVOIGXvCjHiZgBMO1V4uYxoFNtqrIA4qGuIQ==}
     engines: {node: '>=14.21.3'}
     hasBin: true
 
-  '@biomejs/cli-darwin-arm64@2.5.12':
-    resolution: {integrity: sha512-lCRY1rwgNeWNgTr4DI/u6ZwXTRwRLHAvbaio1YLLGS+4r1nhvB2ssyPqIpfUSmRveNfv0fn/N58C7CAdK2XVrg==}
+  '@biomejs/cli-darwin-arm64@2.5.15':
+    resolution: {integrity: sha512-BZVzFhJ/mUvTLMYbc9x6el0o2Uv5zP7bACYyhFb6fSc1giroXm7PL0a5KqMJ9F+/BnkYRjagD/ROSDVOZ6eapg==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [darwin]
 
-  '@biomejs/cli-darwin-x64@2.5.12':
-    resolution: {integrity: sha512-vhPgwnh+6tN3ArdAXuET99xaNbFt7CG82Bqn+omHVLC5xdVx45JsYjGPmUIGNzjDek5XdNCP1HKksK7fn8+3bQ==}
+  '@biomejs/cli-darwin-x64@2.5.15':
+    resolution: {integrity: sha512-V5Kw63V+fVGNFhFrizDxMbGXAzZCh8kYzJpy3GI6gTapWDg7bZK9oYC9CbVgQSEdTnupz0U5Efz8Ev+5vdBBXw==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [darwin]
 
-  '@biomejs/cli-linux-arm64-musl@2.5.12':
-    resolution: {integrity: sha512-couHYjFLL5uuI8ne6zhT7KwEsXo5YP7ry/2xmEqah7qanu0YmfDi3mwJg47YXSuv/NpZj22CZzcRH/5c4gjPSQ==}
+  '@biomejs/cli-linux-arm64-musl@2.5.15':
+    resolution: {integrity: sha512-tGzZUTcJCV7tj5Adh/Gn6nR4MycqA3iohq2LEcrarAgRBkU0h0OKd2UzCRkOsOYOuUGaUJb4YmqRqyy2feGGSw==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
-  '@biomejs/cli-linux-arm64@2.5.12':
-    resolution: {integrity: sha512-2gp8aVwXYKdAtmBfRFCUuyDMcfN1ahHqUkGfLYrZlNRFmryMATLVvJgWKvyA8wu4Rwn5OSxM1UcUmOuOFNGeBQ==}
+  '@biomejs/cli-linux-arm64@2.5.15':
+    resolution: {integrity: sha512-XaG7P7eeSLYETD3K9grfB0mQmpLQZjygdbsxekWBJAg4am79fGAtRpfRyNnTvXB2fZFNnJZG3nXm7HBat0+VUw==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
-  '@biomejs/cli-linux-x64-musl@2.5.12':
-    resolution: {integrity: sha512-8A0oDW58/w9f/PQNYuq0sGUZtGtGrkNF4Z6n0PUoXpLCshi85vtKTv1XSznQawhdE4MXJ8ufpzHXyLFe87M/+w==}
+  '@biomejs/cli-linux-x64-musl@2.5.15':
+    resolution: {integrity: sha512-IlxUcyxilVGPsE008x13pWdkTbU3nQpP2i9b5UrbOYj6goBkKsRX1XB7yJLcV+O1H9LBchIIm4adOaVLZBX0ZQ==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
-  '@biomejs/cli-linux-x64@2.5.12':
-    resolution: {integrity: sha512-SnvOs3TSTiuia4SQOUNe1aWC9RT4+YkjcKnOhL/nsKOV0k5ycgBkDzF0lUxKn1V7Q8CLTRq6iV23ZAivHomRoA==}
+  '@biomejs/cli-linux-x64@2.5.15':
+    resolution: {integrity: sha512-xE4iEW/3LqlYj9GFgGrFsFSH51dEEpUbYWBfeOv0q87WkUDxK2o/HhreSb7qMJqck70RVM6Lg96hgedcAYcOkA==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
-  '@biomejs/cli-win32-arm64@2.5.12':
-    resolution: {integrity: sha512-b9vtoZFsuZt1pdjNwJvXl0f+BpayRzV008uS2+JpmwIKdSE2qdu4A/l04FESwLoou5g2E/Qlec0xwJydZplH+A==}
+  '@biomejs/cli-win32-arm64@2.5.15':
+    resolution: {integrity: sha512-2kPKzhNlm8C+Ru3GcO0Me2ODkCBLrVOUNuyi84RJyWDVKAA4+Kjj3jMjL938lF6BRfvltC4vB2nPY9SvN51Ovg==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [win32]
 
-  '@biomejs/cli-win32-x64@2.5.12':
-    resolution: {integrity: sha512-B1R/l+CwEpKFSuqiwePzPNRk1EiJN8kc0UhdafNz6MZN9v5OFP9HYP1irptvWzHrwVI4blVNGMbxc5zt70m3IA==}
+  '@biomejs/cli-win32-x64@2.5.15':
+    resolution: {integrity: sha512-yAzh4UqEImV6Hcy0zjUqNfJAsUhoD64FBQCdTG8Md/Z2wQeVP/ZmJ3XRYAs1g8J9fjTFyl2fCtc5FB5til47+g==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [win32]
@@ -939,8 +943,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@changesets/apply-release-plan@8.1.0':
-    resolution: {integrity: sha512-M93HOGyX3ssg6He3b5NotaHtQVu6uajHS6UIQ28xKt2RzskCy73ayX4I914qBKjTJmrE4YFlELQjfcqxbmGLJw==}
+  '@changesets/apply-release-plan@8.1.1':
+    resolution: {integrity: sha512-nk2Hbq3M9NeHMdaIRBDvawKrQJzXB9sGyBUE5yWnIKtvdcNCPj75zBekJYr0gTT2ecJH3eFeTrc8eisPImcv0Q==}
     engines: {node: ^22.11 || ^24 || >=26}
 
   '@changesets/assemble-release-plan@7.0.0':
@@ -951,21 +955,21 @@ packages:
     resolution: {integrity: sha512-3Dst2Ime2Op5nd4XmWJLPIgp11ZFqJqSkVug9izK6TDcIV4YlhPS4ECbEVR+eGI0bk0r1ItogD4j2Oli87bJrA==}
     engines: {node: ^22.11 || ^24 || >=26}
 
-  '@changesets/cli@3.0.2':
-    resolution: {integrity: sha512-t/omGJj/I+Jv0kmJAkj5cstYEdUQiJnpip2F+2m3F4lQ3kAZ3o8Exep4/Fm1qq4rvw6ovlhJvZNrKdwLJ4lkuQ==}
+  '@changesets/cli@3.0.3':
+    resolution: {integrity: sha512-L1i67bMfkK6iC/kDejuNO4pFgTRcWIObsD6Qof2woP1I4M8tj17DGlcpRaTzTv1DYSP5EMwWdEtR8X0Pj5Jg3Q==}
     engines: {node: ^22.11 || ^24 || >=26, npm: '>=10.9.0', pnpm: '>=10.0.0', yarn: '>=4.5.2'}
     hasBin: true
 
-  '@changesets/config@4.0.0':
-    resolution: {integrity: sha512-mw95/YrkOuhZZxfnVAA4bSXOFUi+KlhzOBTM8C4x777NhUU6HWIl9Z+K+nME+E4PVsv5NQVQwTfiHihAS1A/ow==}
+  '@changesets/config@4.0.1':
+    resolution: {integrity: sha512-PxpxSQLQSLDjceAgRq+4FWlU+HflDIw03mmPVipxoQx9xrXFUjmqTy3SE+n/2t+DqPdpPiLWVr5NRiLZvjyLwg==}
     engines: {node: ^22.11 || ^24 || >=26}
 
   '@changesets/errors@1.0.0':
     resolution: {integrity: sha512-ElN/mEzn6zmETgjwf5MclCMa9ef59sAR0lfO8VSYIsiRvbC2FbLB/92EoYw10Sl0kGixxHFiJZUSv7dA+YpR8g==}
     engines: {node: ^22.11 || ^24 || >=26}
 
-  '@changesets/format@0.1.2':
-    resolution: {integrity: sha512-Caez5XtNXCFS/G5bwyav3wuXL0tMxVd2ZGbaumWbzN08tyzO21asCw7JZhNtVsAZDCvDRUzZN+Iit9SyRITSYA==}
+  '@changesets/format@0.1.3':
+    resolution: {integrity: sha512-zTZrJbfY81+/MsXsey6i3jQjpApz4PqRQ+nouHGDJhCa5sKCExwR9mZFQ/67lMsqZDNy2G2v3wTbzOmZ56EtaQ==}
     engines: {node: ^22.11 || ^24 || >=26}
 
   '@changesets/get-dependents-graph@3.0.0':
@@ -1000,12 +1004,12 @@ packages:
     resolution: {integrity: sha512-q/ThtP9gcnEP6xlv7LrY26C2mHqdGBti/MmOVngt/M/oIGYkssmQGxPK9WzBNt2juVcH/vml2WQ+ra8LXYOTaA==}
     engines: {node: ^22.11 || ^24 || >=26}
 
-  '@clack/core@1.5.0':
-    resolution: {integrity: sha512-zNikCcd8BbcEvzzG1sbXFrRHFk5kHPrpwZwksPvf9qyQO1Teb7JaXaOAxXZei9nZLDW0gaZawiuTCji88bTBhw==}
+  '@clack/core@1.6.0':
+    resolution: {integrity: sha512-4GZynIB2IIe431odxesswvWTCP6orvqd6e2b07b3VFWBQRqUqIHc/EPIZwFoKS692QBp+ooPuXKaJV8g4kXuYA==}
     engines: {node: '>= 20.12.0'}
 
-  '@clack/prompts@1.8.0':
-    resolution: {integrity: sha512-PXzLZ8N34rxmuo4dJg3xtOXhcBse94qGjDqsteoEYrFrrZ5FSjIGwMAuOcv64ln8rHVBBD06XeVGr+/JX+plcA==}
+  '@clack/prompts@1.9.0':
+    resolution: {integrity: sha512-tEj8X2No2A1c9NDnZECxiiJ8TP3vmFlN9tLlLeSaMqVW4tUmVG2R4qpv/eP4zymWxnymYLkLcIYVV0VcWj3RCQ==}
     engines: {node: '>= 20.12.0'}
 
   '@credo-ts/anoncreds@0.7.4':
@@ -1207,14 +1211,14 @@ packages:
   '@hapi/topo@5.1.0':
     resolution: {integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg==}
 
-  '@hyperledger/anoncreds-react-native@0.4.0':
-    resolution: {integrity: sha512-4/YCgh805ZBqVmAGcFoa+E08w0ypKqyxc6NHKi0bWANrOwC3byz7G4PV4x8JLBfpWs7IDZ+XR+LzxLOwnnBIZw==}
+  '@hyperledger/anoncreds-react-native@0.4.1':
+    resolution: {integrity: sha512-mvEuUY5/jk4drM8TCQQTtm0jQRB9BDuwiBeY1fHeJS9A5zaTTOvP/Mf8JqLRwolRmftzMByEJdYxL02flJUYEA==}
     peerDependencies:
       react: '>= 16'
       react-native: '>= 0.71'
 
-  '@hyperledger/anoncreds-shared@0.4.0':
-    resolution: {integrity: sha512-iQM0Ok6tiuN8r1bjHzkUIUMZUlQt93yD812D0mMK2cBxAqzeccAy285G8iP/kra96/ptZe1mGxAcfoOESKPHzA==}
+  '@hyperledger/anoncreds-shared@0.4.1':
+    resolution: {integrity: sha512-B26j9CNDDoiBd4YgxsYwSH68Z/QmMeBLF/PGbzxyEn8JaS6/yN/1v39XOhghJvCaJriMA6gqGqSQquE/8sUqtg==}
 
   '@hyperledger/indy-vdr-react-native@0.3.0':
     resolution: {integrity: sha512-zz5fdlNlgHfg8iKkiuhltk2z/Et5siaHDDZo5KY9WPri8nkCln3EUh4yvs3SqEDi/MyQq/cMqcx2pH2nbMkEhA==}
@@ -1345,14 +1349,14 @@ packages:
   '@openid4vc/utils@0.6.0':
     resolution: {integrity: sha512-oowl3vQf0yMxaQe96fZjLfAcqjzkxl/A8N2Z9GkXqnQUd17RAEnDpnzq9/MkRasf6x9co5fkKMYIkEn8ApIjQw==}
 
-  '@openwallet-foundation/askar-react-native@0.6.0':
-    resolution: {integrity: sha512-cXyRuWKtslUEPx3LCUYTWox7xs8eomhLTkuvq4TAPXxxXzoZHZWuljXfMCKKCbmiaGEuxOeyYiNuDkIsFzGFOg==}
+  '@openwallet-foundation/askar-react-native@0.6.1':
+    resolution: {integrity: sha512-SFz+7/4wo4qITytGutDl9+jsxN/4E0lVEWaINMjXUcqHSjySzppdbtKuaOlBy8HE7u4rMx4/CMYt0oGoi6PhzQ==}
     peerDependencies:
       react: '>= 16'
       react-native: '>= 0.71'
 
-  '@openwallet-foundation/askar-shared@0.6.0':
-    resolution: {integrity: sha512-O9aaQCZ2BkQ5Z8jqshhqhxbS/rT2nTfN90iW32WKQEh9YUwWERFQcnqKR+XszGhV95jqwZagcwhDb72hFH3VaQ==}
+  '@openwallet-foundation/askar-shared@0.6.1':
+    resolution: {integrity: sha512-xjFYyK5Zk/uTFKfTn2BnnldmBLGWBkVfPhOoXQl122YcRVPN7BadAvFUi6Ad+zu7Nk3axj416+fvXtUUQm1Vig==}
 
   '@owf/cose@0.4.2':
     resolution: {integrity: sha512-ISjH/NFxgI2p0jiCY462JdL5m2bHg850iehvYj8sL9dHra06sJy0RTO1dwx78xqpCkFc/4h9Oo8XXLQD1eyLMg==}
@@ -1650,60 +1654,70 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-arm64-gnu@1.0.0-rc.3':
     resolution: {integrity: sha512-kWXkoxxarYISBJ4bLNf5vFkEbb4JvccOwxWDxuK9yee8lg5XA7OpvlTptfRuwEvYcOZf+7VS69Uenpmpyo5Bjw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-arm64-musl@1.0.0-rc.17':
     resolution: {integrity: sha512-b/CgbwAJpmrRLp02RPfhbudf5tZnN9nsPWK82znefso832etkem8H7FSZwxrOI9djcdTP7U6YfNhbRnh7djErg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rolldown/binding-linux-arm64-musl@1.0.0-rc.3':
     resolution: {integrity: sha512-Z03/wrqau9Bicfgb3Dbs6SYTHliELk2PM2LpG2nFd+cGupTMF5kanLEcj2vuuJLLhptNyS61rtk7SOZ+lPsTUA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rolldown/binding-linux-ppc64-gnu@1.0.0-rc.17':
     resolution: {integrity: sha512-4EII1iNGRUN5WwGbF/kOh/EIkoDN9HsupgLQoXfY+D1oyJm7/F4t5PYU5n8SWZgG0FEwakyM8pGgwcBYruGTlA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-s390x-gnu@1.0.0-rc.17':
     resolution: {integrity: sha512-AH8oq3XqQo4IibpVXvPeLDI5pzkpYn0WiZAfT05kFzoJ6tQNzwRdDYQ45M8I/gslbodRZwW8uxLhbSBbkv96rA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-x64-gnu@1.0.0-rc.17':
     resolution: {integrity: sha512-cLnjV3xfo7KslbU41Z7z8BH/E1y5mzUYzAqih1d1MDaIGZRCMqTijqLv76/P7fyHuvUcfGsIpqCdddbxLLK9rA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-x64-gnu@1.0.0-rc.3':
     resolution: {integrity: sha512-iSXXZsQp08CSilff/DCTFZHSVEpEwdicV3W8idHyrByrcsRDVh9sGC3sev6d8BygSGj3vt8GvUKBPCoyMA4tgQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-x64-musl@1.0.0-rc.17':
     resolution: {integrity: sha512-0phclDw1spsL7dUB37sIARuis2tAgomCJXAHZlpt8PXZ4Ba0dRP1e+66lsRqrfhISeN9bEGNjQs+T/Fbd7oYGw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rolldown/binding-linux-x64-musl@1.0.0-rc.3':
     resolution: {integrity: sha512-qaj+MFudtdCv9xZo9znFvkgoajLdc+vwf0Kz5N44g+LU5XMe+IsACgn3UG7uTRlCCvhMAGXm1XlpEA5bZBrOcw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rolldown/binding-openharmony-arm64@1.0.0-rc.17':
     resolution: {integrity: sha512-0ag/hEgXOwgw4t8QyQvUCxvEg+V0KBcA6YuOx9g0r02MprutRF5dyljgm3EmR02O292UX7UeS6HzWHAl6KgyhA==}
@@ -2206,8 +2220,8 @@ packages:
     resolution: {integrity: sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ==}
     engines: {node: '>=8'}
 
-  cac@7.0.0:
-    resolution: {integrity: sha512-tixWYgm5ZoOD+3g6UTea91eow5z6AAHaho3g0V9CNSNb45gM8SmflpAc+GRd1InC4AqN/07Unrgp56Y94N9hJQ==}
+  cac@7.1.0:
+    resolution: {integrity: sha512-LMDU/U2yA4IPIY8KT0NsNPWEYZvAMkbgyspxJ6btJaYV+WMDOHAZCmB0lsTObiHaRS1V/ztKAl7+TSkTqXyeoA==}
     engines: {node: '>=20.19.0'}
 
   call-bind-apply-helpers@1.0.2:
@@ -2793,8 +2807,8 @@ packages:
   fast-wrap-ansi@0.2.2:
     resolution: {integrity: sha512-7F2Fl+TjRSenLqlU3UjSH0iyqopqoZIu7eZVpEirP2g1GtWa2G/ecEmBdgz31+Mxr+ELclgg6sokpSFIQiZ02Q==}
 
-  fast-xml-builder@1.3.1:
-    resolution: {integrity: sha512-pIM/1n3ntFXKYrUZwW7QCK0gAW7XY+wzj1YMIV3tLDvPj/V+zTGJK5e3/4WJfwj0qWw2ElNXiTixda/R+3YSug==}
+  fast-xml-builder@1.3.2:
+    resolution: {integrity: sha512-OX91VSlShLPDgRZV7tk/YQ4l8tT75QziF5Ixg8g4PFbCVPjuTWwN+yQfAxLJ0dufJpprdOd6HlM74Jhd39TcBQ==}
 
   fast-xml-parser@5.11.1:
     resolution: {integrity: sha512-TBw6K/fxoQGGjCmZDw9w/ZwP3uDcnTM4YH/g+PFRWr8sbe5idXtxNN6vITh4+1ruCZaho6uBFurElsA7F0zzgw==}
@@ -3030,8 +3044,8 @@ packages:
     resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
     engines: {node: '>= 14'}
 
-  human-id@4.2.1:
-    resolution: {integrity: sha512-zPGsiS+dWoTZtZ4AtpA9Y+BdSFSNWvnouNlWNoUFyAM6xHOHmdCvqO3k8AIbdamCOv4gUFUVNPf6rJFfc4UiJw==}
+  human-id@4.2.2:
+    resolution: {integrity: sha512-Z+8unD6em/MJwyrkWQ2M3wygRGI1+MztbutiNwk1DCuEPXOZRWGjtcMPZYP1exY9iNZMhd7ZOSMQSo9WYtiQRw==}
     hasBin: true
 
   iconv-lite@0.7.3:
@@ -3252,8 +3266,8 @@ packages:
     resolution: {integrity: sha512-mnIlAEMu4OyEvUNdzco9xpuB9YVcPkQec+QsgycBCtPZvEqWPCDPfbAE4OJMdBBWpZWtpCn1xw9jJYlwjWI5zQ==}
     hasBin: true
 
-  launch-editor@2.14.1:
-    resolution: {integrity: sha512-QWBrQsMpH7gPr965dsKD/3cKWiNoTjpATQf++Xq63N6sKRGMwlVXz41O1IZTMfZQgBctD/K5Zt06+/I6pP6+HA==}
+  launch-editor@2.14.2:
+    resolution: {integrity: sha512-NHJEb30MGBCkmZXLZwz25t37QR4aY03ZzPYUJXOJaOa92uWwExI9SBQUuIznBYc1xkD7cJNGX7oc3Nl3sq2kQQ==}
 
   leven@3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
@@ -3298,24 +3312,28 @@ packages:
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   lightningcss-linux-arm64-musl@1.27.0:
     resolution: {integrity: sha512-rCGBm2ax7kQ9pBSeITfCW9XSVF69VX+fm5DIpvDZQl4NnQoMQyRwhZQm9pd59m8leZ1IesRqWk2v/DntMo26lg==}
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   lightningcss-linux-x64-gnu@1.27.0:
     resolution: {integrity: sha512-Dk/jovSI7qqhJDiUibvaikNKI2x6kWPN79AQiD/E/KeQWMjdGe9kw51RAgoWFDi0coP4jinaH14Nrt/J8z3U4A==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   lightningcss-linux-x64-musl@1.27.0:
     resolution: {integrity: sha512-QKjTxXm8A9s6v9Tg3Fk0gscCQA1t/HMoF7Woy1u68wCk5kS4fR+q3vXa1p3++REW784cRAtkYKrPy6JKibrEZA==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   lightningcss-win32-arm64-msvc@1.27.0:
     resolution: {integrity: sha512-/wXegPS1hnhkeG4OXQKEMQeJd48RDC3qdh+OA8pCuOPCyvnm/yEayrJdJVqzBsqpy1aJklRCVxscpFur80o6iQ==}
@@ -3791,8 +3809,8 @@ packages:
   package-json-from-dist@1.0.1:
     resolution: {integrity: sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==}
 
-  package-manager-detector@1.8.0:
-    resolution: {integrity: sha512-yQA4H19AmPEoMUeavPMDIe1higySl/gH/yaQrkT/s07Qp+7pp2hYz30N3z2l5BkjVkF9Ow6o0wjJamm2y7Sn0A==}
+  package-manager-detector@1.9.0:
+    resolution: {integrity: sha512-zAMfbta9nPA8AKkA4WdmNAT8R8s6Dk0/xwPsqNnRidMFcLo1YkLuPDTgs2f64XdzS8vbLNnoJ+uUIkgbz7oRHA==}
 
   pako@3.0.3:
     resolution: {integrity: sha512-tmrebBBYI5FOw8QICGwJNqE8fotC8R+gwcxOvoFNv+GKehOI6Lc6YBolNcQNnC4v96l1wt7rh102ifD4kVeZAQ==}
@@ -4177,11 +4195,6 @@ packages:
     resolution: {integrity: sha512-GYrCADwpu6yV5OAvchkQ27Z5wwMxWAEMg5NNWjyHh/5DboFFqbdbvYNIvZouQpxXyeMPoTOh0vdPYKlf0ZswdQ==}
     hasBin: true
 
-  semver@7.8.5:
-    resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
-    engines: {node: '>=10'}
-    hasBin: true
-
   semver@7.8.6:
     resolution: {integrity: sha512-9lpSSU4Mly3mrtruwLs1eLK6+gzbzqeBFwRNjIjE+9LuDpWdYctrQlQ3ej1Ilgi7gknpsTRnPoLP8DpCHqHIJw==}
     engines: {node: '>=10'}
@@ -4272,6 +4285,10 @@ packages:
 
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
+
+  sisteransi@2.0.0:
+    resolution: {integrity: sha512-2WCqLdt12eN6ehLI50S2/ZxoowXU3DD1KVPRyVP0WEsFahrGZZmCdq1K59qjJljMRIDTwx1D9YaRK+hDneBUMg==}
+    engines: {node: '>=20'}
 
   slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
@@ -4619,6 +4636,10 @@ packages:
 
   uuid@14.0.2:
     resolution: {integrity: sha512-xZe/16rV4aa+HGSOCiY2YeLT1OybRLrrkL/Rqaq7p7GMVXjFh+6wN4oMYgjFmnSnhY8t6Xpdl2l9qmnHYuMHwQ==}
+    hasBin: true
+
+  uuid@14.0.3:
+    resolution: {integrity: sha512-Sc5u1VVln93y1Xnz4R+CunOZc7R9LUcTmhj7Rc7Eg3HVcf7rVn2FOoa812fe0W8p3jD7xeoGSYbfqCGGH2B6xw==}
     hasBin: true
 
   valibot@1.4.2:
@@ -5543,39 +5564,39 @@ snapshots:
       '@babel/helper-string-parser': 8.1.2
       '@babel/helper-validator-identifier': 8.0.6
 
-  '@biomejs/biome@2.5.12':
+  '@biomejs/biome@2.5.15':
     optionalDependencies:
-      '@biomejs/cli-darwin-arm64': 2.5.12
-      '@biomejs/cli-darwin-x64': 2.5.12
-      '@biomejs/cli-linux-arm64': 2.5.12
-      '@biomejs/cli-linux-arm64-musl': 2.5.12
-      '@biomejs/cli-linux-x64': 2.5.12
-      '@biomejs/cli-linux-x64-musl': 2.5.12
-      '@biomejs/cli-win32-arm64': 2.5.12
-      '@biomejs/cli-win32-x64': 2.5.12
+      '@biomejs/cli-darwin-arm64': 2.5.15
+      '@biomejs/cli-darwin-x64': 2.5.15
+      '@biomejs/cli-linux-arm64': 2.5.15
+      '@biomejs/cli-linux-arm64-musl': 2.5.15
+      '@biomejs/cli-linux-x64': 2.5.15
+      '@biomejs/cli-linux-x64-musl': 2.5.15
+      '@biomejs/cli-win32-arm64': 2.5.15
+      '@biomejs/cli-win32-x64': 2.5.15
 
-  '@biomejs/cli-darwin-arm64@2.5.12':
+  '@biomejs/cli-darwin-arm64@2.5.15':
     optional: true
 
-  '@biomejs/cli-darwin-x64@2.5.12':
+  '@biomejs/cli-darwin-x64@2.5.15':
     optional: true
 
-  '@biomejs/cli-linux-arm64-musl@2.5.12':
+  '@biomejs/cli-linux-arm64-musl@2.5.15':
     optional: true
 
-  '@biomejs/cli-linux-arm64@2.5.12':
+  '@biomejs/cli-linux-arm64@2.5.15':
     optional: true
 
-  '@biomejs/cli-linux-x64-musl@2.5.12':
+  '@biomejs/cli-linux-x64-musl@2.5.15':
     optional: true
 
-  '@biomejs/cli-linux-x64@2.5.12':
+  '@biomejs/cli-linux-x64@2.5.15':
     optional: true
 
-  '@biomejs/cli-win32-arm64@2.5.12':
+  '@biomejs/cli-win32-arm64@2.5.15':
     optional: true
 
-  '@biomejs/cli-win32-x64@2.5.12':
+  '@biomejs/cli-win32-x64@2.5.15':
     optional: true
 
   '@cbor-extract/cbor-extract-darwin-arm64@2.2.3':
@@ -5596,10 +5617,10 @@ snapshots:
   '@cbor-extract/cbor-extract-win32-x64@2.2.3':
     optional: true
 
-  '@changesets/apply-release-plan@8.1.0':
+  '@changesets/apply-release-plan@8.1.1':
     dependencies:
-      '@changesets/config': 4.0.0
-      '@changesets/format': 0.1.2
+      '@changesets/config': 4.0.1
+      '@changesets/format': 0.1.3
       '@changesets/git': 4.0.1
       '@changesets/should-skip-package': 1.0.0
       '@changesets/types': 7.0.0
@@ -5619,12 +5640,12 @@ snapshots:
     dependencies:
       '@changesets/types': 7.0.0
 
-  '@changesets/cli@3.0.2':
+  '@changesets/cli@3.0.3':
     dependencies:
-      '@changesets/apply-release-plan': 8.1.0
+      '@changesets/apply-release-plan': 8.1.1
       '@changesets/assemble-release-plan': 7.0.0
       '@changesets/changelog-git': 1.0.0
-      '@changesets/config': 4.0.0
+      '@changesets/config': 4.0.1
       '@changesets/errors': 1.0.0
       '@changesets/get-dependents-graph': 3.0.0
       '@changesets/git': 4.0.1
@@ -5633,17 +5654,17 @@ snapshots:
       '@changesets/should-skip-package': 1.0.0
       '@changesets/types': 7.0.0
       '@changesets/write': 1.0.1
-      '@clack/prompts': 1.8.0
+      '@clack/prompts': 1.9.0
       '@manypkg/get-packages': 3.1.0
       '@pnpm/deps.graph-sequencer': 1100.0.1
-      cac: 7.0.0
+      cac: 7.1.0
       import-meta-resolve: 4.2.0
-      launch-editor: 2.14.1
-      package-manager-detector: 1.8.0
-      semver: 7.8.5
+      launch-editor: 2.14.2
+      package-manager-detector: 1.9.0
+      semver: 7.8.6
       tinyexec: 1.3.1
 
-  '@changesets/config@4.0.0':
+  '@changesets/config@4.0.1':
     dependencies:
       '@changesets/get-dependents-graph': 3.0.0
       '@changesets/should-skip-package': 1.0.0
@@ -5653,9 +5674,9 @@ snapshots:
 
   '@changesets/errors@1.0.0': {}
 
-  '@changesets/format@0.1.2':
+  '@changesets/format@0.1.3':
     dependencies:
-      package-manager-detector: 1.8.0
+      package-manager-detector: 1.9.0
       tinyexec: 1.3.1
 
   '@changesets/get-dependents-graph@3.0.0':
@@ -5696,28 +5717,29 @@ snapshots:
 
   '@changesets/write@1.0.1':
     dependencies:
-      '@changesets/format': 0.1.2
+      '@changesets/format': 0.1.3
       '@changesets/types': 7.0.0
-      human-id: 4.2.1
+      human-id: 4.2.2
 
-  '@clack/core@1.5.0':
+  '@clack/core@1.6.0':
     dependencies:
-      fast-wrap-ansi: 0.2.2
-      sisteransi: 1.0.5
-
-  '@clack/prompts@1.8.0':
-    dependencies:
-      '@clack/core': 1.5.0
       fast-string-width: 3.0.2
       fast-wrap-ansi: 0.2.2
-      sisteransi: 1.0.5
+      sisteransi: 2.0.0
 
-  '@credo-ts/anoncreds@0.7.4(@hyperledger/anoncreds-shared@0.4.0)(typescript@5.9.3)':
+  '@clack/prompts@1.9.0':
+    dependencies:
+      '@clack/core': 1.6.0
+      fast-string-width: 3.0.2
+      fast-wrap-ansi: 0.2.2
+      sisteransi: 2.0.0
+
+  '@credo-ts/anoncreds@0.7.4(@hyperledger/anoncreds-shared@0.4.1)(typescript@5.9.3)':
     dependencies:
       '@astronautlabs/jsonpath': 1.1.2
       '@credo-ts/core': 0.7.4(patch_hash=81f9979af246191445ea21d1fd6fdf19558a7daa3d76e6926ca0c4949f17340b)(typescript@5.9.3)
       '@credo-ts/didcomm': 0.7.4(patch_hash=0e72a8e222f2368bfce43b0ddb24e2fff36479131fb035a093e6b69e5dc5e14b)(typescript@5.9.3)
-      '@hyperledger/anoncreds-shared': 0.4.0
+      '@hyperledger/anoncreds-shared': 0.4.1
       '@sphereon/pex-models': 2.3.2
       class-transformer: 0.5.1
       class-validator: 0.14.3
@@ -5727,11 +5749,11 @@ snapshots:
       - supports-color
       - typescript
 
-  '@credo-ts/askar@0.7.4(@openwallet-foundation/askar-shared@0.6.0)(typescript@5.9.3)':
+  '@credo-ts/askar@0.7.4(@openwallet-foundation/askar-shared@0.6.1)(typescript@5.9.3)':
     dependencies:
       '@credo-ts/core': 0.7.4(patch_hash=81f9979af246191445ea21d1fd6fdf19558a7daa3d76e6926ca0c4949f17340b)(typescript@5.9.3)
       '@noble/curves': 2.0.1
-      '@openwallet-foundation/askar-shared': 0.6.0
+      '@openwallet-foundation/askar-shared': 0.6.1
       '@panva/hpke-noble': 1.1.8(hpke@1.1.8)
       class-transformer: 0.5.1
       class-validator: 0.14.3
@@ -5812,9 +5834,9 @@ snapshots:
       - supports-color
       - typescript
 
-  '@credo-ts/indy-vdr@0.7.4(@hyperledger/anoncreds-shared@0.4.0)(@hyperledger/indy-vdr-shared@0.3.0)(typescript@5.9.3)':
+  '@credo-ts/indy-vdr@0.7.4(@hyperledger/anoncreds-shared@0.4.1)(@hyperledger/indy-vdr-shared@0.3.0)(typescript@5.9.3)':
     dependencies:
-      '@credo-ts/anoncreds': 0.7.4(@hyperledger/anoncreds-shared@0.4.0)(typescript@5.9.3)
+      '@credo-ts/anoncreds': 0.7.4(@hyperledger/anoncreds-shared@0.4.1)(typescript@5.9.3)
       '@credo-ts/core': 0.7.4(patch_hash=81f9979af246191445ea21d1fd6fdf19558a7daa3d76e6926ca0c4949f17340b)(typescript@5.9.3)
       '@hyperledger/indy-vdr-shared': 0.3.0
     transitivePeerDependencies:
@@ -6264,13 +6286,13 @@ snapshots:
       '@hapi/hoek': 9.3.0
     optional: true
 
-  '@hyperledger/anoncreds-react-native@0.4.0(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)':
+  '@hyperledger/anoncreds-react-native@0.4.1(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@hyperledger/anoncreds-shared': 0.4.0
+      '@hyperledger/anoncreds-shared': 0.4.1
       react: 19.0.0
       react-native: 0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0)
 
-  '@hyperledger/anoncreds-shared@0.4.0':
+  '@hyperledger/anoncreds-shared@0.4.1':
     dependencies:
       tar: 7.5.23
 
@@ -6439,13 +6461,13 @@ snapshots:
       zod: 4.6.7
       zod-validation-error: 5.0.0(zod@4.6.7)
 
-  '@openwallet-foundation/askar-react-native@0.6.0(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)':
+  '@openwallet-foundation/askar-react-native@0.6.1(react-native@0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@openwallet-foundation/askar-shared': 0.6.0
+      '@openwallet-foundation/askar-shared': 0.6.1
       react: 19.0.0
       react-native: 0.88.1(@babel/core@7.29.13)(@react-native-community/cli@10.2.4(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.0.0)
 
-  '@openwallet-foundation/askar-shared@0.6.0':
+  '@openwallet-foundation/askar-shared@0.6.1':
     dependencies:
       buffer: 6.0.3
       tar: 7.5.23
@@ -7631,7 +7653,7 @@ snapshots:
 
   cac@6.7.14: {}
 
-  cac@7.0.0: {}
+  cac@7.1.0: {}
 
   call-bind-apply-helpers@1.0.2:
     dependencies:
@@ -8228,7 +8250,7 @@ snapshots:
     dependencies:
       fast-string-width: 3.0.2
 
-  fast-xml-builder@1.3.1:
+  fast-xml-builder@1.3.2:
     dependencies:
       path-expression-matcher: 1.6.2
       xml-naming: 0.3.0
@@ -8237,7 +8259,7 @@ snapshots:
   fast-xml-parser@5.11.1:
     dependencies:
       '@nodable/entities': 3.1.0
-      fast-xml-builder: 1.3.1
+      fast-xml-builder: 1.3.2
       is-unsafe: 2.0.3
       path-expression-matcher: 1.6.2
       strnum: 2.5.1
@@ -8483,7 +8505,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  human-id@4.2.1: {}
+  human-id@4.2.2: {}
 
   iconv-lite@0.7.3:
     dependencies:
@@ -8696,7 +8718,7 @@ snapshots:
 
   lan-network@0.1.7: {}
 
-  launch-editor@2.14.1:
+  launch-editor@2.14.2:
     dependencies:
       picocolors: 1.1.1
       shell-quote: 1.12.0
@@ -9505,7 +9527,7 @@ snapshots:
 
   package-json-from-dist@1.0.1: {}
 
-  package-manager-detector@1.8.0: {}
+  package-manager-detector@1.9.0: {}
 
   pako@3.0.3: {}
 
@@ -9937,8 +9959,6 @@ snapshots:
 
   semver@6.3.2: {}
 
-  semver@7.8.5: {}
-
   semver@7.8.6: {}
 
   send@0.19.2:
@@ -10063,6 +10083,8 @@ snapshots:
       plist: 3.1.0
 
   sisteransi@1.0.5: {}
+
+  sisteransi@2.0.0: {}
 
   slash@3.0.0: {}
 
@@ -10387,6 +10409,8 @@ snapshots:
   uuid@11.1.1: {}
 
   uuid@14.0.2: {}
+
+  uuid@14.0.3: {}
 
   valibot@1.4.2(typescript@5.9.3):
     optionalDependencies:
