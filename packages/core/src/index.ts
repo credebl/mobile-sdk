@@ -11,6 +11,7 @@ import {
 } from '@credo-ts/core'
 
 export * from './contexts'
+export * from './credentialList'
 export * from './hooks'
 export * from './keyManagement'
 export * from './MobileSDK'

@@ -35,6 +35,13 @@ import { agentDependencies } from '@credo-ts/react-native'
 import { askar } from '@openwallet-foundation/askar-react-native'
 import type { PropsWithChildren } from 'react'
 import { useMobileSDK } from './contexts'
+import {
+  buildCredentialTagQuery,
+  type CredentialListQuery,
+  DEFAULT_CREDENTIAL_SEARCHABLE_TAGS,
+  filterCredentialRecords,
+  sanitizeCredentialTags,
+} from './credentialList'
 import { type MobileSDKKeyManagementOptions, registerKeyManagementBackends } from './keyManagement'
 import AgentProvider from './providers/AgentProvider'
 
@@ -332,6 +339,37 @@ export class MobileSDK<T extends Record<string, MobileSDKModule> = Record<string
     }
 
     return results
+  }
+
+  /**
+   * List stored credentials with optional tag filters, free-text search and pagination.
+   *
+   * With no fields set on `query`, the matching records are returned as a plain array. With any
+   * field set, a `{ data, pagination, filters? }` envelope is returned instead. Tag filters use the
+   * same names as the platform credential list API (`credentialType`, `vct`, `docType`, `types`, ...).
+   */
+  public async getCredentials({
+    query = {},
+    format,
+    searchableTags = DEFAULT_CREDENTIAL_SEARCHABLE_TAGS,
+  }: {
+    query?: CredentialListQuery
+    format?: CredentialRecord
+    searchableTags?: string[]
+  } = {}) {
+    const agent = this.assertAndGetAgent()
+    const repositories = this.getRepositories(agent, format)
+    const tagQuery = {
+      ...buildCredentialTagQuery(query),
+      ...(query.tags ? (sanitizeCredentialTags(query.tags) ?? {}) : {}),
+    }
+
+    const records = []
+    for (const repository of repositories) {
+      records.push(...(await repository.findByQuery(agent.context, tagQuery)))
+    }
+
+    return filterCredentialRecords(records, query, searchableTags)
   }
 
   public async exportWallet(exportToStore: AskarModuleConfigStoreOptions) {
