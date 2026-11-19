@@ -17,6 +17,7 @@ export {
   HolderBindingNotSupportedError,
 } from './credentialBindingResolver'
 export * from './dcapi'
+export * from './decode'
 export * from './display'
 export * from './holderErrors'
 export * from './metadata'

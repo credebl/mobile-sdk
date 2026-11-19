@@ -138,3 +138,31 @@ metadata, an untrusted X.509 root, mdoc validity/signing-date/country problems, 
 
 Use `readableHolderError(error)` to map an error received from elsewhere, or `withReadableErrors(() => ...)` to wrap
 any holder call. Both are exported from the package root.
+
+## Decoding credentials
+
+Inspect a raw encoded credential before deciding whether to store it. Both helpers only parse the credential: they
+do **not** verify the signature, issuer, holder binding, status or validity dates.
+
+```tsx
+import { CredentialDecodeError, decodeMdocCredential, decodeSdJwt } from '@credebl/ssi-mobile-openid4vc'
+
+// Compact SD-JWT VC — needs an initialized Credo agent
+const sdJwt = sdk.decodeSdJwt({ jwt: compactJwt })
+// or, when you already have the agent: decodeSdJwt(agent, compactJwt)
+
+// Base64url issuer-signed mdoc — no agent needed
+const mdoc = sdk.decodeMdocCredential({ base64Url })
+// mdoc = { namespace, docType, validityInfo, issuerSignedCertificateChain }
+
+try {
+  sdk.decodeMdocCredential({ base64Url: '' })
+} catch (error) {
+  if (error instanceof CredentialDecodeError) showError(error.message)
+}
+```
+
+`decodeSdJwt` returns Credo's `SdJwtVc` with the parsed header, payload and disclosures. `decodeMdocCredential` returns
+the mdoc namespaces, doc type, validity dates and issuer certificate chain — the same fields the platform holder
+service exposes. Empty input and malformed mdocs throw `CredentialDecodeError`; the underlying parser error is kept
+in the message for diagnostics.
