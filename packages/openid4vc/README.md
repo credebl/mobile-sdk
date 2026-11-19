@@ -92,10 +92,49 @@ Use `sendCredentialNotifications({ notifications: [{ credential, event }, ...] }
 
 ### Access token lifetime
 
-Notifications are authorised with the access token of the issuance. CREDEBL issuers issue tokens valid for
-3600 seconds by default, without a refresh token, so send notifications right after storing. A `credential_deleted`
-event only reaches the issuer while the token is still valid; after that it is skipped. The `notification` context
-holds the access token: keep it in memory only, and do not persist or log it.
+Notifications are authorised with the access token of the issuance. Platform issuers issue tokens valid for
+3600 seconds by default, without a refresh token, so send notifications right after storing. The issuance session
+cannot be refreshed once it is completed, so a late notification cannot be retried successfully.
+
+- When the token response includes `expires_in`, the SDK checks the expiry locally and returns `skipped` with a reason
+  naming the event, for example `The access token of the issuance has expired before 'credential_deleted' could be
+  sent to the issuer`. No request is made to the issuer in that case.
+- When the issuer omits `expires_in`, no local expiry time is known and the request is attempted. If the issuer answers
+  with `HTTP 401`, the result is `failed` with an explanation that the notification cannot be retried.
+- A `credential_deleted` event only reaches the issuer while the token is still valid. Do not persist a `notification`
+  context hoping to report a deletion days later: it holds the access token, so keep it in memory only and never log
+  it.
 
 Credo 0.7.4 does not send `event_description`, so it is not supported. Deferred credentials do not get notifications
 yet.
+
+## Readable holder errors
+
+The OID4VCI entry points (`resolveOpenId4VciOffer`, `acquirePreAuthorizedAccessToken`,
+`acquireAuthorizationCodeAccessToken` and `receiveCredentialFromOpenId4VciOffer`) translate known issuer and
+Credential failures into a `ReadableHolderError` with a message that can be shown to the wallet user.
+
+```tsx
+import { ReadableHolderError } from '@credebl/ssi-mobile-openid4vc'
+
+try {
+  await openid4vc.acquirePreAuthorizedAccessToken({ resolvedCredentialOffer, txCode })
+} catch (error) {
+  if (error instanceof ReadableHolderError) {
+    // error.code        -> stable reason, e.g. 'TRANSACTION_CODE_REQUIRED'
+    // error.status      -> mirrors the platform error taxonomy (400, 404, 422, 502)
+    // error.message     -> user-facing text, with the original text in brackets
+    // error.originalMessage -> the raw Credo/issuer text, for diagnostics
+    showError(error.message)
+    return
+  }
+  throw error
+}
+```
+
+The mapped reasons are: a missing transaction code, an offer that was used/expired/withdrawn, unreadable issuer
+metadata, an untrusted X.509 root, mdoc validity/signing-date/country problems, and DID binding requested for an
+`mso_mdoc` credential. Unknown errors, biometric cancellations and non-`Error` values are rethrown unchanged.
+
+Use `readableHolderError(error)` to map an error received from elsewhere, or `withReadableErrors(() => ...)` to wrap
+any holder call. Both are exported from the package root.

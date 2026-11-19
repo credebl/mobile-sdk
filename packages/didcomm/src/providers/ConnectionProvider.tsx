@@ -6,7 +6,7 @@ import {
   recordsUpdatedByType,
   removeRecord,
   updateRecord,
-} from '@credebl/core'
+} from '@credebl/ssi-mobile-core'
 import { DidCommConnectionRecord, DidCommConnectionType, DidCommDidExchangeState } from '@credo-ts/didcomm'
 import type { PropsWithChildren } from 'react'
 import * as React from 'react'

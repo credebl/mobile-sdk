@@ -56,6 +56,7 @@ import {
   getCredentialForDisplay,
   getSelectedCredentialsForRequest,
 } from './display'
+import { readableHolderError, withReadableErrors } from './holderErrors'
 import { extractOpenId4VcCredentialMetadata, setOpenId4VcCredentialMetadata } from './metadata'
 import {
   type CredentialNotificationEvent,
@@ -193,7 +194,9 @@ export class OpenID4VCSDK implements MobileSDKModule {
       uri: offer.uri,
     })
 
-    const resolvedCredentialOffer = await agent.modules.openid4vc.holder.resolveCredentialOffer(offer.uri)
+    const resolvedCredentialOffer = await withReadableErrors(() =>
+      agent.modules.openid4vc.holder.resolveCredentialOffer(offer.uri)
+    )
     let resolvedAuthorizationRequest: OpenId4VciResolvedAuthorizationRequest | undefined
 
     // NOTE: we always assume scopes are used at the moment
@@ -207,9 +210,8 @@ export class OpenID4VCSDK implements MobileSDKModule {
 
       // TODO: authorization should only be initiated after we know which credentials we're going to request
       if (authorization) {
-        resolvedAuthorizationRequest = await agent.modules.openid4vc.holder.resolveOpenId4VciAuthorizationRequest(
-          resolvedCredentialOffer,
-          {
+        resolvedAuthorizationRequest = await withReadableErrors(async () =>
+          agent.modules.openid4vc.holder.resolveOpenId4VciAuthorizationRequest(resolvedCredentialOffer, {
             redirectUri: authorization.redirectUri,
             clientId: authorization.clientId,
             scope: getScopesFromCredentialConfigurationsSupported(
@@ -218,7 +220,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
             // Added in patch but not in types
             // @ts-expect-error
             customHeaders,
-          }
+          })
         )
       }
     }
@@ -237,10 +239,12 @@ export class OpenID4VCSDK implements MobileSDKModule {
     txCode?: string
   }) {
     const agent = this.assertAndGetAgent()
-    return await agent.modules.openid4vc.holder.requestToken({
-      resolvedCredentialOffer,
-      txCode,
-    })
+    return await withReadableErrors(() =>
+      agent.modules.openid4vc.holder.requestToken({
+        resolvedCredentialOffer,
+        txCode,
+      })
+    )
   }
 
   async parseCredentialResponses(
@@ -325,10 +329,14 @@ export class OpenID4VCSDK implements MobileSDKModule {
     const credentialConfigurationIds = Object.keys(offeredCredentialsToRequest)
 
     if (holderDidUrl) {
-      await assertOfferAcceptsHolderDid(agent.context, resolvedCredentialOffer, credentialConfigurationIds, {
-        holderDidUrl,
-        bindingPolicy,
-      })
+      try {
+        await assertOfferAcceptsHolderDid(agent.context, resolvedCredentialOffer, credentialConfigurationIds, {
+          holderDidUrl,
+          bindingPolicy,
+        })
+      } catch (error) {
+        throw readableHolderError(error) ?? error
+      }
     }
 
     try {
@@ -383,7 +391,7 @@ export class OpenID4VCSDK implements MobileSDKModule {
       // TODO: if one biometric operation fails it will fail the whole credential receiving. We should have more control so we
       // can retry e.g. the second credential
       // Handle biometric authentication errors
-      throw BiometricAuthenticationError.tryParseFromError(error) ?? error
+      throw BiometricAuthenticationError.tryParseFromError(error) ?? readableHolderError(error) ?? error
     }
   }
 
@@ -490,13 +498,15 @@ export class OpenID4VCSDK implements MobileSDKModule {
     redirectUri?: string
   }) {
     const agent = this.assertAndGetAgent()
-    const response = await agent.modules.openid4vc.holder.requestToken({
-      resolvedCredentialOffer,
-      code: authorizationCode,
-      codeVerifier,
-      redirectUri,
-      clientId,
-    })
+    const response = await withReadableErrors(() =>
+      agent.modules.openid4vc.holder.requestToken({
+        resolvedCredentialOffer,
+        code: authorizationCode,
+        codeVerifier,
+        redirectUri,
+        clientId,
+      })
+    )
     return response
   }
 
