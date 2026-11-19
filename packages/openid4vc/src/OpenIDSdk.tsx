@@ -48,6 +48,7 @@ import {
   mapMdocAttributesToClaimDisplay,
   mapSdJwtAttributesToClaimDisplay,
 } from './dcapi/mapAttributes'
+import { type DecodedMdocCredential, decodeMdocCredential, decodeSdJwt } from './decode'
 import {
   type FormattedSubmission,
   type FormattedSubmissionEntry,
@@ -175,6 +176,22 @@ export class OpenID4VCSDK implements MobileSDKModule {
         <MdocRecordProvider agent={agent}>{children}</MdocRecordProvider>
       </SdJwtVcRecordProvider>
     )
+  }
+
+  /**
+   * Decode a compact SD-JWT VC without storing or verifying it. Use the SDK's proof and display helpers on the
+   * decoded credential, or store it with `storeOpenIdCredential`.
+   */
+  public decodeSdJwt({ jwt }: { jwt: string }) {
+    return decodeSdJwt(this.assertAndGetAgent(), jwt)
+  }
+
+  /**
+   * Decode a base64url-encoded ISO mdoc without storing or verifying it. Returns the namespaces, doc type,
+   * validity dates and issuer certificate chain.
+   */
+  public decodeMdocCredential({ base64Url }: { base64Url: string }): DecodedMdocCredential {
+    return decodeMdocCredential(base64Url)
   }
 
   public async resolveOpenId4VciOffer({
