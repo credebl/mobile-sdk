@@ -1,6 +1,6 @@
 import { parseStringPromise } from 'xml2js'
 
-interface AadhaarData {
+export interface AadhaarData {
   uid: string
   dob: string
   gender: string
@@ -19,14 +19,14 @@ interface AadhaarData {
   photo: string
 }
 
-interface PANData {
+export interface PANData {
   panNumber: string
   name: string
   dob: string
   gender: string
 }
 
-interface DrivingLicenseData {
+export interface DrivingLicenseData {
   licenseNumber: string
   issuedAt: string
   issueDate: string

@@ -8,12 +8,17 @@ import {
 } from '@credo-ts/openid4vc'
 
 export {
+  assertOfferAcceptsHolderDid,
+  assertW3cCredentialsBoundToHolderDid,
   type CredentialBindingPolicy,
+  type CredentialBindingResolverOptions,
+  getCredentialBindingResolver,
   HolderBindingMismatchError,
   HolderBindingNotSupportedError,
 } from './credentialBindingResolver'
 export * from './dcapi'
 export * from './display'
+export * from './metadata'
 export {
   type CredentialNotificationEvent,
   type CredentialNotificationResult,
@@ -24,6 +29,7 @@ export {
 export * from './OpenIDSdk'
 export * from './providers'
 export * from './utils'
+export * from './utils/error'
 export {
   GenericRecord,
   MdocRecord,

@@ -11,6 +11,7 @@ A React Native SDK for adding **Self-Sovereign Identity (SSI)** capabilities to 
 | [`@credebl/ssi-mobile-core`](./packages/core/README.md) | Core SDK — wallet setup, DID operations, credential storage, key management | [![npm](https://img.shields.io/npm/v/@credebl/ssi-mobile-core.svg)](https://npmjs.com/package/@credebl/ssi-mobile-core) |
 | [`@credebl/ssi-mobile-didcomm`](./packages/didcomm/README.md) | DIDComm protocol — connections, credentials, proofs, messaging | [![npm](https://img.shields.io/npm/v/@credebl/ssi-mobile-didcomm.svg)](https://npmjs.com/package/@credebl/ssi-mobile-didcomm) |
 | [`@credebl/ssi-mobile-openid4vc`](./packages/openid4vc/README.md) | OpenID4VC — credential issuance and presentation via QR/deep link | [![npm](https://img.shields.io/npm/v/@credebl/ssi-mobile-openid4vc.svg)](https://npmjs.com/package/@credebl/ssi-mobile-openid4vc) |
+| [`@credebl/digilocker-mobile`](./packages/digilocker/README.md) | DigiLocker — document fetch and parsing helpers | [![npm](https://img.shields.io/npm/v/@credebl/digilocker-mobile.svg)](https://npmjs.com/package/@credebl/digilocker-mobile) |
 
 ---
 

@@ -1,5 +1,13 @@
+// Module APIs. These are also reachable through DidCommSDK getters, but exporting them
+// keeps the standalone classes available to consumers that need their types.
+export * from './basicMessages'
+export * from './connections'
+export * from './credentials'
 export * from './DidCommSdk'
+export * from './mediationRecipient'
+export * from './proofs'
 export * from './providers'
+export * from './questionAnswer'
 
 // Anoncreds
 import {

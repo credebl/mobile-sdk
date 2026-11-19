@@ -19,7 +19,7 @@ interface Props {
   agent: Agent
 }
 
-const AgentProvider: React.FC<PropsWithChildren<Props>> = ({ agent, children }) => {
+export const AgentProvider: React.FC<PropsWithChildren<Props>> = ({ agent, children }) => {
   return <AgentContext.Provider value={agent}>{children}</AgentContext.Provider>
 }
 

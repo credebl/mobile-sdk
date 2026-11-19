@@ -10,7 +10,7 @@ Previous stable release: v2.2.1.
 | `@credebl/ssi-mobile-core` | 2.3.0 |
 | `@credebl/ssi-mobile-didcomm` | 2.3.0 |
 | `@credebl/ssi-mobile-openid4vc` | 2.3.0 |
-| `@credebl/ssi-mobile-digilocker` | 2.2.1 (unchanged) |
+| `@credebl/digilocker-mobile` | 1.1.0 (unchanged) |
 | Credo stack | 0.7.4 |
 | `@owf/mdoc` | 0.8.3 |
 | `@openwallet-foundation/askar-react-native` | 0.6.0 |
