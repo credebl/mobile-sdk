@@ -99,3 +99,34 @@ holds the access token: keep it in memory only, and do not persist or log it.
 
 Credo 0.7.4 does not send `event_description`, so it is not supported. Deferred credentials do not get notifications
 yet.
+
+## Readable holder errors
+
+The OID4VCI entry points (`resolveOpenId4VciOffer`, `acquirePreAuthorizedAccessToken`,
+`acquireAuthorizationCodeAccessToken` and `receiveCredentialFromOpenId4VciOffer`) translate known issuer and
+Credential failures into a `ReadableHolderError` with a message that can be shown to the wallet user.
+
+```tsx
+import { ReadableHolderError } from '@credebl/ssi-mobile-openid4vc'
+
+try {
+  await openid4vc.acquirePreAuthorizedAccessToken({ resolvedCredentialOffer, txCode })
+} catch (error) {
+  if (error instanceof ReadableHolderError) {
+    // error.code        -> stable reason, e.g. 'TRANSACTION_CODE_REQUIRED'
+    // error.status      -> mirrors the platform error taxonomy (400, 404, 422, 502)
+    // error.message     -> user-facing text, with the original text in brackets
+    // error.originalMessage -> the raw Credo/issuer text, for diagnostics
+    showError(error.message)
+    return
+  }
+  throw error
+}
+```
+
+The mapped reasons are: a missing transaction code, an offer that was used/expired/withdrawn, unreadable issuer
+metadata, an untrusted X.509 root, mdoc validity/signing-date/country problems, and DID binding requested for an
+`mso_mdoc` credential. Unknown errors, biometric cancellations and non-`Error` values are rethrown unchanged.
+
+Use `readableHolderError(error)` to map an error received from elsewhere, or `withReadableErrors(() => ...)` to wrap
+any holder call. Both are exported from the package root.

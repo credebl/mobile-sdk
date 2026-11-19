@@ -18,6 +18,7 @@ export {
 } from './credentialBindingResolver'
 export * from './dcapi'
 export * from './display'
+export * from './holderErrors'
 export * from './metadata'
 export {
   type CredentialNotificationEvent,
