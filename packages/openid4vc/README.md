@@ -166,3 +166,28 @@ try {
 the mdoc namespaces, doc type, validity dates and issuer certificate chain — the same fields the platform holder
 service exposes. Empty input and malformed mdocs throw `CredentialDecodeError`; the underlying parser error is kept
 in the message for diagnostics.
+
+## Credential status (revocation and suspension)
+
+Check an SD-JWT VC against its status list on demand — for example when showing a stored credential to a user.
+
+```tsx
+import { verifyCredentialStatus, verifyCredentialStatuses } from '@credebl/ssi-mobile-openid4vc'
+
+// From a stored SdJwtVcRecord, or directly from a compact SD-JWT VC string
+const result = await sdk.verifyCredentialStatus({ credential: record })
+// { checked: true, status: 'revoked', verified: true, statusListUri, statusListIndex }
+
+const results = await sdk.verifyCredentialStatuses({ credentials: records })
+```
+
+`status` is one of `valid`, `revoked`, `suspended` or `unknown`. The result is fail-closed: if the status list cannot
+be fetched or decoded, `verified` is `false` and `error` explains why. Credentials with no status reference return
+`checked: false`. Batch checks run sequentially so a wallet does not fetch many status lists from one issuer at once.
+
+The helper uses the agent's configured `fetch`, so it works in React Native without platform-specific networking
+code. It reads the status bit only — it does **not** re-verify the credential signature, the status list token
+signature, holder binding or validity dates. Use the agent's credential verification APIs for those checks.
+
+Only SD-JWT VC status lists are supported. Credo 0.7.4 does not verify W3C credential status lists or mdoc status, so
+those credential formats return `checked: false`.
