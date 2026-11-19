@@ -92,10 +92,18 @@ Use `sendCredentialNotifications({ notifications: [{ credential, event }, ...] }
 
 ### Access token lifetime
 
-Notifications are authorised with the access token of the issuance. CREDEBL issuers issue tokens valid for
-3600 seconds by default, without a refresh token, so send notifications right after storing. A `credential_deleted`
-event only reaches the issuer while the token is still valid; after that it is skipped. The `notification` context
-holds the access token: keep it in memory only, and do not persist or log it.
+Notifications are authorised with the access token of the issuance. Platform issuers issue tokens valid for
+3600 seconds by default, without a refresh token, so send notifications right after storing. The issuance session
+cannot be refreshed once it is completed, so a late notification cannot be retried successfully.
+
+- When the token response includes `expires_in`, the SDK checks the expiry locally and returns `skipped` with a reason
+  naming the event, for example `The access token of the issuance has expired before 'credential_deleted' could be
+  sent to the issuer`. No request is made to the issuer in that case.
+- When the issuer omits `expires_in`, no local expiry time is known and the request is attempted. If the issuer answers
+  with `HTTP 401`, the result is `failed` with an explanation that the notification cannot be retried.
+- A `credential_deleted` event only reaches the issuer while the token is still valid. Do not persist a `notification`
+  context hoping to report a deletion days later: it holds the access token, so keep it in memory only and never log
+  it.
 
 Credo 0.7.4 does not send `event_description`, so it is not supported. Deferred credentials do not get notifications
 yet.

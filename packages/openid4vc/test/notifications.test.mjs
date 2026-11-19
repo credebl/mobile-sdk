@@ -145,7 +145,7 @@ test('skips once the access token has expired', async () => {
 
   assert.deepEqual(before, [{ status: 'sent', event: 'credential_deleted' }])
   assert.equal(after[0].status, 'skipped')
-  assert.match(after[0].reason, /access token .* expired/)
+  assert.match(after[0].reason, /access token .* expired before 'credential_deleted' could be sent/)
   assert.equal(holder.calls.length, 1)
 })
 
@@ -193,7 +193,11 @@ test('a failure reason falls back to the error message without an issuer respons
 
   assert.deepEqual(
     results.map((result) => result.reason),
-    ['offline', 'boom', `${errors.c.message}: HTTP 401`]
+    [
+      'offline',
+      'boom',
+      `${errors.c.message}: HTTP 401. The issuance access token is no longer accepted; this notification cannot be retried.`,
+    ]
   )
 })
 
