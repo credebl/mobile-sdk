@@ -7,6 +7,27 @@ Digital Credentials API, and display SD-JWT VC, mdoc and W3C credentials.
 npm install @credebl/ssi-mobile-openid4vc
 ```
 
+## Requesting only the credentials you want
+
+An issuer can offer several credential configurations in one offer. By default `resolveOpenId4VciOffer` asks for the
+scopes of **all** offered configurations. Pass `credentialConfigurationIdsToRequest` to limit the authorization
+request to the credentials the wallet actually intends to receive:
+
+```tsx
+const { resolvedCredentialOffer, resolvedAuthorizationRequest } = await sdk.resolveOpenId4VciOffer({
+  offer: { uri: offerUri },
+  authorization: { clientId, redirectUri },
+  credentialConfigurationIdsToRequest: ['pid-sd-jwt'],
+})
+
+// Use the same IDs when receiving the credentials
+await sdk.receiveCredentialFromOpenId4VciOffer({ resolvedCredentialOffer, credentialConfigurationIdsToRequest: ['pid-sd-jwt'], ... })
+```
+
+`getScopesForCredentialConfigurationIds(offer, ids)` is also exported for direct use. Duplicate scopes are removed.
+If an ID is not in the offer, `UnknownCredentialConfigurationIdError` is thrown instead of silently requesting the
+wrong scope. When no IDs are passed, behaviour is unchanged.
+
 ## OID4VCI notifications
 
 After the wallet receives credentials over OID4VCI, it tells the issuer what happened to each one by sending a
