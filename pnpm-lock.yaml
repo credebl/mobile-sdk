@@ -25,8 +25,8 @@ catalogs:
       specifier: 0.7.4
       version: 0.7.4
     '@credo-ts/didcomm-push-notifications':
-      specifier: 0.0.4-alpha-20261026124349
-      version: 0.0.4-alpha-20261026124349
+      specifier: 0.0.4-alpha-20261105172857
+      version: 0.0.4-alpha-20261105172857
     '@credo-ts/indy-vdr':
       specifier: 0.7.4
       version: 0.7.4
@@ -176,7 +176,7 @@ importers:
         version: 0.7.4(patch_hash=0e72a8e222f2368bfce43b0ddb24e2fff36479131fb035a093e6b69e5dc5e14b)(typescript@5.9.3)
       '@credo-ts/didcomm-push-notifications':
         specifier: 'catalog:'
-        version: 0.0.4-alpha-20261026124349(@credo-ts/core@0.7.4(patch_hash=81f9979af246191445ea21d1fd6fdf19558a7daa3d76e6926ca0c4949f17340b)(typescript@5.9.3))(@credo-ts/didcomm@0.7.4(patch_hash=0e72a8e222f2368bfce43b0ddb24e2fff36479131fb035a093e6b69e5dc5e14b)(typescript@5.9.3))
+        version: 0.0.4-alpha-20261105172857(@credo-ts/core@0.7.4(patch_hash=81f9979af246191445ea21d1fd6fdf19558a7daa3d76e6926ca0c4949f17340b)(typescript@5.9.3))(@credo-ts/didcomm@0.7.4(patch_hash=0e72a8e222f2368bfce43b0ddb24e2fff36479131fb035a093e6b69e5dc5e14b)(typescript@5.9.3))
       '@credo-ts/indy-vdr':
         specifier: 'catalog:'
         version: 0.7.4(@hyperledger/anoncreds-shared@0.4.0)(@hyperledger/indy-vdr-shared@0.3.0)(typescript@5.9.3)
@@ -878,24 +878,28 @@ packages:
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@biomejs/cli-linux-arm64@2.5.12':
     resolution: {integrity: sha512-2gp8aVwXYKdAtmBfRFCUuyDMcfN1ahHqUkGfLYrZlNRFmryMATLVvJgWKvyA8wu4Rwn5OSxM1UcUmOuOFNGeBQ==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@biomejs/cli-linux-x64-musl@2.5.12':
     resolution: {integrity: sha512-8A0oDW58/w9f/PQNYuq0sGUZtGtGrkNF4Z6n0PUoXpLCshi85vtKTv1XSznQawhdE4MXJ8ufpzHXyLFe87M/+w==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@biomejs/cli-linux-x64@2.5.12':
     resolution: {integrity: sha512-SnvOs3TSTiuia4SQOUNe1aWC9RT4+YkjcKnOhL/nsKOV0k5ycgBkDzF0lUxKn1V7Q8CLTRq6iV23ZAivHomRoA==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@biomejs/cli-win32-arm64@2.5.12':
     resolution: {integrity: sha512-b9vtoZFsuZt1pdjNwJvXl0f+BpayRzV008uS2+JpmwIKdSE2qdu4A/l04FESwLoou5g2E/Qlec0xwJydZplH+A==}
@@ -1021,8 +1025,8 @@ packages:
   '@credo-ts/core@0.7.4':
     resolution: {integrity: sha512-pBPwAWOttA2795567BHS8FxWxtnj5RYNowC6U6j7WQ6y4kED1o3ueRAgsP9dpogWMZ97ilaVUyk9eDScN86+9g==}
 
-  '@credo-ts/didcomm-push-notifications@0.0.4-alpha-20261026124349':
-    resolution: {integrity: sha512-GcdP0VmS5Vn5yWXyQ9/7c2v0OPlh2A9BIPbhJmZVZ8uh2ZrIV3rscIHcKI9qUzStnFErIav7KQWwpCZhtQxYog==}
+  '@credo-ts/didcomm-push-notifications@0.0.4-alpha-20261105172857':
+    resolution: {integrity: sha512-/IVMVGYm/azWaKqAZH/nocURRj9J1RBiksWjN+KaDr0DNT+VB/nDRr68YPe8gujvzmYmQOLKPH1ZgEoAsGBN2A==}
     peerDependencies:
       '@credo-ts/core': ^0.6.0 || ^0.7.0
       '@credo-ts/didcomm': ^0.6.0 || ^0.7.0
@@ -1650,60 +1654,70 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-arm64-gnu@1.0.0-rc.3':
     resolution: {integrity: sha512-kWXkoxxarYISBJ4bLNf5vFkEbb4JvccOwxWDxuK9yee8lg5XA7OpvlTptfRuwEvYcOZf+7VS69Uenpmpyo5Bjw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-arm64-musl@1.0.0-rc.17':
     resolution: {integrity: sha512-b/CgbwAJpmrRLp02RPfhbudf5tZnN9nsPWK82znefso832etkem8H7FSZwxrOI9djcdTP7U6YfNhbRnh7djErg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rolldown/binding-linux-arm64-musl@1.0.0-rc.3':
     resolution: {integrity: sha512-Z03/wrqau9Bicfgb3Dbs6SYTHliELk2PM2LpG2nFd+cGupTMF5kanLEcj2vuuJLLhptNyS61rtk7SOZ+lPsTUA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rolldown/binding-linux-ppc64-gnu@1.0.0-rc.17':
     resolution: {integrity: sha512-4EII1iNGRUN5WwGbF/kOh/EIkoDN9HsupgLQoXfY+D1oyJm7/F4t5PYU5n8SWZgG0FEwakyM8pGgwcBYruGTlA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-s390x-gnu@1.0.0-rc.17':
     resolution: {integrity: sha512-AH8oq3XqQo4IibpVXvPeLDI5pzkpYn0WiZAfT05kFzoJ6tQNzwRdDYQ45M8I/gslbodRZwW8uxLhbSBbkv96rA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-x64-gnu@1.0.0-rc.17':
     resolution: {integrity: sha512-cLnjV3xfo7KslbU41Z7z8BH/E1y5mzUYzAqih1d1MDaIGZRCMqTijqLv76/P7fyHuvUcfGsIpqCdddbxLLK9rA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-x64-gnu@1.0.0-rc.3':
     resolution: {integrity: sha512-iSXXZsQp08CSilff/DCTFZHSVEpEwdicV3W8idHyrByrcsRDVh9sGC3sev6d8BygSGj3vt8GvUKBPCoyMA4tgQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-x64-musl@1.0.0-rc.17':
     resolution: {integrity: sha512-0phclDw1spsL7dUB37sIARuis2tAgomCJXAHZlpt8PXZ4Ba0dRP1e+66lsRqrfhISeN9bEGNjQs+T/Fbd7oYGw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rolldown/binding-linux-x64-musl@1.0.0-rc.3':
     resolution: {integrity: sha512-qaj+MFudtdCv9xZo9znFvkgoajLdc+vwf0Kz5N44g+LU5XMe+IsACgn3UG7uTRlCCvhMAGXm1XlpEA5bZBrOcw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rolldown/binding-openharmony-arm64@1.0.0-rc.17':
     resolution: {integrity: sha512-0ag/hEgXOwgw4t8QyQvUCxvEg+V0KBcA6YuOx9g0r02MprutRF5dyljgm3EmR02O292UX7UeS6HzWHAl6KgyhA==}
@@ -3298,24 +3312,28 @@ packages:
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   lightningcss-linux-arm64-musl@1.27.0:
     resolution: {integrity: sha512-rCGBm2ax7kQ9pBSeITfCW9XSVF69VX+fm5DIpvDZQl4NnQoMQyRwhZQm9pd59m8leZ1IesRqWk2v/DntMo26lg==}
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   lightningcss-linux-x64-gnu@1.27.0:
     resolution: {integrity: sha512-Dk/jovSI7qqhJDiUibvaikNKI2x6kWPN79AQiD/E/KeQWMjdGe9kw51RAgoWFDi0coP4jinaH14Nrt/J8z3U4A==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   lightningcss-linux-x64-musl@1.27.0:
     resolution: {integrity: sha512-QKjTxXm8A9s6v9Tg3Fk0gscCQA1t/HMoF7Woy1u68wCk5kS4fR+q3vXa1p3++REW784cRAtkYKrPy6JKibrEZA==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   lightningcss-win32-arm64-msvc@1.27.0:
     resolution: {integrity: sha512-/wXegPS1hnhkeG4OXQKEMQeJd48RDC3qdh+OA8pCuOPCyvnm/yEayrJdJVqzBsqpy1aJklRCVxscpFur80o6iQ==}
@@ -5792,7 +5810,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@credo-ts/didcomm-push-notifications@0.0.4-alpha-20261026124349(@credo-ts/core@0.7.4(patch_hash=81f9979af246191445ea21d1fd6fdf19558a7daa3d76e6926ca0c4949f17340b)(typescript@5.9.3))(@credo-ts/didcomm@0.7.4(patch_hash=0e72a8e222f2368bfce43b0ddb24e2fff36479131fb035a093e6b69e5dc5e14b)(typescript@5.9.3))':
+  '@credo-ts/didcomm-push-notifications@0.0.4-alpha-20261105172857(@credo-ts/core@0.7.4(patch_hash=81f9979af246191445ea21d1fd6fdf19558a7daa3d76e6926ca0c4949f17340b)(typescript@5.9.3))(@credo-ts/didcomm@0.7.4(patch_hash=0e72a8e222f2368bfce43b0ddb24e2fff36479131fb035a093e6b69e5dc5e14b)(typescript@5.9.3))':
     dependencies:
       '@credo-ts/core': 0.7.4(patch_hash=81f9979af246191445ea21d1fd6fdf19558a7daa3d76e6926ca0c4949f17340b)(typescript@5.9.3)
       '@credo-ts/didcomm': 0.7.4(patch_hash=0e72a8e222f2368bfce43b0ddb24e2fff36479131fb035a093e6b69e5dc5e14b)(typescript@5.9.3)
