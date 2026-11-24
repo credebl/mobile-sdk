@@ -4,7 +4,22 @@ OpenID4VC module of the CREDEBL Mobile SDK: receive credentials over OID4VCI, pr
 Digital Credentials API, and display SD-JWT VC, mdoc and W3C credentials.
 
 ```bash
-npm install @credebl/ssi-mobile-openid4vc
+npm install @credebl/ssi-mobile-core @credebl/ssi-mobile-openid4vc
+```
+
+This package requires React Native >= 0.76 and the core SDK setup in the [root README](../../README.md). It is built
+against Credo 0.7.4, so make sure your app resolves a single matching Credo version. Expo Go is not supported.
+
+Register the module when you initialize the core SDK:
+
+```ts
+import { OpenID4VCSDK } from '@credebl/ssi-mobile-openid4vc'
+
+const openid4vc = new OpenID4VCSDK({
+  notificationTimeoutMs: 5000, // default
+  // trustedCertificates / getTrustedCertificatesForVerification (X.509)
+})
+// MobileSDK.initializeSDK({ ..., modules: { openid4vc } })
 ```
 
 ## OID4VCI notifications
@@ -23,9 +38,11 @@ notification to the issuer's `notification_endpoint`
 context on each one: its `notification_id`, the access token of the issuance and the DPoP options. Pass that
 credential back to the SDK after the app stores it, fails to store it, or deletes it.
 
-The examples use the module registered with the core SDK:
+The examples below use the module registered with the core SDK. `resolvedCredentialOffer` and `accessToken` come from
+`resolveOpenId4VciOffer` and the token helpers; `credentials` comes from `receiveCredentialFromOpenId4VciOffer`.
 
 ```tsx
+import { useMobileSDK } from '@credebl/ssi-mobile-core'
 import { OpenID4VCSDK } from '@credebl/ssi-mobile-openid4vc'
 
 type AppModules = { openid4vc: OpenID4VCSDK }
@@ -46,13 +63,16 @@ const results = await openid4vc.storeOpenIdCredentialsAndNotify({ credentials })
 
 for (const result of results) {
   if (!result.stored) console.warn('Could not store credential', result.error)
+  // result: { credential, stored: true, notification } |
+  //         { credential, stored: false, error, notification }
   // result.notification: { status: 'sent', event } | { status: 'skipped', reason } | { status: 'failed', event, reason }
 }
 ```
 
 `storeOpenIdCredentialsAndNotify` stores the credentials one at a time, then sends `credential_accepted` for each
-stored credential and `credential_failure` for each one that could not be stored. It does not throw: check `stored`
-on each result.
+stored credential and `credential_failure` for each one that could not be stored. After initialization, store and
+notification failures are reported in the results instead of thrown: check `stored` and `error` on each result.
+Calling it before initialization throws `Agent not initialized`.
 
 ### Notify after storing yourself
 
@@ -70,15 +90,18 @@ for (const credential of credentials) {
 await openid4vc.sendCredentialNotification({ credential, event: 'credential_deleted' })
 ```
 
-Use `sendCredentialNotifications({ notifications: [{ credential, event }, ...] })` to send several in one call.
+Use `openid4vc.sendCredentialNotifications({ notifications: [{ credential, event }, ...] })` to send several in one call.
 
 ### Behaviour
 
 - **On by default.** Pass `sendNotification: false` to `receiveCredentialFromOpenId4VciOffer` to turn notifications
   off for those credentials.
-- **Never throws.** Each call returns a `CredentialNotificationResult`:
+- **Returns results instead of throwing for issuer failures.** `sendCredentialNotification` returns one
+  `CredentialNotificationResult`; `sendCredentialNotifications` returns one result per credential. These helpers still
+  throw `Agent not initialized` if the SDK has not been initialized:
   - `{ status: 'sent', event }`
-  - `{ status: 'skipped', reason }`: the issuer has no `notification_endpoint`, the credential has no
+  - `{ status: 'skipped', reason }`: the credential has no notification context from
+    `receiveCredentialFromOpenId4VciOffer`, the issuer has no `notification_endpoint`, the credential has no
     `notification_id`, notifications are turned off, or the access token has expired.
   - `{ status: 'failed', event, reason }`: the issuer rejected the notification or did not answer in time. The
     reason includes the issuer's HTTP status and error code, e.g. `HTTP 400 invalid_notification_id`.
@@ -87,14 +110,16 @@ Use `sendCredentialNotifications({ notifications: [{ credential, event }, ...] }
 - **Timeout.** Each notification waits at most `notificationTimeoutMs` (default 5000 ms, set in the
   `OpenID4VCSDK` configuration). After a timeout the remaining notifications of that call are skipped, because the
   timed-out request may still reach the issuer.
-- **Holder DID check.** When `holderDidUrl` is used with `bindingPolicy: 'require'` and the issued W3C credentials
-  do not name the holder DID, `credential_failure` is sent for each credential before the error is thrown.
+- **Holder DID check.** When `holderDidUrl` is used with the default `bindingPolicy: 'require'` (or any policy other
+  than `prefer`) and the issued W3C credentials do not name the holder DID, `credential_failure` is sent for each
+  credential before `HolderBindingMismatchError` is thrown.
 
 ### Access token lifetime
 
-Notifications are authorised with the access token of the issuance. Platform issuers issue tokens valid for
-3600 seconds by default, without a refresh token, so send notifications right after storing. The issuance session
-cannot be refreshed once it is completed, so a late notification cannot be retried successfully.
+Notifications are authorised with the issuance access token. The SDK only knows an expiry when the token response
+includes `expires_in`; many issuers use a short lifetime (for example 3600 seconds) and no refresh token, so send
+notifications immediately after storing. A late notification may be rejected with HTTP 401 and cannot be retried in
+the same issuance session.
 
 - When the token response includes `expires_in`, the SDK checks the expiry locally and returns `skipped` with a reason
   naming the event, for example `The access token of the issuance has expired before 'credential_deleted' could be
@@ -112,7 +137,7 @@ yet.
 
 The OID4VCI entry points (`resolveOpenId4VciOffer`, `acquirePreAuthorizedAccessToken`,
 `acquireAuthorizationCodeAccessToken` and `receiveCredentialFromOpenId4VciOffer`) translate known issuer and
-Credential failures into a `ReadableHolderError` with a message that can be shown to the wallet user.
+credential failures into a `ReadableHolderError` with a message that can be shown to the wallet user.
 
 ```tsx
 import { ReadableHolderError } from '@credebl/ssi-mobile-openid4vc'
@@ -122,7 +147,7 @@ try {
 } catch (error) {
   if (error instanceof ReadableHolderError) {
     // error.code        -> stable reason, e.g. 'TRANSACTION_CODE_REQUIRED'
-    // error.status      -> mirrors the platform error taxonomy (400, 404, 422, 502)
+    // error.status      -> stable numeric code (400, 404, 422, 502)
     // error.message     -> user-facing text, with the original text in brackets
     // error.originalMessage -> the raw Credo/issuer text, for diagnostics
     showError(error.message)
@@ -134,60 +159,69 @@ try {
 
 The mapped reasons are: a missing transaction code, an offer that was used/expired/withdrawn, unreadable issuer
 metadata, an untrusted X.509 root, mdoc validity/signing-date/country problems, and DID binding requested for an
-`mso_mdoc` credential. Unknown errors, biometric cancellations and non-`Error` values are rethrown unchanged.
+`mso_mdoc` credential. Unknown errors and non-`Error` values are rethrown unchanged by `readableHolderError` and
+`withReadableErrors`. `receiveCredentialFromOpenId4VciOffer` also maps recognised biometric cancellations to
+`BiometricAuthenticationCancelledError` or `BiometricAuthenticationNotEnabledError`.
 
-Use `readableHolderError(error)` to map an error received from elsewhere, or `withReadableErrors(() => ...)` to wrap
-any holder call. Both are exported from the package root.
+Use `readableHolderError(error)` to map an error received from elsewhere, or `withReadableErrors(async () => ...)` to
+wrap any async holder call. Both are exported from the package root.
 
 ## Decoding credentials
 
 Inspect a raw encoded credential before deciding whether to store it. Both helpers only parse the credential: they
-do **not** verify the signature, issuer, holder binding, status or validity dates.
+do **not** verify the signature, issuer, holder binding, status or validity dates. `compactJwt` is a compact SD-JWT VC
+string, `base64Url` is an `MdocRecord.credentialInstances[].issuerSignedBase64Url` value, and `showError` is your UI
+error handler.
 
 ```tsx
-import { CredentialDecodeError, decodeMdocCredential, decodeSdJwt } from '@credebl/ssi-mobile-openid4vc'
+import { CredentialDecodeError } from '@credebl/ssi-mobile-openid4vc'
 
 // Compact SD-JWT VC — needs an initialized Credo agent
-const sdJwt = sdk.decodeSdJwt({ jwt: compactJwt })
+const sdJwt = openid4vc.decodeSdJwt({ jwt: compactJwt })
 // or, when you already have the agent: decodeSdJwt(agent, compactJwt)
 
 // Base64url issuer-signed mdoc — no agent needed
-const mdoc = sdk.decodeMdocCredential({ base64Url })
+const mdoc = openid4vc.decodeMdocCredential({ base64Url })
 // mdoc = { namespace, docType, validityInfo, issuerSignedCertificateChain }
 
 try {
-  sdk.decodeMdocCredential({ base64Url: '' })
+  openid4vc.decodeMdocCredential({ base64Url: '' })
 } catch (error) {
   if (error instanceof CredentialDecodeError) showError(error.message)
 }
 ```
 
 `decodeSdJwt` returns Credo's `SdJwtVc` with the parsed header, payload and disclosures. `decodeMdocCredential` returns
-the mdoc namespaces, doc type, validity dates and issuer certificate chain — the same fields the platform holder
-service exposes. Empty input and malformed mdocs throw `CredentialDecodeError`; the underlying parser error is kept
-in the message for diagnostics.
+the mdoc namespaces, doc type, validity dates and issuer certificate chain. Empty input and malformed mdocs throw
+`CredentialDecodeError`; the underlying parser error is kept in the message for diagnostics. The standalone
+`decodeSdJwt(agent, jwt)` and `decodeMdocCredential(base64Url)` helpers are also exported from the package root; only
+the SD-JWT helper needs an initialized agent.
 
 ## Credential status (revocation and suspension)
 
 Check an SD-JWT VC against its status list on demand — for example when showing a stored credential to a user.
 
 ```tsx
-import { verifyCredentialStatus, verifyCredentialStatuses } from '@credebl/ssi-mobile-openid4vc'
-
 // From a stored SdJwtVcRecord, or directly from a compact SD-JWT VC string
-const result = await sdk.verifyCredentialStatus({ credential: record })
+const result = await openid4vc.verifyCredentialStatus({ credential: record })
 // { checked: true, status: 'revoked', verified: true, statusListUri, statusListIndex }
 
-const results = await sdk.verifyCredentialStatuses({ credentials: records })
+const results = await openid4vc.verifyCredentialStatuses({ credentials: records })
 ```
 
-`status` is one of `valid`, `revoked`, `suspended` or `unknown`. The result is fail-closed: if the status list cannot
-be fetched or decoded, `verified` is `false` and `error` explains why. Credentials with no status reference return
-`checked: false`. Batch checks run sequentially so a wallet does not fetch many status lists from one issuer at once.
+The standalone `verifyCredentialStatus(agent, { credential })` and `verifyCredentialStatuses(agent, { credentials })`
+helpers are also exported from the package root when you already have an initialized agent. `record`/`records` are
+`SdJwtVcRecord` instances or compact SD-JWT VC strings.
+
+`status` is one of `valid`, `revoked`, `suspended` or `unknown`. With no status reference the result is
+`{ checked: false, status: 'unknown', verified: true }`. A malformed credential is
+`{ checked: false, status: 'unknown', verified: false, error }`. A status list fetch or parse failure is
+`{ checked: true, status: 'unknown', verified: false, error }`, so a failed check is never treated as valid. Batch
+checks run sequentially so a wallet does not fetch many status lists from one issuer at once.
 
 The helper uses the agent's configured `fetch`, so it works in React Native without platform-specific networking
 code. It reads the status bit only — it does **not** re-verify the credential signature, the status list token
 signature, holder binding or validity dates. Use the agent's credential verification APIs for those checks.
 
-Only SD-JWT VC status lists are supported. Credo 0.7.4 does not verify W3C credential status lists or mdoc status, so
-those credential formats return `checked: false`.
+Only SD-JWT VC `status_list` references are supported by this helper. W3C credentials and mdocs passed to it return
+`checked: false`; use the appropriate credential verification APIs for those formats.

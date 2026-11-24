@@ -70,6 +70,7 @@ export function createConfig(walletId: string, walletKey: string): MobileSDKOpti
       id: walletId,
       key: walletKey,
     },
+    // `didcommModule` is the DidCommSDK instance created in step 1.
     modules: { didcomm: didcommModule },
   }
 }
@@ -118,6 +119,7 @@ type AppModules = { didcomm: DidCommSDK }
 
 function MyScreen() {
   const { sdk } = useMobileSDK<AppModules>()
+  if (!sdk) throw new Error('SDK not initialized')
   const didcomm = sdk.modules.didcomm
 
   // Access: didcomm.connections, didcomm.credentials, didcomm.proofs
@@ -184,8 +186,11 @@ const oobRecord = await didcomm.connections.acceptInvitation(invitation, { label
 Wait until a connection reaches the `Completed` state. Call this after accepting an invitation if you need to confirm the handshake finished.
 
 ```tsx
+const connectionId = oobRecord.connectionRecord?.id
+if (!connectionId) throw new Error('Invitation did not create a connection')
+
 const connection = await didcomm.connections.waitForConnectionToComplete(
-  oobRecord.connectionRecord?.id,
+  connectionId,
   30000 // 30 second timeout (optional)
 )
 ```
@@ -309,7 +314,8 @@ await didcomm.credentials.declineCredentialOffer({
 Update an existing credential exchange record (e.g. to store custom metadata).
 
 ```tsx
-await didcomm.credentials.updateCredentialExchangeRecord(credentialRecord)
+// `credentialExchangeRecord` is an existing DidCommCredentialExchangeRecord.
+await didcomm.credentials.updateCredentialExchangeRecord(credentialExchangeRecord)
 ```
 
 ---
@@ -332,7 +338,7 @@ Report a problem with a credential exchange back to the issuer.
 
 ```tsx
 await didcomm.credentials.sendCredentialProblemReport({
-  credentialRecordId: 'exchange-record-id',
+  credentialExchangeRecordId: 'exchange-record-id',
   description: 'The credential data is incorrect',
 })
 ```
@@ -346,6 +352,7 @@ Initiate a credential exchange by proposing a credential to a connected issuer.
 ```tsx
 await didcomm.credentials.proposeCredential({
   connectionId: 'connection-id',
+  protocolVersion: 'v2',
   credentialFormats: {
     anoncreds: {
       credentialDefinitionId: 'cred-def-id',
@@ -367,7 +374,7 @@ Get all credentials in the wallet that can satisfy a given proof request.
 
 ```tsx
 const credentials = await didcomm.proofs.getCredentialsForProofRequest({
-  proofRecordId: 'proof-record-id',
+  proofExchangeRecordId: 'proof-record-id',
 })
 ```
 
@@ -379,7 +386,7 @@ Automatically select the best matching credentials for a proof request.
 
 ```tsx
 const selected = await didcomm.proofs.selectCredentialsForProofRequest({
-  proofRecordId: 'proof-record-id',
+  proofExchangeRecordId: 'proof-record-id',
 })
 ```
 
@@ -391,8 +398,8 @@ Accept and respond to a proof request using the selected credentials.
 
 ```tsx
 await didcomm.proofs.acceptProofRequest({
-  proofRecordId: 'proof-record-id',
-  proofFormats: selected,
+  proofExchangeRecordId: 'proof-record-id',
+  proofFormats: selected.proofFormats,
 })
 ```
 
@@ -404,7 +411,7 @@ Decline a proof request.
 
 ```tsx
 await didcomm.proofs.declineProofRequest({
-  proofRecordId: 'proof-record-id',
+  proofExchangeRecordId: 'proof-record-id',
 })
 ```
 
@@ -437,7 +444,7 @@ Report a problem with a proof exchange.
 
 ```tsx
 await didcomm.proofs.sendProofProblemReport({
-  proofRecordId: 'proof-record-id',
+  proofExchangeRecordId: 'proof-record-id',
   description: 'Unable to satisfy the proof request',
 })
 ```

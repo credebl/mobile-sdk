@@ -122,21 +122,40 @@ const { sdk } = useMobileSDK<AppModules>()
 
 #### `MobileSDK.AppProvider`
 
-Provides the underlying `Agent` to credential and record hooks. Wrap the parts of your app that use credential hooks with this.
+Provides the underlying `Agent` context and throws if the SDK is not initialized. It does **not** mount the
+credential or generic-record providers itself. Mount those separately above the components that use record hooks.
 
 ```tsx
-import { MobileSDK } from '@credebl/ssi-mobile-core'
+import type { ReactNode } from 'react'
+import {
+  CredentialsProvider,
+  GenericRecordProvider,
+  MobileSDK,
+  MobileSDKProvider,
+  useAgent,
+} from '@credebl/ssi-mobile-core'
+
+function RecordProviders({ children }: { children: ReactNode }) {
+  const { agent } = useAgent()
+  return (
+    <CredentialsProvider agent={agent}>
+      <GenericRecordProvider agent={agent}>{children}</GenericRecordProvider>
+    </CredentialsProvider>
+  )
+}
 
 function App() {
   return (
     <MobileSDKProvider>
       <MobileSDK.AppProvider>
-        {/* hooks like useW3cCredentialRecords() work here */}
+        <RecordProviders>{/* record hooks work here */}</RecordProviders>
       </MobileSDK.AppProvider>
     </MobileSDKProvider>
   )
 }
 ```
+
+`useAgent()` returns `{ agent }` and must be used inside `MobileSDK.AppProvider`.
 
 ---
 
@@ -153,9 +172,9 @@ Create a new DID and store it in the wallet.
 const didRecord = await sdk.createDid({ method: 'key' })
 
 // Create a did:jwk with a specific key type
-const didRecord = await sdk.createDid({
+const jwkDid = await sdk.createDid({
   method: 'jwk',
-  options: { keyType: 'Ed25519' },
+  options: { createKey: { type: { kty: 'OKP', crv: 'Ed25519' } } },
 })
 ```
 
@@ -167,13 +186,13 @@ Retrieve DIDs that were created by this wallet.
 
 ```tsx
 // Get all DIDs
-const dids = await sdk.getDids({})
+const allDids = await sdk.getDids({})
 
 // Filter by method
 const keyDids = await sdk.getDids({ method: 'key' })
 
 // Look up a specific DID
-const dids = await sdk.getDids({ did: 'did:key:z6Mk...' })
+const specificDid = await sdk.getDids({ did: 'did:key:z6Mk...' })
 ```
 
 ---
@@ -223,13 +242,13 @@ await sdk.deleteCredential({
 
 ---
 
-#### `sdk.storeOpenIdCredential(credential)`
+#### `sdk.storeOpenIdCredential(credential: W3cCredentialRecord | SdJwtVcRecord | MdocRecord)`
 
 Manually store a credential record received via OpenID4VC.
 
 ```tsx
 // credential is a W3cCredentialRecord, SdJwtVcRecord, or MdocRecord
-await sdk.storeOpenIdCredential(credentialRecord)
+await sdk.storeOpenIdCredential(credential)
 ```
 
 ---
@@ -290,7 +309,7 @@ const result = await sdk.getCredentials({
 
 result.data // serialized credential records
 result.pagination // { page, pageSize, total, totalPages, hasNextPage, hasPreviousPage }
-result.filters // normalized filters echoed back for display
+result.filters // echoed filters; q is trimmed, other values are copied as supplied
 
 try {
   await sdk.getCredentials({ query: { pageSize: 1000 } })
@@ -299,9 +318,10 @@ try {
 }
 ```
 
-Tag filters use the platform credential list names (`credentialType`, `vct`, `docType`, `types`, `issuer`, `name`,
-`reference`) plus a `tags` object for custom tags. `q` searches `credentialType`, `vct`, `docType`, `types`, `name`,
-`reference` and `issuer` by default; pass `searchableTags` to override that list. Empty and non-string tag values are
+Tag filters use the credential list field names (`credentialType`, `vct`, `docType`, `types`, `issuer`, `name`,
+`reference`) plus a `tags` object for custom tags. `q` searches the configured tags (`credentialType`, `vct`,
+`docType`, `types`, `name`, `reference`, `issuer` by default; override with `searchableTags`) and also falls back to
+`id`, `name`, `reference`, `issuerId`, `issuer` and `JSON.stringify(credential)`. Empty and non-string tag values are
 dropped before a tag query is written. The helpers behind this method (`buildCredentialTagQuery`,
 `filterCredentialRecords`, `normalizeCredentialPagination`, `sanitizeCredentialTags`, `matchesCredentialSearch`,
 `normalizeCredentialFilterValue`) are exported for apps that fetch records themselves.
@@ -367,7 +387,7 @@ Export the wallet to a different storage location (useful for backup).
 await sdk.exportWallet({
   id: 'backup-wallet-id',
   key: 'backup-wallet-key',
-  path: '/path/to/backup/file',
+  database: { type: 'sqlite', config: { path: '/path/to/backup/file' } },
 })
 ```
 
@@ -432,7 +452,7 @@ console.log(keyPair.keyId)
 Sign data with a key from the wallet.
 
 ```tsx
-const signature = await sdk.signData({
+const { signature } = await sdk.signData({
   keyId: keyPair.keyId,
   algorithm: 'EdDSA',
   data: new Uint8Array([1, 2, 3]),
@@ -446,12 +466,17 @@ const signature = await sdk.signData({
 Verify that a signature was produced by a given key.
 
 ```tsx
-const isValid = await sdk.verifyData({
+const verification = await sdk.verifyData({
   key: { keyId: keyPair.keyId },
   algorithm: 'EdDSA',
   data: new Uint8Array([1, 2, 3]),
   signature,
 })
+
+const isValid = verification.verified
+if (verification.verified) {
+  console.log(verification.publicJwk)
+}
 ```
 
 ---
@@ -474,7 +499,8 @@ const jws = await sdk.createJwsCompact({
 
 These hooks give real-time reactive access to credentials stored in the wallet. They update automatically when credentials are added, updated, or deleted.
 
-> Must be used inside `MobileSDK.AppProvider`.
+> In addition to `MobileSDK.AppProvider`, these hooks require the matching record provider above them in the tree
+> (for example `CredentialsProvider` or `GenericRecordProvider`).
 
 #### `useW3cCredentialRecords()`
 
@@ -579,7 +605,11 @@ import { isWalletImportable } from '@credebl/ssi-mobile-core'
 
 const canImport = await isWalletImportable(
   { id: 'new-wallet', key: 'new-wallet-key' },
-  { id: 'backup-wallet', key: 'backup-key', path: '/path/to/backup' }
+  {
+    id: 'backup-wallet',
+    key: 'backup-key',
+    database: { type: 'sqlite', config: { path: '/path/to/backup' } },
+  }
 )
 ```
 
@@ -594,6 +624,10 @@ import { importWalletToStore } from '@credebl/ssi-mobile-core'
 
 await importWalletToStore(
   { id: 'new-wallet', key: 'new-wallet-key' },
-  { id: 'backup-wallet', key: 'backup-key', path: '/path/to/backup' }
+  {
+    id: 'backup-wallet',
+    key: 'backup-key',
+    database: { type: 'sqlite', config: { path: '/path/to/backup' } },
+  }
 )
 ```
