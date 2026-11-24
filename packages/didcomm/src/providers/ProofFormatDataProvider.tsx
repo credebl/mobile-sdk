@@ -1,4 +1,4 @@
-import { recordsAddedByType, recordsRemovedByType, recordsUpdatedByType } from '@credebl/core'
+import { recordsAddedByType, recordsRemovedByType, recordsUpdatedByType } from '@credebl/ssi-mobile-core'
 import type { Agent } from '@credo-ts/core'
 import { DidCommProofExchangeRecord } from '@credo-ts/didcomm'
 import type { PropsWithChildren } from 'react'

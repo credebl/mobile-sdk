@@ -155,7 +155,7 @@ async function sendOne({
   }
   if (!context.notificationId) return skipped('Credential response has no notification_id')
   if (context.accessTokenExpiresAt !== undefined && now() >= context.accessTokenExpiresAt) {
-    return skipped('The access token of the issuance has expired')
+    return skipped(`The access token of the issuance has expired before '${event}' could be sent to the issuer`)
   }
 
   try {
@@ -196,7 +196,11 @@ function notificationErrorReason(error: unknown) {
   const status = response?.response?.status
   const code = response?.notificationErrorResponseResult?.data?.error
   const detail = [status && `HTTP ${status}`, code].filter(Boolean).join(' ')
-  return detail ? `${message}: ${detail}` : message
+  // The issuer rejects notifications with 401 once the short-lived issuance access token is gone.
+  // Say so explicitly: a wallet cannot retry this later, because the session cannot be refreshed.
+  const hint =
+    status === 401 ? '. The issuance access token is no longer accepted; this notification cannot be retried.' : ''
+  return detail ? `${message}: ${detail}${hint}` : `${message}${hint}`
 }
 
 async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {

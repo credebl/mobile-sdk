@@ -265,6 +265,49 @@ const sdJwtCreds = await sdk.getCredentialsByTag({
 
 ---
 
+#### `sdk.getCredentials({ query?, format?, searchableTags? })`
+
+List stored credentials with tag filters, free-text search and pagination. Without a `query` it returns a plain
+array of records. With any query field set it returns a `{ data, pagination, filters? }` envelope.
+
+```tsx
+import { InvalidCredentialListQueryError } from '@credebl/ssi-mobile-core'
+
+// No query: plain array
+const all = await sdk.getCredentials()
+
+// Filters and pagination: paginated envelope
+const result = await sdk.getCredentials({
+  query: {
+    q: 'passport', // free-text search over tags and common record fields
+    credentialType: 'IdentityCredential',
+    vct: ['https://example.com/type-a', 'https://example.com/type-b'], // commas also accepted
+    page: 1,
+    pageSize: 20, // 1-100, defaults to 20
+  },
+  format: CredentialRecord.SdJwt, // omit to search all formats
+})
+
+result.data // serialized credential records
+result.pagination // { page, pageSize, total, totalPages, hasNextPage, hasPreviousPage }
+result.filters // normalized filters echoed back for display
+
+try {
+  await sdk.getCredentials({ query: { pageSize: 1000 } })
+} catch (error) {
+  if (error instanceof InvalidCredentialListQueryError) showError(error.message)
+}
+```
+
+Tag filters use the platform credential list names (`credentialType`, `vct`, `docType`, `types`, `issuer`, `name`,
+`reference`) plus a `tags` object for custom tags. `q` searches `credentialType`, `vct`, `docType`, `types`, `name`,
+`reference` and `issuer` by default; pass `searchableTags` to override that list. Empty and non-string tag values are
+dropped before a tag query is written. The helpers behind this method (`buildCredentialTagQuery`,
+`filterCredentialRecords`, `normalizeCredentialPagination`, `sanitizeCredentialTags`, `matchesCredentialSearch`,
+`normalizeCredentialFilterValue`) are exported for apps that fetch records themselves.
+
+---
+
 ### Generic Records
 
 Use generic records to store arbitrary structured data in the wallet (e.g. app settings, user preferences, custom metadata).

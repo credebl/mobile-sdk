@@ -25,7 +25,7 @@
   },
   "scripts": {
     "build": "tsdown --config-loader unconfig",
-    "test": "pnpm build && node --test test/keyManagement.test.mjs",
+    "test": "pnpm build && node --test test/keyManagement.test.mjs test/credentialList.test.mjs",
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
