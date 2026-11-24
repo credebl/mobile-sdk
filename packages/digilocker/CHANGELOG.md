@@ -1,5 +1,21 @@
 # @credebl/digilocker-mobile
 
+## 1.1.1
+
+### Patch Changes
+
+- c807af4: Correct the package READMEs.
+  
+  - Fix examples that used invalid options, wrong return shapes, or undefined variables.
+  - Document the provider setup needed by credential hooks, module registration, notification and status result semantics, and DigiLocker installation and React Native constraints.
+- e34939d: Fix package imports and expose documented public APIs.
+  
+  - DIDComm providers now import record helpers from `@credebl/ssi-mobile-core` instead of the undeclared `@credebl/core` alias.
+  - Export the standalone DIDComm module APIs (`ConnectionsApi`, `CredentialsApi`, `ProofsApi`, `BasicMessagesApi`, `QuestionAnswerApi`, `MediationRecipientApi`) from the package root.
+  - Export `AgentProvider` as a named export from `@credebl/ssi-mobile-core`.
+  - Export metadata helpers, holder-binding helpers and biometric error classes from `@credebl/ssi-mobile-openid4vc`.
+  - Export the DigiLocker data interfaces and correct the package name/version in the README and release notes.
+
 ## 1.1.0
 
 ### Minor Changes

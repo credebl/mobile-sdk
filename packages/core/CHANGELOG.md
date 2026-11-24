@@ -1,5 +1,49 @@
 # @credebl/ssi-mobile-core
 
+## 2.3.0
+
+### Minor Changes
+
+- e34939d: Add filtered and paginated credential listing.
+  
+  `MobileSDK.getCredentials({ query?, format?, searchableTags? })` lists stored credentials using platform-style tag
+  filters (`credentialType`, `vct`, `docType`, `types`, `issuer`, `name`, `reference`), a custom `tags` object and
+  free-text search. With no query fields it returns a plain array; with any query field it returns a
+  `{ data, pagination, filters? }` envelope. Invalid pagination throws `InvalidCredentialListQueryError`.
+  
+  The underlying helpers (`buildCredentialTagQuery`, `filterCredentialRecords`, `normalizeCredentialPagination`,
+  `sanitizeCredentialTags`, `matchesCredentialSearch`, `normalizeCredentialFilterValue`) and their types are exported
+  for apps that fetch records themselves.
+- 7b386c2: Align the mobile SDK with CREDEBL Platform v2.3.0 and agent-controller v2.3.3.
+  
+  - Upgrade the Credo stack from 0.7.0 to 0.7.4 and `@owf/mdoc` from 0.6 to 0.8.3.
+  - Add wallet-side `ldp_vc` support for OID4VCI issuance, DCQL selection, and OID4VP presentation.
+  - Use the stored W3C credential claim format (`JwtVc` or `LdpVc`) when selecting credentials for DCQL.
+  - Show `ldp_vc` placeholders for unsatisfied DCQL queries.
+  - Bind credentials to an existing holder DID with `holderDidUrl` and `bindingPolicy` on `receiveCredentialFromOpenId4VciOffer`, including issuer capability checks and W3C subject verification.
+  - Carry the Credo 0.7.4 patches used by agent-controller 2.3.2 for `ldp_vc` record lookup, signature-suite selection, JWA proof algorithms, optional W3C `id`/`expirationDate`, JSON-LD signing, and DIDComm forward messages.
+  - Adapt mdoc disclosure limiting to the `@owf/mdoc` 0.8 API.
+
+### Patch Changes
+
+- c807af4: Correct the package READMEs.
+  
+  - Fix examples that used invalid options, wrong return shapes, or undefined variables.
+  - Document the provider setup needed by credential hooks, module registration, notification and status result semantics, and DigiLocker installation and React Native constraints.
+- e34939d: Fix package imports and expose documented public APIs.
+  
+  - DIDComm providers now import record helpers from `@credebl/ssi-mobile-core` instead of the undeclared `@credebl/core` alias.
+  - Export the standalone DIDComm module APIs (`ConnectionsApi`, `CredentialsApi`, `ProofsApi`, `BasicMessagesApi`, `QuestionAnswerApi`, `MediationRecipientApi`) from the package root.
+  - Export `AgentProvider` as a named export from `@credebl/ssi-mobile-core`.
+  - Export metadata helpers, holder-binding helpers and biometric error classes from `@credebl/ssi-mobile-openid4vc`.
+  - Export the DigiLocker data interfaces and correct the package name/version in the README and release notes.
+- 4abf721: Upgrade the transitive `@stablelib/ed25519` dependency to 2.1.1 to fix signature malleability.
+  
+  Credo 0.7.4 allows `@stablelib/ed25519` 2.0.2, whose verifier accepts a second signature `(R, S + L)` for any valid
+  signature `(R, S)`. That can break code that treats signature bytes as a unique identifier. A workspace override now
+  forces the patched 2.1.1 release, and a regression test verifies that a malleable signature is rejected by the copy
+  of the library that Credo resolves. No public API changes.
+
 ## 2.2.1
 
 ### Patch Changes
