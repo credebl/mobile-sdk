@@ -33,6 +33,8 @@ onlyBuiltDependencies:
 
 overrides:
   '@isaacs/brace-expansion': 5.0.1
+  # GHSA-x3ff-w252-2g7j: 2.0.2 accepts malleable Ed25519 signatures (S >= L)
+  '@stablelib/ed25519': 2.1.1
   ajv: 8.20.0
   body-parser: 2.3.0
   'brace-expansion@<2': 1.1.18
