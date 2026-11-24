@@ -10,7 +10,7 @@ Previous stable release: v2.2.1.
 | `@credebl/ssi-mobile-core` | 2.3.0 |
 | `@credebl/ssi-mobile-didcomm` | 2.3.0 |
 | `@credebl/ssi-mobile-openid4vc` | 2.3.0 |
-| `@credebl/digilocker-mobile` | 1.1.0 (unchanged) |
+| `@credebl/digilocker-mobile` | 1.1.1 (patch: package imports and README fixes only) |
 | Credo stack | 0.7.4 |
 | `@owf/mdoc` | 0.8.3 |
 | `@openwallet-foundation/askar-react-native` | 0.6.0 |
@@ -39,6 +39,21 @@ Previous stable release: v2.2.1.
 - mdoc: adapt disclosure limiting and attribute mapping to the `@owf/mdoc` 0.8 API.
 - DIDComm: include the original message type on forward messages for mediator compatibility.
 
+## New holder APIs
+
+- Core: `MobileSDK.getCredentials({ query?, format?, searchableTags? })` lists stored credentials with platform-style tag filters, free-text search and pagination. With no query fields it returns a plain array; with any query field it returns a `{ data, pagination, filters? }` envelope. Invalid pagination throws `InvalidCredentialListQueryError`.
+- OpenID4VC: `verifyCredentialStatus` and `verifyCredentialStatuses` (also on `OpenID4VCSDK`) check an SD-JWT VC status list on demand and report `valid`, `revoked` or `suspended`. They fail closed when the list cannot be fetched or decoded.
+- OpenID4VC: `decodeSdJwt` and `decodeMdocCredential` parse a compact SD-JWT VC and a base64url issuer-signed mdoc without storing or verifying them. Malformed input throws `CredentialDecodeError`.
+- OpenID4VC: `resolveOpenId4VciOffer` accepts `credentialConfigurationIdsToRequest`, so the authorization request carries only the scopes of the selected credentials. `getScopesForCredentialConfigurationIds` throws `UnknownCredentialConfigurationIdError` for ids the issuer did not offer. Omitting the list keeps the previous behaviour.
+- OpenID4VC: known issuer and Credo failures from the OID4VCI holder calls surface as `ReadableHolderError` with a stable `code`, a platform-compatible `status` and a user-facing message. `readableHolderError` and `withReadableErrors` are exported for app-level mapping.
+- Notifications skipped because the issuance token expired now name the dropped event, and an issuer `HTTP 401` explains that the notification cannot be retried.
+- Public API fixes: DIDComm providers import record helpers from `@credebl/ssi-mobile-core`; the standalone DIDComm module APIs, `AgentProvider`, metadata and holder-binding helpers, biometric error classes and the DigiLocker data interfaces are now exported.
+
+## Security
+
+- The transitive `@stablelib/ed25519` is forced to 2.1.1. Credo 0.7.4 allows 2.0.2, whose verifier accepts a second signature `(R, S + L)` for any valid `(R, S)`. A regression test checks that the malleable signature is rejected.
+- Package READMEs were corrected (invalid options, return shapes, provider setup, DigiLocker and React Native constraints).
+
 ## Patched dependencies
 
 The release carries build-output patches from agent-controller v2.3.2 so that stock Credo 0.7.4 behaves the same in the wallet:
@@ -55,7 +70,7 @@ Patches live in `patches/` and are registered under `patchedDependencies` in `pn
 
 ## Upgrade notes
 
-- Update all `@credebl/ssi-mobile-*` packages together. The core, DIDComm, and OpenID4VC packages were released as a fixed minor version.
+- Update all `@credebl/ssi-mobile-*` packages together. The core, DIDComm, and OpenID4VC packages were released as a minor version (2.3.0). `@credebl/digilocker-mobile` is a separate package and moved to 1.1.1 (patch).
 - Run `pnpm install` with the committed lockfile. `pnpm-lock.yaml` pins the patched Credo builds.
 - Install `@openwallet-foundation/askar-react-native` 0.6.0 and `@hyperledger/anoncreds-react-native` 0.4.0 in the app. Newer bindings (askar 0.7, anoncreds 0.5) are outside the peer ranges of Credo 0.7.4 and are not supported in this release.
 - Native mdoc handling now uses `@owf/mdoc` 0.8. Rebuild the iOS/Android app rather than reusing a Metro cache or an old native bundle.
