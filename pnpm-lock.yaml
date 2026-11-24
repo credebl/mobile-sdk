@@ -69,6 +69,7 @@ catalogs:
 
 overrides:
   '@isaacs/brace-expansion': 5.0.1
+  '@stablelib/ed25519': 2.1.1
   ajv: 8.20.0
   body-parser: 2.3.0
   brace-expansion@<2: 1.1.18
@@ -1826,8 +1827,8 @@ packages:
   '@stablelib/binary@2.0.1':
     resolution: {integrity: sha512-U9iAO8lXgEDONsA0zPPSgcf3HUBNAqHiJmSHgZz62OvC3Hi2Bhc5kTnQ3S1/L+sthDTHtCMhcEiklmIly6uQ3w==}
 
-  '@stablelib/ed25519@2.0.2':
-    resolution: {integrity: sha512-d/lJ5sgzhtmpMIbKFWfev+i6WebBdIzzBpMzXtZdvUijoksjXosYFNqytoMj7cRshNj+/XTLYnnVMdZfd+penw==}
+  '@stablelib/ed25519@2.1.1':
+    resolution: {integrity: sha512-A4VE8ylbvQANsl0M2HaS5LD7il0orXuqRzkky3lijJ+efcU9b+GrllOzQt/sxsJZz7IbeRzh4DSzEs9FtNSX2g==}
 
   '@stablelib/hash@2.0.0':
     resolution: {integrity: sha512-u3WPSqGido8lwJuMcrBgM5K54LrPGhkWAdtsyccf7dGsLixAZUds77zOAbu7bvKPwQlmoByH0txBi5rTmEKuHg==}
@@ -1838,8 +1839,8 @@ packages:
   '@stablelib/random@2.0.1':
     resolution: {integrity: sha512-W6GAtXEEs7r+dSbuBsvoFmlyL3gLxle41tQkjKu17dDWtDdjhVUbtRfRCQcCUeczwkgjQxMPopgwYEvxXtHXGw==}
 
-  '@stablelib/sha512@2.0.1':
-    resolution: {integrity: sha512-DUNe5cbnoH3sSIN+MG04RvTCLXtkbyy/SnQxiNO+GgF/KSXkkUSlF6mUVvCUdZBZ2X3NgogR+tAvaRSn8wxnLw==}
+  '@stablelib/sha512@2.0.2':
+    resolution: {integrity: sha512-GXsvhU3Q0EA+aXEy1f/misPZVOrgJQeKBaI9x7sp9ipjyv1zZpRrjh1hmHnfzsqFKI01SF3Ojh6JBdxbQYHc+A==}
 
   '@stablelib/wipe@2.0.1':
     resolution: {integrity: sha512-1eU2K9EgOcV4qc9jcP6G72xxZxEm5PfeI5H55l08W95b4oRJaqhmlWRc4xZAm6IVSKhVNxMi66V67hCzzuMTAg==}
@@ -5766,7 +5767,7 @@ snapshots:
       '@sd-jwt/sd-jwt-vc': 0.21.1
       '@sphereon/pex-models': 2.3.2
       '@sphereon/ssi-types': 0.33.0
-      '@stablelib/ed25519': 2.0.2
+      '@stablelib/ed25519': 2.1.1
       '@types/events': 3.0.3
       '@types/ws': 8.18.1
       '@verifiables/request-converter': 0.2.0(dcql@3.0.1(typescript@5.9.3))
@@ -7157,10 +7158,10 @@ snapshots:
     dependencies:
       '@stablelib/int': 2.0.1
 
-  '@stablelib/ed25519@2.0.2':
+  '@stablelib/ed25519@2.1.1':
     dependencies:
       '@stablelib/random': 2.0.1
-      '@stablelib/sha512': 2.0.1
+      '@stablelib/sha512': 2.0.2
       '@stablelib/wipe': 2.0.1
 
   '@stablelib/hash@2.0.0': {}
@@ -7172,7 +7173,7 @@ snapshots:
       '@stablelib/binary': 2.0.1
       '@stablelib/wipe': 2.0.1
 
-  '@stablelib/sha512@2.0.1':
+  '@stablelib/sha512@2.0.2':
     dependencies:
       '@stablelib/binary': 2.0.1
       '@stablelib/hash': 2.0.0
