@@ -1,6 +1,6 @@
 # CREDEBL Mobile SDK v2.3.0
 
-Released alongside CREDEBL Platform v2.3.0 and aligned with agent-controller v2.3.2.
+Released alongside CREDEBL Platform v2.3.0 and aligned with agent-controller v2.3.3.
 Previous stable release: v2.2.1.
 
 ## Compatibility
@@ -17,7 +17,7 @@ Previous stable release: v2.2.1.
 | `@hyperledger/anoncreds-react-native` | 0.4.0 |
 | `@animo-id/expo-digital-credentials-api` | 0.4.x |
 | CREDEBL Platform | 2.3.0 |
-| agent-controller | 2.3.2 (minimum 2.3.0) |
+| agent-controller | 2.3.3 (minimum 2.3.0) |
 | React Native | >= 0.76 |
 
 ## Dependency updates

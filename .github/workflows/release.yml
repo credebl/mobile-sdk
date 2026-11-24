@@ -59,6 +59,8 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ env.CURRENT_PACKAGE_VERSION }}
+          # Release candidates (e.g. 2.3.0-rc.0) are marked as GitHub pre-releases
+          prerelease: ${{ contains(env.CURRENT_PACKAGE_VERSION, '-') }}
 
   release-unstable:
     name: Release Unstable
