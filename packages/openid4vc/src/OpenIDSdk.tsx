@@ -75,6 +75,7 @@ import {
   formatDifPexCredentialsForRequest,
   type GetCredentialsForProofRequestOptions,
 } from './resolverProof'
+import { type StatusCheckCredential, verifyCredentialStatus, verifyCredentialStatuses } from './status'
 import {
   applySelectedCredentialFilter,
   ensureSingleCredentialRequest,
@@ -192,6 +193,21 @@ export class OpenID4VCSDK implements MobileSDKModule {
    */
   public decodeMdocCredential({ base64Url }: { base64Url: string }): DecodedMdocCredential {
     return decodeMdocCredential(base64Url)
+  }
+
+  /**
+   * Read the revocation/suspension status of a stored SD-JWT VC or a compact SD-JWT VC.
+   *
+   * The status list is fetched with the agent's configured fetch. The result is fail-closed: a fetch or parse problem
+   * returns `verified: false` with the reason in `error`.
+   */
+  public async verifyCredentialStatus({ credential }: { credential: StatusCheckCredential }) {
+    return verifyCredentialStatus(this.assertAndGetAgent(), { credential })
+  }
+
+  /** Read the status of several SD-JWT VCs sequentially, returning one result per credential in input order. */
+  public async verifyCredentialStatuses({ credentials }: { credentials: StatusCheckCredential[] }) {
+    return verifyCredentialStatuses(this.assertAndGetAgent(), { credentials })
   }
 
   public async resolveOpenId4VciOffer({

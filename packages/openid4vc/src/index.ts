@@ -30,6 +30,7 @@ export {
 } from './notifications'
 export * from './OpenIDSdk'
 export * from './providers'
+export * from './status'
 export * from './utils'
 export * from './utils/error'
 export {
