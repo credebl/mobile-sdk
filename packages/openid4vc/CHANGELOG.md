@@ -1,5 +1,83 @@
 # @credebl/ssi-mobile-openid4vc
 
+## 2.3.0
+
+### Minor Changes
+
+- 6e3ae21: Add on-demand SD-JWT VC credential status verification.
+  
+  `verifyCredentialStatus(agent, { credential })` reads a credential's status list and reports `valid`, `revoked` or
+  `suspended`, with a fail-closed result when the list cannot be fetched or decoded. `verifyCredentialStatuses` checks
+  several credentials sequentially in input order. Both are available as `OpenID4VCSDK.verifyCredentialStatus` and
+  `OpenID4VCSDK.verifyCredentialStatuses`, accept a stored `SdJwtVcRecord` or a compact SD-JWT VC, and use the agent's
+  configured `fetch`. The `@owf/token-status-list` decoder Credo already depends on is now a direct dependency.
+- c09196b: Add holder-side credential decode helpers.
+  
+  `decodeSdJwt(agent, jwt)` and `decodeMdocCredential(base64Url)` parse a compact SD-JWT VC and a base64url issuer-signed
+  mdoc respectively, without storing or verifying them. `OpenID4VCSDK.decodeSdJwt({ jwt })` and
+  `OpenID4VCSDK.decodeMdocCredential({ base64Url })` provide the same helpers for apps that use the SDK instance.
+  Empty input and malformed mdocs throw the exported `CredentialDecodeError`.
+- a1d0ec2: Send OID4VCI wallet notifications (OpenID4VCI 1.0 §11) to the issuer's `notification_endpoint`.
+  
+  - `receiveCredentialFromOpenId4VciOffer` keeps a `notification` context (notification id, access token, DPoP) on each returned credential. Notifications are on by default; pass `sendNotification: false` to turn them off.
+  - New `sendCredentialNotification({ credential, event })` and `sendCredentialNotifications({ notifications })` send `credential_accepted`, `credential_failure` or `credential_deleted` after the app stores, fails to store, or deletes a credential.
+  - New `storeOpenIdCredentialsAndNotify({ credentials })` stores the received credentials and sends `credential_accepted` or `credential_failure` for each of them.
+  - Notifications go out one at a time with a timeout (`notificationTimeoutMs`, default 5000 ms). After a timeout, the rest of that batch is skipped. A notification that is not sent is returned as `skipped` or `failed` (with the issuer's HTTP status and error code) and never throws.
+  - When the `holderDidUrl` subject check fails, `credential_failure` is sent for each credential before the error is thrown.
+- e34939d: Add readable OID4VCI holder errors.
+  
+  `resolveOpenId4VciOffer`, both access-token methods and `receiveCredentialFromOpenId4VciOffer` now translate known
+  issuer and Credo failures into a `ReadableHolderError` with a stable `code`, a platform-compatible `status`, a
+  user-facing message and the original technical text. `readableHolderError` and `withReadableErrors` are exported for
+  apps that need to map errors from their own holder calls. Unknown errors and biometric cancellations pass through
+  unchanged.
+- 7b386c2: Align the mobile SDK with CREDEBL Platform v2.3.0 and agent-controller v2.3.3.
+  
+  - Upgrade the Credo stack from 0.7.0 to 0.7.4 and `@owf/mdoc` from 0.6 to 0.8.3.
+  - Add wallet-side `ldp_vc` support for OID4VCI issuance, DCQL selection, and OID4VP presentation.
+  - Use the stored W3C credential claim format (`JwtVc` or `LdpVc`) when selecting credentials for DCQL.
+  - Show `ldp_vc` placeholders for unsatisfied DCQL queries.
+  - Bind credentials to an existing holder DID with `holderDidUrl` and `bindingPolicy` on `receiveCredentialFromOpenId4VciOffer`, including issuer capability checks and W3C subject verification.
+  - Carry the Credo 0.7.4 patches used by agent-controller 2.3.2 for `ldp_vc` record lookup, signature-suite selection, JWA proof algorithms, optional W3C `id`/`expirationDate`, JSON-LD signing, and DIDComm forward messages.
+  - Adapt mdoc disclosure limiting to the `@owf/mdoc` 0.8 API.
+- 445e15e: Add credential-aware OID4VCI authorization scopes.
+  
+  `resolveOpenId4VciOffer` now accepts an optional `credentialConfigurationIdsToRequest` list. When supplied, the
+  authorization request carries only the scopes of the selected credential configurations instead of every configuration
+  the issuer offered. The exported `getScopesForCredentialConfigurationIds` helper implements the filtering and throws
+  `UnknownCredentialConfigurationIdError` for IDs that are not offered. Omitting the list preserves existing behaviour.
+
+### Patch Changes
+
+- e34939d: Improve OID4VCI notification diagnostics for post-expiry failures.
+  
+  A notification skipped because the issuance access token expired now names the event that was dropped. An issuer
+  `HTTP 401` response now explains that the token is no longer accepted and that the notification cannot be retried,
+  instead of surfacing a bare status. Documentation covers the case where the issuer omits `expires_in`.
+- c807af4: Correct the package READMEs.
+  
+  - Fix examples that used invalid options, wrong return shapes, or undefined variables.
+  - Document the provider setup needed by credential hooks, module registration, notification and status result semantics, and DigiLocker installation and React Native constraints.
+- e34939d: Fix package imports and expose documented public APIs.
+  
+  - DIDComm providers now import record helpers from `@credebl/ssi-mobile-core` instead of the undeclared `@credebl/core` alias.
+  - Export the standalone DIDComm module APIs (`ConnectionsApi`, `CredentialsApi`, `ProofsApi`, `BasicMessagesApi`, `QuestionAnswerApi`, `MediationRecipientApi`) from the package root.
+  - Export `AgentProvider` as a named export from `@credebl/ssi-mobile-core`.
+  - Export metadata helpers, holder-binding helpers and biometric error classes from `@credebl/ssi-mobile-openid4vc`.
+  - Export the DigiLocker data interfaces and correct the package name/version in the README and release notes.
+- 4abf721: Upgrade the transitive `@stablelib/ed25519` dependency to 2.1.1 to fix signature malleability.
+  
+  Credo 0.7.4 allows `@stablelib/ed25519` 2.0.2, whose verifier accepts a second signature `(R, S + L)` for any valid
+  signature `(R, S)`. That can break code that treats signature bytes as a unique identifier. A workspace override now
+  forces the patched 2.1.1 release, and a regression test verifies that a malleable signature is rejected by the copy
+  of the library that Credo resolves. No public API changes.
+- Updated dependencies [e34939d]
+- Updated dependencies [c807af4]
+- Updated dependencies [e34939d]
+- Updated dependencies [7b386c2]
+- Updated dependencies [4abf721]
+  - @credebl/ssi-mobile-core@2.3.0
+
 ## 2.2.1
 
 ### Patch Changes
