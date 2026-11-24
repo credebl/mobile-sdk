@@ -93,10 +93,6 @@ jobs:
           TAG: ${{ github.event_name == 'push' && 'alpha' || format('pr-{0}', github.event.number) }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Snapshot versions are not allowed in changesets pre mode (.changeset/pre.json). Leave pre mode
-          # in this throwaway checkout only, so alpha snapshots keep being published under the alpha tag.
-          rm -f .changeset/pre.json
-
           # this ensures there's always a patch release created
           cat << 'EOF' > .changeset/snapshot-template-changeset.md
           ---
