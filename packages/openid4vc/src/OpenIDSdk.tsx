@@ -22,7 +22,6 @@ import {
 } from '@credo-ts/core'
 import {
   getOfferedCredentials,
-  getScopesFromCredentialConfigurationsSupported,
   type OpenId4VciCredentialConfigurationSupportedWithFormats,
   OpenId4VciCredentialResponse,
   OpenId4VciMetadata,
@@ -35,6 +34,7 @@ import {
 import { DeviceRequest, type DocRequest, type IssuerSigned, type IssuerSignedItem } from '@owf/mdoc'
 import type { PropsWithChildren } from 'react'
 import { Platform } from 'react-native'
+import { getScopesForCredentialConfigurationIds } from './authorization'
 import {
   assertOfferAcceptsHolderDid,
   assertW3cCredentialsBoundToHolderDid,
@@ -215,11 +215,13 @@ export class OpenID4VCSDK implements MobileSDKModule {
     authorization,
     customHeaders,
     fetchAuthorization = true,
+    credentialConfigurationIdsToRequest,
   }: {
     offer: { uri: string }
     authorization?: { clientId: string; redirectUri: string }
     customHeaders?: Record<string, unknown>
     fetchAuthorization?: boolean
+    credentialConfigurationIdsToRequest?: string[]
   }) {
     const agent = this.assertAndGetAgent()
 
@@ -241,15 +243,12 @@ export class OpenID4VCSDK implements MobileSDKModule {
         )
       }
 
-      // TODO: authorization should only be initiated after we know which credentials we're going to request
       if (authorization) {
         resolvedAuthorizationRequest = await withReadableErrors(async () =>
           agent.modules.openid4vc.holder.resolveOpenId4VciAuthorizationRequest(resolvedCredentialOffer, {
             redirectUri: authorization.redirectUri,
             clientId: authorization.clientId,
-            scope: getScopesFromCredentialConfigurationsSupported(
-              resolvedCredentialOffer.offeredCredentialConfigurations
-            ),
+            scope: getScopesForCredentialConfigurationIds(resolvedCredentialOffer, credentialConfigurationIdsToRequest),
             // Added in patch but not in types
             // @ts-expect-error
             customHeaders,

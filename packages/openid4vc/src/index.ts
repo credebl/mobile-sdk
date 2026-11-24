@@ -7,6 +7,7 @@ import {
   OpenId4VciTxCode,
 } from '@credo-ts/openid4vc'
 
+export * from './authorization'
 export {
   assertOfferAcceptsHolderDid,
   assertW3cCredentialsBoundToHolderDid,
